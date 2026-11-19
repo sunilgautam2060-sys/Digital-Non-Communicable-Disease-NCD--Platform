@@ -1,0 +1,1464 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Know & Prevent | NCD Nepal</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #147d72;
+            --primary-dark: #0d625a;
+            --primary-light: #e8f5f2;
+            --background: #f5f8f8;
+            --white: #ffffff;
+            --text: #243746;
+            --muted: #718096;
+            --border: #e4ebed;
+            --shadow: 0 5px 20px rgba(25, 55, 70, 0.06);
+            --radius: 14px;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .app {
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 245px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 25px 18px;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.3s ease, background 0.3s;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 8px 30px;
+        }
+
+        .brand-logo {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .brand h2 {
+            font-size: 19px;
+            line-height: 1.2;
+        }
+
+        .brand small {
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .menu-heading {
+            color: #9aa7b2;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin: 20px 10px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin: 5px 0;
+            border-radius: 9px;
+            color: #61717d;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-note {
+            background: var(--primary-light);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 35px;
+        }
+
+        .sidebar-note strong {
+            color: var(--primary-dark);
+            font-size: 13px;
+        }
+
+        .sidebar-note p {
+            color: #55736f;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* MAIN CONTENT */
+
+        .main {
+            margin-left: 245px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 72px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+        }
+
+        .topbar-title {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .menu-button {
+            display: none;
+            border: none;
+            background: none;
+            font-size: 25px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .content {
+            max-width: 1250px;
+            margin: auto;
+            padding: 32px 35px 50px;
+        }
+
+        /* PAGE HEADING */
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: linear-gradient(115deg, #0d766c, #229b87);
+            color: white;
+            padding: 35px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .hero-text {
+            max-width: 650px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.16);
+            padding: 6px 11px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        .hero h2 {
+            font-size: 27px;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 14px;
+            color: #e4f5f1;
+            max-width: 580px;
+        }
+
+        .hero-symbol {
+            font-size: 75px;
+            opacity: 0.9;
+            padding: 0 20px;
+        }
+
+        /* SEARCH */
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0 17px;
+        }
+
+        .section-heading h2 {
+            font-size: 19px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 340px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: white;
+            padding: 12px 15px 12px 40px;
+            border-radius: 9px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            top: 10px;
+            color: var(--muted);
+        }
+
+        /* CONDITION CARDS */
+
+        .condition-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .condition-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+            transition: 0.2s;
+        }
+
+        .condition-card:hover {
+            transform: translateY(-3px);
+            border-color: #b4dcd5;
+        }
+
+        .condition-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-light);
+            border-radius: 12px;
+            font-size: 23px;
+            margin-bottom: 15px;
+        }
+
+        .condition-card h3 {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .condition-card p {
+            font-size: 12px;
+            color: var(--muted);
+            min-height: 42px;
+        }
+
+        .learn-button {
+            margin-top: 17px;
+            border: none;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 7px;
+            padding: 9px 13px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .learn-button:hover {
+            background: #d6eee8;
+        }
+
+        .empty-state {
+            display: none;
+            background: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 12px;
+            color: var(--muted);
+            margin-top: 15px;
+        }
+
+        /* CONDITION INFORMATION */
+
+        .information-section {
+            margin-top: 35px;
+            scroll-margin-top: 25px;
+        }
+
+        .information-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 27px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .information-card h2 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .information-card h3 {
+            font-size: 15px;
+            margin: 20px 0 8px;
+            color: var(--primary-dark);
+        }
+
+        .information-card p {
+            color: #647482;
+            font-size: 13px;
+        }
+
+        .information-card ul {
+            padding-left: 21px;
+            color: #647482;
+            font-size: 13px;
+        }
+
+        .information-card li {
+            margin: 7px 0;
+        }
+
+        .info-tag {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .warning-note {
+            background: #fff8e8;
+            border-left: 4px solid #e6ae43;
+            padding: 13px 16px;
+            border-radius: 5px;
+            margin-top: 18px;
+        }
+
+        .warning-note p {
+            color: #795b25;
+        }
+
+        /* LIFESTYLE */
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .tip-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .tip-card span {
+            font-size: 25px;
+        }
+
+        .tip-card h3 {
+            font-size: 14px;
+            margin: 10px 0 5px;
+        }
+
+        .tip-card p {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* FAQ */
+
+        .faq-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .faq-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            background: white;
+            border: none;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            text-align: left;
+            gap: 15px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 0 18px 17px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-arrow {
+            transition: transform 0.2s;
+        }
+
+        /* NOTICE AND FOOTER */
+
+        .medical-notice {
+            margin-top: 30px;
+            padding: 19px;
+            background: #edf4fa;
+            border: 1px solid #dce8f2;
+            border-radius: 12px;
+        }
+
+        .medical-notice h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .medical-notice p {
+            color: #627486;
+            font-size: 12px;
+        }
+
+        .footer {
+            padding: 25px 10px 10px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* DARK MODE */
+
+        html.dark-mode body {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .sidebar,
+        html.dark-mode .topbar {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        html.dark-mode .brand h2,
+        html.dark-mode .page-heading h1,
+        html.dark-mode .section-heading h2,
+        html.dark-mode .condition-card h3,
+        html.dark-mode .information-card h2,
+        html.dark-mode .tip-card h3,
+        html.dark-mode .faq-question,
+        html.dark-mode .menu-button {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .brand small,
+        html.dark-mode .menu-heading,
+        html.dark-mode .nav-link,
+        html.dark-mode .topbar-title,
+        html.dark-mode .topbar-right span,
+        html.dark-mode .page-heading p,
+        html.dark-mode .section-heading p,
+        html.dark-mode .footer {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .nav-link:hover,
+        html.dark-mode .nav-link.active {
+            background: #374151;
+            color: #4ade80;
+        }
+
+        html.dark-mode .sidebar-note {
+            background: #273449;
+        }
+
+        html.dark-mode .sidebar-note strong {
+            color: #4ade80;
+        }
+
+        html.dark-mode .sidebar-note p {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .user-avatar {
+            background: #374151;
+            color: #4ade80;
+        }
+
+        html.dark-mode .search-box input {
+            background: #1f2937;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+
+        html.dark-mode .search-box input::placeholder {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .search-box input:focus {
+            border-color: #4ade80;
+        }
+
+        html.dark-mode .search-icon {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .condition-card,
+        html.dark-mode .information-card,
+        html.dark-mode .tip-card,
+        html.dark-mode .faq-item,
+        html.dark-mode .empty-state {
+            background: #1f2937;
+            border-color: #374151;
+            box-shadow: none;
+        }
+
+        html.dark-mode .condition-card:hover {
+            border-color: #4ade80;
+        }
+
+        html.dark-mode .condition-icon {
+            background: #4ade80;
+            color: #111827;
+        }
+
+        html.dark-mode .condition-card p,
+        html.dark-mode .information-card p,
+        html.dark-mode .information-card ul,
+        html.dark-mode .tip-card p,
+        html.dark-mode .faq-answer {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .learn-button {
+            background: #4ade80;
+            color: #111827;
+        }
+
+        html.dark-mode .learn-button:hover {
+            background: #86efac;
+        }
+
+        html.dark-mode .information-card h3 {
+            color: #4ade80;
+        }
+
+        html.dark-mode .info-tag {
+            background: #374151;
+            color: #4ade80;
+        }
+
+        html.dark-mode .warning-note {
+            background: #3b3222;
+            border-left-color: #e6ae43;
+        }
+
+        html.dark-mode .warning-note p {
+            color: #f5dca7;
+        }
+
+        html.dark-mode .faq-question {
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .faq-question:hover {
+            background: #273449;
+        }
+
+        html.dark-mode .medical-notice {
+            background: #273449;
+            border-color: #374151;
+        }
+
+        html.dark-mode .medical-notice h3 {
+            color: #4ade80;
+        }
+
+        html.dark-mode .medical-notice p {
+            color: #cbd5e1;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1000px) {
+            .condition-grid,
+            .tips-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: none;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: 5px 0 25px rgba(0,0,0,0.12);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 0 18px;
+                height: 65px;
+            }
+
+            .menu-button {
+                display: block;
+            }
+
+            .topbar-title {
+                margin-right: auto;
+                margin-left: 12px;
+            }
+
+            .content {
+                padding: 25px 18px 40px;
+            }
+
+            .hero {
+                padding: 25px;
+            }
+
+            .hero h2 {
+                font-size: 22px;
+            }
+
+            .hero-symbol {
+                display: none;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .condition-grid,
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-heading h1 {
+                font-size: 23px;
+            }
+
+            .information-card {
+                padding: 19px;
+            }
+
+            .topbar-right span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">N+</div>
+            <div>
+                <h2>NCD Nepal</h2>
+                <small>HEALTH & WELLNESS</small>
+            </div>
+        </div>
+
+        <div class="menu-heading">MAIN MENU</div>
+
+        <nav>
+            <a href="/dashboard" class="nav-link">
+                <span class="nav-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a href="/monitoring" class="nav-link">
+                <span class="nav-icon">♡</span>
+                Health Monitoring
+            </a>
+
+            <a href="/prevention" class="nav-link active">
+                <span class="nav-icon">✚</span>
+                Know & Prevent
+            </a>
+
+            <a href="/community" class="nav-link">
+                <span class="nav-icon">♧</span>
+                Community
+            </a>
+        </nav>
+
+        <div class="menu-heading">HEALTH INFORMATION</div>
+
+        <div class="sidebar-note">
+            <strong>Stay informed. Stay healthy.</strong>
+            <p>Learn about non-communicable diseases and healthy lifestyle practices.</p>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button class="menu-button" id="menuButton"
+                    aria-label="Open navigation menu">
+                ☰
+            </button>
+
+            <div class="topbar-title">
+                Health Education / Know & Prevent
+            </div>
+
+            <div class="topbar-right">
+                <span>Health & Wellness</span>
+                <div class="user-avatar">U</div>
+            </div>
+
+        </header>
+
+        <div class="content">
+
+            <!-- PAGE HEADING -->
+            <section class="page-heading">
+                <h1>Know & Prevent</h1>
+                <p>Understand non-communicable diseases and learn how to reduce health risks.</p>
+            </section>
+
+            <!-- HERO -->
+            <section class="hero">
+
+                <div class="hero-text">
+                    <span class="hero-label">AWARENESS • PREVENTION • WELLNESS</span>
+
+                    <h2>Knowledge is the first step towards a healthier life.</h2>
+
+                    <p>
+                        Learn about common non-communicable diseases,
+                        understand their risk factors, recognize warning
+                        signs, and explore healthy lifestyle practices.
+                    </p>
+                </div>
+
+                <div class="hero-symbol">♡</div>
+
+            </section>
+
+            <!-- CONDITIONS -->
+            <section>
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Explore Health Conditions</h2>
+                        <p>Select a condition to learn more.</p>
+                    </div>
+
+                    <div class="search-box">
+                        <span class="search-icon">⌕</span>
+                        <input
+                            type="search"
+                            id="conditionSearch"
+                            placeholder="Search health conditions..."
+                            aria-label="Search health conditions"
+                        >
+                    </div>
+                </div>
+
+                <div class="condition-grid" id="conditionCards">
+
+                    <article class="condition-card"
+                             data-search="diabetes blood sugar glucose">
+                        <div class="condition-icon">🩸</div>
+                        <h3>Diabetes</h3>
+                        <p>
+                            Learn about blood glucose, common symptoms,
+                            risk factors, and prevention.
+                        </p>
+                        <button class="learn-button"
+                                type="button"
+                                data-condition="diabetes">
+                            Learn More →
+                        </button>
+                    </article>
+
+                    <article class="condition-card"
+                             data-search="hypertension high blood pressure bp">
+                        <div class="condition-icon">❤️</div>
+                        <h3>Hypertension</h3>
+                        <p>
+                            Understand high blood pressure, its risks,
+                            monitoring, and healthy habits.
+                        </p>
+                        <button class="learn-button"
+                                type="button"
+                                data-condition="hypertension">
+                            Learn More →
+                        </button>
+                    </article>
+
+                    <article class="condition-card"
+                             data-search="thyroid hypothyroidism hyperthyroidism">
+                        <div class="condition-icon">🦋</div>
+                        <h3>Thyroid Disorders</h3>
+                        <p>
+                            Understand thyroid function and common
+                            thyroid-related health conditions.
+                        </p>
+                        <button class="learn-button"
+                                type="button"
+                                data-condition="thyroid">
+                            Learn More →
+                        </button>
+                    </article>
+
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    No matching health conditions found.
+                    Try another search.
+                </div>
+
+            </section>
+
+            <!-- CONDITION INFORMATION -->
+            <section class="information-section" id="conditionInformation">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Health Information</h2>
+                        <p>Basic educational information about common conditions.</p>
+                    </div>
+                </div>
+
+                <!-- DIABETES -->
+                <article class="information-card"
+                         id="diabetesDetails">
+
+                    <span class="info-tag">HEALTH CONDITION 01</span>
+
+                    <h2>Diabetes</h2>
+
+                    <p>
+                        Diabetes is a chronic condition that affects how
+                        the body regulates blood glucose (blood sugar).
+                        It occurs when the body does not produce enough
+                        insulin or cannot use insulin effectively.
+                    </p>
+
+                    <h3>Common Symptoms</h3>
+                    <ul>
+                        <li>Increased thirst and frequent urination.</li>
+                        <li>Unusual tiredness or fatigue.</li>
+                        <li>Increased hunger.</li>
+                        <li>Blurred vision.</li>
+                        <li>Unexplained weight changes.</li>
+                        <li>Slow healing of wounds.</li>
+                    </ul>
+
+                    <h3>Common Risk Factors</h3>
+                    <ul>
+                        <li>Family history of diabetes.</li>
+                        <li>Physical inactivity.</li>
+                        <li>Unhealthy dietary patterns.</li>
+                        <li>Excess body weight.</li>
+                        <li>Increasing age and other individual health factors.</li>
+                    </ul>
+
+                    <h3>Prevention and Management</h3>
+                    <ul>
+                        <li>Maintain a balanced and varied diet.</li>
+                        <li>Engage in regular physical activity.</li>
+                        <li>Maintain a healthy body weight.</li>
+                        <li>Attend recommended blood glucose screening.</li>
+                        <li>Follow medical advice and prescribed treatment.</li>
+                    </ul>
+
+                    <div class="warning-note">
+                        <p>
+                            <strong>Important:</strong>
+                            Frequent thirst, urination, or unexplained
+                            weight changes should be discussed with a
+                            qualified healthcare professional.
+                        </p>
+                    </div>
+
+                </article>
+
+                <!-- HYPERTENSION -->
+                <article class="information-card"
+                         id="hypertensionDetails"
+                         hidden>
+
+                    <span class="info-tag">HEALTH CONDITION 02</span>
+
+                    <h2>Hypertension (High Blood Pressure)</h2>
+
+                    <p>
+                        Hypertension is a condition in which the pressure
+                        of blood against artery walls remains consistently
+                        higher than recommended levels. It often has no
+                        noticeable symptoms.
+                    </p>
+
+                    <h3>Possible Symptoms</h3>
+                    <p>
+                        Many people with hypertension do not experience
+                        obvious symptoms. Very high blood pressure may
+                        sometimes be associated with headache, visual
+                        disturbance, chest pain, or other symptoms.
+                    </p>
+
+                    <h3>Common Risk Factors</h3>
+                    <ul>
+                        <li>High salt intake.</li>
+                        <li>Physical inactivity.</li>
+                        <li>Smoking and tobacco use.</li>
+                        <li>Excessive alcohol consumption.</li>
+                        <li>Family history and increasing age.</li>
+                        <li>Unhealthy dietary patterns and excess body weight.</li>
+                    </ul>
+
+                    <h3>Prevention and Management</h3>
+                    <ul>
+                        <li>Reduce excess salt in meals.</li>
+                        <li>Participate in regular physical activity.</li>
+                        <li>Eat a balanced diet with vegetables and fruits.</li>
+                        <li>Monitor blood pressure as recommended.</li>
+                        <li>Take prescribed medicines as directed.</li>
+                        <li>Attend regular healthcare appointments.</li>
+                    </ul>
+
+                    <div class="warning-note">
+                        <p>
+                            <strong>Important:</strong>
+                            Regular blood pressure checks are important
+                            because hypertension can exist without
+                            noticeable symptoms.
+                        </p>
+                    </div>
+
+                </article>
+
+                <!-- THYROID -->
+                <article class="information-card"
+                         id="thyroidDetails"
+                         hidden>
+
+                    <span class="info-tag">HEALTH CONDITION 03</span>
+
+                    <h2>Thyroid Disorders</h2>
+
+                    <p>
+                        The thyroid is a small, butterfly-shaped gland
+                        located in the front of the neck. It produces
+                        hormones that help regulate metabolism, energy
+                        use, and several body functions.
+                    </p>
+
+                    <h3>Common Types</h3>
+                    <ul>
+                        <li>
+                            <strong>Hypothyroidism:</strong>
+                            The thyroid gland does not produce enough
+                            thyroid hormones.
+                        </li>
+                        <li>
+                            <strong>Hyperthyroidism:</strong>
+                            The thyroid gland produces too much
+                            thyroid hormone.
+                        </li>
+                    </ul>
+
+                    <h3>Possible Symptoms</h3>
+                    <ul>
+                        <li>Unusual tiredness or changes in energy.</li>
+                        <li>Unexplained weight changes.</li>
+                        <li>Changes in heart rate.</li>
+                        <li>Feeling unusually cold or hot.</li>
+                        <li>Changes in mood or sleep.</li>
+                        <li>Changes in hair or skin.</li>
+                    </ul>
+
+                    <h3>Monitoring and Management</h3>
+                    <ul>
+                        <li>Consult a healthcare professional for assessment.</li>
+                        <li>Complete thyroid tests when recommended.</li>
+                        <li>Follow prescribed treatment.</li>
+                        <li>Attend follow-up appointments.</li>
+                        <li>Do not start or stop thyroid medicines without medical advice.</li>
+                    </ul>
+
+                    <div class="warning-note">
+                        <p>
+                            <strong>Important:</strong>
+                            Thyroid symptoms can overlap with other
+                            conditions. Proper medical assessment and
+                            testing are needed.
+                        </p>
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- HEALTHY LIFESTYLE -->
+            <section>
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Healthy Lifestyle Practices</h2>
+                        <p>Small daily habits can support long-term health.</p>
+                    </div>
+                </div>
+
+                <div class="tips-grid">
+
+                    <article class="tip-card">
+                        <span>🥗</span>
+                        <h3>Balanced Nutrition</h3>
+                        <p>
+                            Eat a variety of vegetables, fruits,
+                            whole grains, and other nutritious foods.
+                        </p>
+                    </article>
+
+                    <article class="tip-card">
+                        <span>🏃</span>
+                        <h3>Regular Physical Activity</h3>
+                        <p>
+                            Include regular movement and physical
+                            activity according to your abilities.
+                        </p>
+                    </article>
+
+                    <article class="tip-card">
+                        <span>🚭</span>
+                        <h3>Avoid Tobacco</h3>
+                        <p>
+                            Avoid smoking and other tobacco products
+                            to protect your health.
+                        </p>
+                    </article>
+
+                    <article class="tip-card">
+                        <span>💧</span>
+                        <h3>Stay Hydrated</h3>
+                        <p>
+                            Drink sufficient safe water throughout
+                            the day according to your needs.
+                        </p>
+                    </article>
+
+                    <article class="tip-card">
+                        <span>😴</span>
+                        <h3>Healthy Sleep</h3>
+                        <p>
+                            Maintain a regular sleep schedule
+                            and get adequate rest.
+                        </p>
+                    </article>
+
+                    <article class="tip-card">
+                        <span>🩺</span>
+                        <h3>Regular Health Checks</h3>
+                        <p>
+                            Attend recommended health screenings
+                            and follow-up appointments.
+                        </p>
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- FAQ -->
+            <section>
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Frequently Asked Questions</h2>
+                        <p>Quick answers to common health questions.</p>
+                    </div>
+                </div>
+
+                <div class="faq-list">
+
+                    <div class="faq-item">
+                        <button class="faq-question" type="button">
+                            What are non-communicable diseases?
+                            <span class="faq-arrow">⌄</span>
+                        </button>
+
+                        <div class="faq-answer">
+                            Non-communicable diseases (NCDs) are
+                            generally long-term conditions that are
+                            not transmitted directly from one person
+                            to another. Examples include cardiovascular
+                            diseases, diabetes, cancer, and chronic
+                            respiratory diseases.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" type="button">
+                            Can NCDs be prevented?
+                            <span class="faq-arrow">⌄</span>
+                        </button>
+
+                        <div class="faq-answer">
+                            Many NCD risks can be reduced through
+                            healthier lifestyle habits, avoiding
+                            tobacco, regular physical activity,
+                            balanced nutrition, and appropriate
+                            health screening.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" type="button">
+                            Why are regular health checkups important?
+                            <span class="faq-arrow">⌄</span>
+                        </button>
+
+                        <div class="faq-answer">
+                            Regular checkups can help identify certain
+                            health problems early, monitor existing
+                            conditions, and support timely medical care.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question" type="button">
+                            Should I stop taking medicine when I feel better?
+                            <span class="faq-arrow">⌄</span>
+                        </button>
+
+                        <div class="faq-answer">
+                            No. Do not stop or change prescribed
+                            medicines without consulting your
+                            healthcare professional.
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- MEDICAL NOTICE -->
+            <section class="medical-notice">
+
+                <h3>Medical Information Notice</h3>
+
+                <p>
+                    The information on this page is provided for
+                    general health education and awareness. It does
+                    not replace professional medical advice,
+                    diagnosis, or treatment. Consult a qualified
+                    healthcare professional for personal medical
+                    concerns and decisions.
+                </p>
+
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="footer">
+                <p>© 2026 NCD Nepal. Health & Wellness Information.</p>
+                <p>Awareness • Access • Continuity</p>
+            </footer>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- SHARED THEME SCRIPT -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // MOBILE SIDEBAR
+    const menuButton = document.getElementById("menuButton");
+    const sidebar = document.getElementById("sidebar");
+
+    if (menuButton && sidebar) {
+
+        menuButton.addEventListener("click", function () {
+            sidebar.classList.toggle("open");
+        });
+
+        document.addEventListener("click", function (event) {
+
+            if (
+                window.innerWidth <= 700 &&
+                !sidebar.contains(event.target) &&
+                !menuButton.contains(event.target)
+            ) {
+                sidebar.classList.remove("open");
+            }
+
+        });
+    }
+
+    // CONDITION INFORMATION
+    const conditionButtons = document.querySelectorAll(
+        ".learn-button"
+    );
+
+    const conditionSections = [
+        "diabetesDetails",
+        "hypertensionDetails",
+        "thyroidDetails"
+    ];
+
+    function showCondition(condition) {
+
+        conditionSections.forEach(function (id) {
+            const section = document.getElementById(id);
+
+            if (section) {
+                section.hidden = true;
+            }
+        });
+
+        const selectedSection = document.getElementById(
+            condition + "Details"
+        );
+
+        if (selectedSection) {
+
+            selectedSection.hidden = false;
+
+            selectedSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }
+
+    conditionButtons.forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const condition = this.dataset.condition;
+
+            showCondition(condition);
+
+        });
+
+    });
+
+    // CONDITION SEARCH
+    const searchInput = document.getElementById(
+        "conditionSearch"
+    );
+
+    const cards = document.querySelectorAll(
+        ".condition-card"
+    );
+
+    const emptyState = document.getElementById(
+        "emptyState"
+    );
+
+    if (searchInput) {
+
+        searchInput.addEventListener("input", function () {
+
+            const searchValue = this.value
+                .toLowerCase()
+                .trim();
+
+            let visibleCount = 0;
+
+            cards.forEach(function (card) {
+
+                const searchableText = (
+                    (card.dataset.search || "") +
+                    " " +
+                    (card.innerText || "")
+                ).toLowerCase();
+
+                const matched = searchableText.includes(
+                    searchValue
+                );
+
+                card.style.display = matched ? "" : "none";
+
+                if (matched) {
+                    visibleCount++;
+                }
+
+            });
+
+            if (emptyState) {
+                emptyState.style.display =
+                    visibleCount === 0 ? "block" : "none";
+            }
+
+        });
+    }
+
+    // FAQ ACCORDION
+    const faqQuestions = document.querySelectorAll(
+        ".faq-question"
+    );
+
+    faqQuestions.forEach(function (question) {
+
+        question.addEventListener("click", function () {
+
+            const currentItem = this.closest(".faq-item");
+
+            if (!currentItem) return;
+
+            currentItem.classList.toggle("open");
+
+        });
+
+    });
+
+});
+</script>
+
+</body>
+</html>

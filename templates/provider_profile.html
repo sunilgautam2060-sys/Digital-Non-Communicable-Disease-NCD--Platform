@@ -1,0 +1,1499 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Provider Profile | NCD Nepal</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Arial, sans-serif;
+            background: #f1f7f5;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button, input, select {
+            font-family: inherit;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e4ece9;
+            padding: 26px 18px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+            margin-bottom: 34px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #176b5b;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .brand-text h2 {
+            color: #176b5b;
+            font-size: 20px;
+            line-height: 1.1;
+        }
+
+        .brand-text p {
+            font-size: 10px;
+            color: #8b9693;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+            margin-top: 4px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #9aa5a2;
+            letter-spacing: 1px;
+            padding: 0 14px;
+            margin: 18px 0 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: #687572;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: #f1f7f5;
+            color: #176b5b;
+        }
+
+        .nav-link.active {
+            background: #e7f3ef;
+            color: #176b5b;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            background: #eaf5f1;
+            border-radius: 14px;
+            padding: 17px;
+        }
+
+        .sidebar-bottom p {
+            font-size: 12px;
+            color: #176b5b;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .sidebar-bottom span {
+            display: block;
+            font-size: 11px;
+            color: #6f817c;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
+
+        .topbar {
+            min-height: 76px;
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid #e4ece9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 36px;
+            gap: 15px;
+        }
+
+        .page-heading h1 {
+            font-size: 22px;
+            color: #17211f;
+            font-weight: 750;
+        }
+
+        .page-heading p {
+            color: #87928f;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .top-profile {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .top-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #176b5b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .top-user strong {
+            display: block;
+            font-size: 13px;
+            color: #27312f;
+        }
+
+        .top-user span {
+            display: block;
+            font-size: 11px;
+            color: #8a9491;
+            margin-top: 2px;
+        }
+
+        /* CONTENT */
+
+        .content {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 34px 36px 55px;
+        }
+
+        .profile-header {
+            background: #ffffff;
+            border: 1px solid #e4ece9;
+            border-radius: 18px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 24px;
+        }
+
+        .profile-main {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .large-avatar {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            background: #176b5b;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 29px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .profile-intro h2 {
+            font-size: 23px;
+            color: #17211f;
+            margin-bottom: 6px;
+        }
+
+        .profile-intro p {
+            color: #7b8784;
+            font-size: 13px;
+            margin-bottom: 11px;
+            overflow-wrap: anywhere;
+        }
+
+        .account-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 11px;
+            border-radius: 20px;
+            background: #e8f4f0;
+            color: #176b5b;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .edit-button, .save-button {
+            border: 1px solid #176b5b;
+            background: #176b5b;
+            color: #ffffff;
+            border-radius: 9px;
+            padding: 11px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .edit-button:hover, .save-button:hover {
+            background: #125447;
+        }
+
+        .cancel-button {
+            border: 1px solid #d5dfdb;
+            background: #ffffff;
+            color: #596761;
+            border-radius: 9px;
+            padding: 11px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* GRID AND CARDS */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e4ece9;
+            border-radius: 18px;
+            padding: 25px;
+            min-width: 0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            color: #1d2926;
+        }
+
+        .card-header p {
+            color: #899490;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: #eaf5f1;
+            color: #176b5b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* INFORMATION */
+
+        .info-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px 28px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            color: #98a29f;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .info-value {
+            color: #26322f;
+            font-size: 14px;
+            font-weight: 600;
+            min-height: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .info-value.empty {
+            color: #a1aaa7;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        /* PROFESSIONAL DETAILS */
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf2f0;
+        }
+
+        .detail-item:first-of-type {
+            padding-top: 0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .detail-icon {
+            width: 39px;
+            height: 39px;
+            border-radius: 10px;
+            background: #eef7f4;
+            color: #176b5b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 17px;
+        }
+
+        .detail-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .detail-text strong {
+            display: block;
+            color: #293431;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .detail-text span {
+            display: block;
+            color: #8b9592;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        /* EDIT FORM */
+
+        .edit-card {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .edit-card.show {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            min-width: 0;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            color: #56645f;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            border: 1px solid #dce7e2;
+            border-radius: 9px;
+            padding: 12px 13px;
+            outline: none;
+            font-size: 13px;
+            color: #26322f;
+            background: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #176b5b;
+            box-shadow: 0 0 0 3px rgba(23, 107, 91, 0.09);
+        }
+
+        .form-group textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .form-group input[readonly] {
+            background: #f3f6f5;
+            color: #87928f;
+            cursor: not-allowed;
+        }
+
+        .form-help {
+            color: #8b9592;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        /* QUICK LINKS */
+
+        .actions-card {
+            margin-top: 24px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .action {
+            border: 1px solid #e3ebe8;
+            border-radius: 12px;
+            padding: 15px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s ease;
+        }
+
+        .action:hover {
+            border-color: #b8d9d0;
+            background: #f8fbfa;
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #eef7f4;
+            color: #176b5b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .action-text strong {
+            display: block;
+            color: #27322f;
+            font-size: 12px;
+        }
+
+        .action-text span {
+            display: block;
+            color: #929b98;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        /* NOTICE */
+
+        .security-note {
+            margin-top: 24px;
+            padding: 15px 18px;
+            background: #f8fbfa;
+            border: 1px solid #e3ece9;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .security-note-icon {
+            color: #176b5b;
+            font-size: 16px;
+        }
+
+        .security-note h4 {
+            font-size: 12px;
+            color: #27322f;
+            margin-bottom: 4px;
+        }
+
+        .security-note p {
+            color: #87918e;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .flash-message {
+            padding: 13px 16px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+            background: #e7f3ef;
+            color: #176b5b;
+            border: 1px solid #c9e5da;
+        }
+
+        .flash-message.error {
+            background: #fff0ef;
+            color: #b42318;
+            border-color: #f5ceca;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #9aa39f;
+            font-size: 11px;
+        }
+
+        .mobile-menu {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 23px;
+            color: #176b5b;
+            cursor: pointer;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1000px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.25s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .topbar {
+                padding: 12px 18px;
+                min-height: 70px;
+            }
+
+            .mobile-menu {
+                display: block;
+                margin-right: 12px;
+            }
+
+            .page-heading {
+                display: flex;
+                align-items: center;
+            }
+
+            .page-heading h1 {
+                font-size: 19px;
+            }
+
+            .page-heading p,
+            .top-user {
+                display: none;
+            }
+
+            .content {
+                padding: 24px 17px 40px;
+            }
+
+            .profile-header {
+                padding: 22px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-main {
+                width: 100%;
+            }
+
+            .large-avatar {
+                width: 68px;
+                height: 68px;
+                font-size: 24px;
+            }
+
+            .profile-intro h2 {
+                font-size: 19px;
+            }
+
+            .edit-button {
+                width: 100%;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-list,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions button {
+                width: 100%;
+            }
+        }
+
+        /* DARK MODE */
+
+        html.dark-mode body {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .sidebar,
+        html.dark-mode .topbar {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        html.dark-mode .brand-text h2 {
+            color: #4ade80;
+        }
+
+        html.dark-mode .brand-text p,
+        html.dark-mode .menu-title {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .nav-link {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .nav-link:hover,
+        html.dark-mode .nav-link.active {
+            background: #374151;
+            color: #4ade80;
+        }
+
+        html.dark-mode .sidebar-bottom {
+            background: #273449;
+        }
+
+        html.dark-mode .sidebar-bottom p {
+            color: #4ade80;
+        }
+
+        html.dark-mode .sidebar-bottom span {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .page-heading h1,
+        html.dark-mode .top-user strong {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .page-heading p,
+        html.dark-mode .top-user span {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .profile-header,
+        html.dark-mode .card {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        html.dark-mode .profile-intro h2,
+        html.dark-mode .card-header h3,
+        html.dark-mode .info-value,
+        html.dark-mode .detail-text strong,
+        html.dark-mode .action-text strong,
+        html.dark-mode .security-note h4 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .profile-intro p,
+        html.dark-mode .card-header p,
+        html.dark-mode .detail-text span,
+        html.dark-mode .action-text span {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .account-badge,
+        html.dark-mode .section-icon,
+        html.dark-mode .detail-icon,
+        html.dark-mode .action-icon {
+            background: #374151;
+            color: #4ade80;
+        }
+
+        html.dark-mode .info-item label,
+        html.dark-mode .form-group label {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .info-value.empty {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .detail-item {
+            border-color: #374151;
+        }
+
+        html.dark-mode .action {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        html.dark-mode .action:hover {
+            background: #273449;
+            border-color: #4ade80;
+        }
+
+        html.dark-mode .form-group input,
+        html.dark-mode .form-group select,
+        html.dark-mode .form-group textarea {
+            background: #111827;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .form-group input[readonly] {
+            background: #273449;
+            color: #9ca3af;
+        }
+
+        html.dark-mode .form-help {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .cancel-button {
+            background: #273449;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+
+        html.dark-mode .security-note {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        html.dark-mode .security-note-icon {
+            color: #4ade80;
+        }
+
+        html.dark-mode .security-note p {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .edit-button,
+        html.dark-mode .save-button {
+            background: #4ade80;
+            border-color: #4ade80;
+            color: #111827;
+        }
+
+        html.dark-mode .edit-button:hover,
+        html.dark-mode .save-button:hover {
+            background: #86efac;
+        }
+
+        html.dark-mode .brand-logo,
+        html.dark-mode .top-avatar,
+        html.dark-mode .large-avatar {
+            background: #4ade80;
+            color: #111827;
+        }
+
+        html.dark-mode .mobile-menu {
+            color: #4ade80;
+        }
+
+        html.dark-mode .footer {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">N+</div>
+
+            <div class="brand-text">
+                <h2>NCD Nepal</h2>
+                <p>HEALTH & WELLNESS</p>
+            </div>
+        </div>
+
+        <div class="menu-title">PROVIDER MENU</div>
+
+        <nav class="nav-menu">
+
+            <a href="{{ url_for('service_provider') }}" class="nav-link">
+                <span class="nav-icon">▦</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('provider_appointments') }}" class="nav-link">
+                <span class="nav-icon">📅</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}" class="nav-link">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('consultation') }}" class="nav-link">
+                <span class="nav-icon">🩺</span>
+                <span>Consultation</span>
+            </a>
+
+            <a href="{{ url_for('follow_up') }}" class="nav-link">
+                <span class="nav-icon">↻</span>
+                <span>Follow-up</span>
+            </a>
+
+            <a href="{{ url_for('availability') }}" class="nav-link">
+                <span class="nav-icon">◷</span>
+                <span>Availability</span>
+            </a>
+
+            <a href="{{ url_for('provider_notifications') }}" class="nav-link">
+                <span class="nav-icon">🔔</span>
+                <span>Notifications</span>
+            </a>
+
+        </nav>
+
+        <div class="menu-title">ACCOUNT</div>
+
+        <nav class="nav-menu">
+
+            <a href="{{ url_for('provider_profile') }}" class="nav-link active">
+                <span class="nav-icon">👤</span>
+                <span>My Profile</span>
+            </a>
+
+            <a href="{{ url_for('provider_settings') }}" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+            <a href="{{ url_for('provider_logout') }}" class="nav-link">
+                <span class="nav-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <p>Professional Healthcare Support</p>
+            <span>Supporting better NCD care and continuity.</span>
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="page-heading">
+
+                <button class="mobile-menu"
+                        type="button"
+                        onclick="toggleSidebar()"
+                        aria-label="Toggle navigation">
+                    ☰
+                </button>
+
+                <div>
+                    <h1>My Profile</h1>
+                    <p>Manage your professional and account information.</p>
+                </div>
+
+            </div>
+
+            <div class="top-profile">
+
+                <div class="top-avatar">
+                    {{ (session.get('provider_fullname') or 'P')[0]|upper }}
+                </div>
+
+                <div class="top-user">
+                    <strong>{{ session.get('provider_fullname', 'Provider') }}</strong>
+                    <span>Service Provider</span>
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {% if category == 'error' %}error{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- PROFILE HEADER -->
+
+            <div class="profile-header">
+
+                <div class="profile-main">
+
+                    <div class="large-avatar">
+                        {{ (session.get('provider_fullname') or 'P')[0]|upper }}
+                    </div>
+
+                    <div class="profile-intro">
+
+                        <h2>
+                            {{ session.get('provider_fullname', 'Service Provider') }}
+                        </h2>
+
+                        <p>
+                            {{ session.get('provider_email', 'Email not available') }}
+                        </p>
+
+                        <span class="account-badge">
+                            ● SERVICE PROVIDER
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <button type="button"
+                        class="edit-button"
+                        onclick="toggleEditForm()">
+                    Edit Profile
+                </button>
+
+            </div>
+
+            <!-- INFORMATION GRID -->
+
+            <div class="profile-grid">
+
+                <!-- PERSONAL INFORMATION -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Personal Information</h3>
+                            <p>Your registered account details</p>
+                        </div>
+
+                        <div class="section-icon">👤</div>
+
+                    </div>
+
+                    <div class="info-list">
+
+                        <div class="info-item">
+                            <label>Full Name</label>
+                            <div class="info-value">
+                                {{ session.get('provider_fullname') or 'Not provided' }}
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <label>Account Type</label>
+                            <div class="info-value">Service Provider</div>
+                        </div>
+
+                        <div class="info-item">
+                            <label>Email Address</label>
+                            <div class="info-value">
+                                {{ session.get('provider_email') or 'Not provided' }}
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <label>Phone Number</label>
+                            <div class="info-value">
+                                {{ session.get('provider_phone') or 'Not provided' }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PROFESSIONAL INFORMATION -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Professional Information</h3>
+                            <p>Your healthcare professional details</p>
+                        </div>
+
+                        <div class="section-icon">🩺</div>
+
+                    </div>
+
+                    <div class="detail-item">
+
+                        <div class="detail-icon">⚕</div>
+
+                        <div class="detail-text">
+                            <strong>Provider Type</strong>
+                            <span>
+                                {{ session.get('provider_type') or 'Not provided' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="detail-item">
+
+                        <div class="detail-icon">📋</div>
+
+                        <div class="detail-text">
+                            <strong>Specialization</strong>
+                            <span>
+                                {{ session.get('provider_specialization') or 'Not provided' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="detail-item">
+
+                        <div class="detail-icon">🏥</div>
+
+                        <div class="detail-text">
+                            <strong>Organization</strong>
+                            <span>
+                                {{ session.get('provider_organization') or 'Not provided' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="detail-item">
+
+                        <div class="detail-icon">📍</div>
+
+                        <div class="detail-text">
+                            <strong>Workplace Location</strong>
+                            <span>
+                                {{ session.get('provider_location') or 'Not provided' }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- EDIT PROFILE FORM -->
+
+            <div class="card edit-card" id="editCard">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3>Edit Provider Profile</h3>
+                        <p>Update your personal and professional information.</p>
+                    </div>
+
+                    <div class="section-icon">✎</div>
+
+                </div>
+
+                <form method="POST"
+                      action="{{ url_for('provider_profile') }}"
+                      autocomplete="on">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input
+                                type="text"
+                                id="fullname"
+                                name="fullname"
+                                value="{{ session.get('provider_fullname', '') }}"
+                                required
+                                maxlength="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input
+                                type="email"
+                                id="email"
+                                value="{{ session.get('provider_email', '') }}"
+                                readonly>
+                            <p class="form-help">
+                                Contact the administrator if your registered email needs changing.
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                value="{{ session.get('provider_phone', '') }}"
+                                maxlength="20"
+                                placeholder="Enter your phone number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="provider_type">Provider Type</label>
+                            <input
+                                type="text"
+                                id="provider_type"
+                                name="provider_type"
+                                value="{{ session.get('provider_type', '') }}"
+                                maxlength="100"
+                                placeholder="e.g. Doctor, Health Worker">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="specialization">Specialization</label>
+                            <input
+                                type="text"
+                                id="specialization"
+                                name="specialization"
+                                value="{{ session.get('provider_specialization', '') }}"
+                                maxlength="150"
+                                placeholder="Enter your specialization">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="organization">Organization</label>
+                            <input
+                                type="text"
+                                id="organization"
+                                name="organization"
+                                value="{{ session.get('provider_organization', '') }}"
+                                maxlength="150"
+                                placeholder="Enter your organization">
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="location">Workplace Location</label>
+                            <textarea
+                                id="location"
+                                name="location"
+                                maxlength="300"
+                                placeholder="Enter your workplace address">{{ session.get('provider_location', '') }}</textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <button type="button"
+                                class="cancel-button"
+                                onclick="toggleEditForm()">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="save-button">
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- PROVIDER WORKSPACE -->
+
+            <div class="card actions-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3>Provider Workspace</h3>
+                        <p>Quick access to your healthcare management activities.</p>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <a href="{{ url_for('provider_appointments') }}" class="action">
+                        <div class="action-icon">📅</div>
+                        <div class="action-text">
+                            <strong>Appointments</strong>
+                            <span>Manage appointment requests</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('patients') }}" class="action">
+                        <div class="action-icon">♙</div>
+                        <div class="action-text">
+                            <strong>Patients</strong>
+                            <span>View patient information</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('consultation') }}" class="action">
+                        <div class="action-icon">🩺</div>
+                        <div class="action-text">
+                            <strong>Consultation</strong>
+                            <span>Manage consultations</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('follow_up') }}" class="action">
+                        <div class="action-icon">↻</div>
+                        <div class="action-text">
+                            <strong>Follow-up</strong>
+                            <span>Manage patient follow-ups</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('availability') }}" class="action">
+                        <div class="action-icon">◷</div>
+                        <div class="action-text">
+                            <strong>Availability</strong>
+                            <span>Manage working hours</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ url_for('provider_notifications') }}" class="action">
+                        <div class="action-icon">🔔</div>
+                        <div class="action-text">
+                            <strong>Notifications</strong>
+                            <span>View account updates</span>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- ACCOUNT SETTINGS -->
+
+            <div class="card actions-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3>Account Management</h3>
+                        <p>Manage your provider account preferences.</p>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <a href="{{ url_for('provider_settings') }}" class="action">
+
+                        <div class="action-icon">⚙</div>
+
+                        <div class="action-text">
+                            <strong>Provider Settings</strong>
+                            <span>Manage account preferences</span>
+                        </div>
+
+                    </a>
+
+                    <a href="{{ url_for('provider_notifications') }}" class="action">
+
+                        <div class="action-icon">🔔</div>
+
+                        <div class="action-text">
+                            <strong>Notifications</strong>
+                            <span>View provider notifications</span>
+                        </div>
+
+                    </a>
+
+                    <a href="{{ url_for('provider_logout') }}" class="action">
+
+                        <div class="action-icon">⇥</div>
+
+                        <div class="action-text">
+                            <strong>Logout</strong>
+                            <span>Securely leave your account</span>
+                        </div>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- SECURITY NOTICE -->
+
+            <div class="security-note">
+
+                <div class="security-note-icon">🔒</div>
+
+                <div>
+                    <h4>Protect your provider account</h4>
+
+                    <p>
+                        Keep your professional and contact information accurate.
+                        Do not share your login credentials with anyone.
+                        Patient information should only be accessed for authorized
+                        healthcare activities.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="footer">
+                © 2026 NCD Nepal · Digital Health & Wellness Support
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<script>
+
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+
+    function toggleEditForm() {
+        const editCard = document.getElementById("editCard");
+
+        editCard.classList.toggle("show");
+
+        if (editCard.classList.contains("show")) {
+            editCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Patients | NCD Nepal</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7f6;
+            color: #1f2937;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            width: 245px;
+            background: #123b2c;
+            color: white;
+            padding: 25px 17px;
+            flex-shrink: 0;
+            min-height: 100vh;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .brand-sub {
+            color: #b9d7c7;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin-bottom: 35px;
+        }
+
+        .menu-label {
+            color: #a9c5b5;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 24px 10px 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 13px 14px;
+            margin: 5px 0;
+            text-decoration: none;
+            color: #e8f3ef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #176b5b;
+            color: #ffffff;
+        }
+
+        .nav-link.active {
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================= */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: #123b2c;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            margin-bottom: 7px;
+        }
+
+        .topbar p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .provider {
+            background: white;
+            padding: 12px 17px;
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           PAGE BANNER
+        ========================================================= */
+
+        .page-banner {
+            background: #176b5b;
+            color: white;
+            padding: 27px 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .banner-label {
+            display: block;
+            color: #d5eee6;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .page-banner h2 {
+            font-size: 27px;
+            margin-bottom: 9px;
+        }
+
+        .page-banner p {
+            color: #ffffff;
+            font-size: 15px;
+            line-height: 1.7;
+            max-width: 800px;
+        }
+
+        /* =========================================================
+           STATISTICS
+        ========================================================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 17px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 21px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-icon {
+            font-size: 23px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .stat-card h3 {
+            font-size: 29px;
+            margin-top: 10px;
+            color: #176b5b;
+        }
+
+        /* =========================================================
+           PANEL
+        ========================================================= */
+
+        .panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 23px;
+            margin-bottom: 22px;
+        }
+
+        .panel-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .panel-heading h2 {
+            font-size: 19px;
+        }
+
+        .panel-heading p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .patient-count {
+            background: #e6f4ef;
+            color: #176b5b;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================================================
+           FILTERS
+        ========================================================= */
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 11px;
+            margin-bottom: 20px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            outline: none;
+            background: white;
+            color: #1f2937;
+            font-size: 13px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #176b5b;
+            box-shadow: 0 0 0 2px rgba(23, 107, 91, 0.10);
+        }
+
+        button,
+        .btn {
+            border: none;
+            border-radius: 7px;
+            padding: 11px 15px;
+            background: #176b5b;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        button:hover,
+        .btn:hover {
+            background: #125345;
+        }
+
+        .reset-btn {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .reset-btn:hover {
+            background: #d1d5db;
+        }
+
+        /* =========================================================
+           TABLE
+        ========================================================= */
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 12px;
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            background: #f8faf9;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #edf0ee;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9fcfa;
+        }
+
+        .patient-name {
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .subtext {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .Pending {
+            color: #92400e;
+            background: #fef3c7;
+        }
+
+        .Confirmed {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .Completed {
+            color: #1d4ed8;
+            background: #dbeafe;
+        }
+
+        .Cancelled {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .Rejected {
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .Unknown {
+            color: #374151;
+            background: #e5e7eb;
+        }
+
+        .view-btn {
+            background: #176b5b;
+            padding: 9px 12px;
+            font-size: 12px;
+        }
+
+        .view-btn:hover {
+            background: #125345;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 45px 15px;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 35px;
+            margin-bottom: 12px;
+        }
+
+        .empty h3 {
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        /* =========================================================
+           NOTICE
+        ========================================================= */
+
+        .notice {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 16px;
+            border-radius: 9px;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        /* =========================================================
+           PATIENT DETAILS MODAL
+        ========================================================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 20px;
+            overflow-y: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 13px;
+            padding: 25px;
+            margin: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 17px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 21px;
+        }
+
+        .close-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 19px;
+            padding: 5px 11px;
+        }
+
+        .close-btn:hover {
+            background: #fecaca;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: #f8faf9;
+            padding: 13px;
+            border-radius: 8px;
+            min-width: 0;
+        }
+
+        .detail-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .detail-item label {
+            display: block;
+            color: #6b7280;
+            font-size: 11px;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .detail-item p {
+            font-size: 14px;
+            color: #1f2937;
+            overflow-wrap: anywhere;
+            line-height: 1.5;
+        }
+
+        .history-section {
+            margin-top: 22px;
+        }
+
+        .history-section h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .history-item {
+            background: #f8faf9;
+            border-left: 3px solid #176b5b;
+            padding: 12px;
+            margin-bottom: 9px;
+            border-radius: 5px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .history-item .history-date {
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .history-item .history-status {
+            margin-top: 5px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .no-history {
+            color: #6b7280;
+            font-size: 13px;
+            padding: 10px 0;
+        }
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            z-index: 2000;
+            background: #123b2c;
+            color: white;
+            padding: 13px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+                width: 100%;
+                min-height: auto;
+            }
+
+            .sidebar.show {
+                display: block;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .page-banner {
+                padding: 22px;
+            }
+
+            .page-banner h2 {
+                font-size: 22px;
+            }
+
+            .stats {
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h3 {
+                font-size: 24px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-item.full {
+                grid-column: auto;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+
+            .modal-content {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 380px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            N+ NCD Nepal
+        </div>
+
+        <div class="brand-sub">
+            HEALTH & WELLNESS
+        </div>
+
+        <div class="menu-label">
+            MAIN MENU
+        </div>
+
+        <a class="nav-link"
+           href="{{ url_for('service_provider') }}">
+            ▦ Dashboard
+        </a>
+
+        <a class="nav-link"
+           href="{{ url_for('provider_appointments') }}">
+            ◷ Appointments
+        </a>
+
+        <a class="nav-link active"
+           href="{{ url_for('patients') }}">
+            ♙ Patients
+        </a>
+
+        <a class="nav-link"
+           href="{{ url_for('consultation') }}">
+            ▤ Consultation
+        </a>
+
+        <a class="nav-link"
+           href="{{ url_for('follow_up') }}">
+            ⟳ Follow-up
+        </a>
+
+        <a class="nav-link"
+           href="{{ url_for('availability') }}">
+            ◷ Availability
+        </a>
+
+        <div class="menu-label">
+            ACCOUNT
+        </div>
+
+        <a class="nav-link"
+           href="{{ url_for('provider_profile') }}">
+            ♙ Profile
+        </a>
+
+        <a class="nav-link"
+           href="{{ url_for('provider_settings') }}">
+            ⚙ Settings
+        </a>
+
+        <a class="nav-link"
+           href="{{ url_for('provider_logout') }}">
+            ⇥ Logout
+        </a>
+
+    </aside>
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================= -->
+
+    <main class="main">
+
+        <button
+            type="button"
+            class="mobile-menu"
+            onclick="toggleSidebar()">
+            ☰ Menu
+        </button>
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    Patients
+                </h1>
+
+                <p>
+                    View and manage patients connected to your appointments.
+                </p>
+
+            </div>
+
+            <div class="provider">
+
+                👤
+                {{ provider_name|default('Service Provider', true) }}
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             PAGE BANNER
+        ===================================================== -->
+
+        <section class="page-banner">
+
+            <span class="banner-label">
+                PROVIDER WORKSPACE
+            </span>
+
+            <h2>
+                PATIENT MANAGEMENT
+            </h2>
+
+            <p>
+                View patient information, review appointment history,
+                and keep track of patients connected to your provider account.
+                Patient information shown here comes from appointment records
+                associated with your provider account.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             STATISTICS
+        ===================================================== -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <p>
+                    Total Patients
+                </p>
+
+                <h3 id="totalPatients">
+                    0
+                </h3>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📅
+                </div>
+
+                <p>
+                    Active Patients
+                </p>
+
+                <h3 id="activePatients">
+                    0
+                </h3>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🆕
+                </div>
+
+                <p>
+                    New Patients This Month
+                </p>
+
+                <h3 id="newPatients">
+                    0
+                </h3>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔄
+                </div>
+
+                <p>
+                    Pending Appointments
+                </p>
+
+                <h3 id="pendingAppointments">
+                    0
+                </h3>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PATIENT DIRECTORY
+        ===================================================== -->
+
+        <section class="panel">
+
+            <div class="panel-heading">
+
+                <div>
+
+                    <h2>
+                        Patient Directory
+                    </h2>
+
+                    <p>
+                        Patients who have booked appointments with you.
+                    </p>
+
+                </div>
+
+                <span
+                    class="patient-count"
+                    id="visibleCount">
+                    0 Patients
+                </span>
+
+            </div>
+
+
+            <!-- FILTERS -->
+
+            <div class="filters">
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search name, patient ID, email or phone..."
+                    aria-label="Search patients"
+                >
+
+
+                <select
+                    id="conditionFilter"
+                    aria-label="Filter by condition">
+
+                    <option value="">
+                        All Conditions
+                    </option>
+
+                    <option value="Diabetes">
+                        Diabetes
+                    </option>
+
+                    <option value="Blood Pressure">
+                        Blood Pressure
+                    </option>
+
+                    <option value="Thyroid">
+                        Thyroid
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="statusFilter"
+                    aria-label="Filter by appointment status">
+
+                    <option value="">
+                        All Appointment Statuses
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="button"
+                    class="reset-btn"
+                    onclick="resetFilters()">
+
+                    Reset
+
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 PATIENT TABLE
+            ================================================= -->
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            Patient
+                        </th>
+
+                        <th>
+                            Patient ID
+                        </th>
+
+                        <th>
+                            Age / Gender
+                        </th>
+
+                        <th>
+                            Contact
+                        </th>
+
+                        <th>
+                            Condition
+                        </th>
+
+                        <th>
+                            Last Appointment
+                        </th>
+
+                        <th>
+                            Latest Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody id="patientTable">
+
+                    {% for patient in patients|default([], true) %}
+
+                    <tr
+                        class="patient-row"
+
+                        data-name="{{ patient.fullname|default('', true)|lower }}"
+
+                        data-email="{{ patient.email|default('', true)|lower }}"
+
+                        data-phone="{{ patient.phone|default('', true)|lower }}"
+
+                        data-id="{{ patient.patient_id|default('', true)|lower }}"
+
+                        data-condition="{{ patient.condition|default('', true)|lower }}"
+
+                        data-status="{{ patient.latest_status|default('Pending', true)|lower }}"
+
+                        data-statuses="{{ patient.appointment_statuses|default([], true)|join(',')|lower }}"
+
+                        data-created="{{ patient.created_at|default('', true) }}"
+                    >
+
+                        <!-- PATIENT -->
+
+                        <td>
+
+                            <span class="patient-name">
+
+                                {{ patient.fullname|default('Name not provided', true) }}
+
+                            </span>
+
+                            <span class="subtext">
+
+                                {{ patient.email|default('Email not provided', true) }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PATIENT ID -->
+
+                        <td>
+
+                            {{ patient.patient_id|default('—', true) }}
+
+                        </td>
+
+
+                        <!-- AGE / GENDER -->
+
+                        <td>
+
+                            {{ patient.age|default('—', true) }}
+
+                            <span class="subtext">
+
+                                {{ patient.gender|default('Not provided', true) }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PHONE -->
+
+                        <td>
+
+                            {{ patient.phone|default('Not provided', true) }}
+
+                        </td>
+
+
+                        <!-- CONDITION -->
+
+                        <td>
+
+                            {{ patient.condition|default('Not specified', true) }}
+
+                        </td>
+
+
+                        <!-- LAST APPOINTMENT -->
+
+                        <td>
+
+                            {{ patient.last_appointment|default(patient.appointment_date|default('—', true), true) }}
+
+                            {% if patient.appointment_time %}
+                            <span class="subtext">
+                                {{ patient.appointment_time }}
+                            </span>
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% set patient_status = patient.latest_status|default('Pending', true) %}
+
+                            {% set status_class = patient_status|replace(' ', '') %}
+
+                            {% if status_class not in ['Pending', 'Confirmed', 'Completed', 'Cancelled', 'Rejected'] %}
+                                {% set status_class = 'Unknown' %}
+                            {% endif %}
+
+                            <span class="status {{ status_class }}">
+
+                                {{ patient_status }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <!--
+                                The entire patient object is taken from Flask.
+
+                                This means the details modal reads the same
+                                patient information that came from the
+                                appointment record.
+                            -->
+
+                            <button
+                                type="button"
+                                class="view-btn patient-details-button"
+
+                                data-patient="{{ patient|tojson|forceescape }}">
+
+                                View Details
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% else %}
+
+                    <tr id="emptyRow">
+
+                        <td colspan="8">
+
+                            <div class="empty">
+
+                                <div class="empty-icon">
+                                    👥
+                                </div>
+
+                                <h3>
+                                    No patients found
+                                </h3>
+
+                                <p>
+                                    Patients will appear here after they book
+                                    an appointment with you.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                    <!-- FILTER EMPTY -->
+
+                    <tr
+                        id="filterEmptyRow"
+                        style="display:none;">
+
+                        <td colspan="8">
+
+                            <div class="empty">
+
+                                <div class="empty-icon">
+                                    🔍
+                                </div>
+
+                                <h3>
+                                    No matching patients
+                                </h3>
+
+                                <p>
+                                    Try changing your search or filter options.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PRIVACY NOTICE
+        ===================================================== -->
+
+        <div class="notice">
+
+            <strong>
+                Privacy and medical notice:
+            </strong>
+
+            Patient information is displayed for appointments associated
+            with your provider account. Use patient information responsibly.
+            Digital records and notes support continuity of care and do not
+            replace professional medical judgement.
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     PATIENT DETAILS MODAL
+============================================================= -->
+
+<div
+    class="modal"
+    id="patientModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Patient Details
+            </h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closePatientDetails()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <!-- PATIENT INFORMATION -->
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+
+                <label>
+                    Full Name
+                </label>
+
+                <p id="detailName">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Patient ID
+                </label>
+
+                <p id="detailId">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Email Address
+                </label>
+
+                <p id="detailEmail">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Phone Number
+                </label>
+
+                <p id="detailPhone">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Date of Birth
+                </label>
+
+                <p id="detailDob">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Age / Gender
+                </label>
+
+                <p id="detailAgeGender">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item full">
+
+                <label>
+                    Address
+                </label>
+
+                <p id="detailAddress">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Health Condition
+                </label>
+
+                <p id="detailCondition">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Latest Appointment Status
+                </label>
+
+                <p id="detailStatus">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Appointment Date
+                </label>
+
+                <p id="detailDate">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <label>
+                    Appointment Time
+                </label>
+
+                <p id="detailTime">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item full">
+
+                <label>
+                    Consultation Type
+                </label>
+
+                <p id="detailConsultationType">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="detail-item full">
+
+                <label>
+                    Appointment Reason
+                </label>
+
+                <p id="detailReason">
+                    —
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             APPOINTMENT HISTORY
+        ===================================================== -->
+
+        <div class="history-section">
+
+            <h3>
+                Appointment History
+            </h3>
+
+            <div id="appointmentHistory">
+
+                <p class="no-history">
+                    No appointment history available.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODAL FOOTER -->
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                onclick="closePatientDetails()">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+    class="toast"
+    id="toast">
+</div>
+
+
+<script>
+/* =========================================================
+   NCD NEPAL - PATIENT MANAGEMENT
+   =========================================================
+
+   IMPORTANT:
+
+   This page does NOT create a separate patient record.
+
+   Flask sends:
+
+       patients
+
+   to this template.
+
+   The patient objects should be created from the same
+   appointment records used by provider_appointments.
+
+   Therefore the information shown here comes from
+   the appointment data.
+========================================================= */
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+function toggleSidebar() {
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    if (sidebar) {
+        sidebar.classList.toggle("show");
+    }
+}
+
+
+/* =========================================================
+   DOM ELEMENTS
+========================================================= */
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const conditionFilter =
+    document.getElementById("conditionFilter");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+const patientRows =
+    Array.from(
+        document.querySelectorAll(".patient-row")
+    );
+
+
+/* =========================================================
+   NORMALIZE TEXT
+========================================================= */
+
+function normalizeText(value) {
+
+    if (
+        value === undefined ||
+        value === null
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .trim()
+        .toLowerCase();
+}
+
+
+/* =========================================================
+   PATIENT SEARCH + FILTER
+========================================================= */
+
+function filterPatients() {
+
+    const search =
+        normalizeText(
+            searchInput
+                ? searchInput.value
+                : ""
+        );
+
+    const condition =
+        normalizeText(
+            conditionFilter
+                ? conditionFilter.value
+                : ""
+        );
+
+    const status =
+        normalizeText(
+            statusFilter
+                ? statusFilter.value
+                : ""
+        );
+
+
+    let visible = 0;
+
+
+    patientRows.forEach(function(row) {
+
+        const name =
+            normalizeText(
+                row.dataset.name
+            );
+
+        const email =
+            normalizeText(
+                row.dataset.email
+            );
+
+        const phone =
+            normalizeText(
+                row.dataset.phone
+            );
+
+        const patientId =
+            normalizeText(
+                row.dataset.id
+            );
+
+
+        const rowConditions =
+            normalizeText(
+                row.dataset.condition
+            )
+            .split(",")
+            .map(function(value) {
+                return value.trim();
+            })
+            .filter(Boolean);
+
+
+        const statusData =
+            row.dataset.statuses ||
+            row.dataset.status ||
+            "";
+
+
+        const rowStatuses =
+            normalizeText(statusData)
+                .split(",")
+                .map(function(value) {
+                    return value.trim();
+                })
+                .filter(Boolean);
+
+
+        const matchesSearch =
+            !search ||
+            name.includes(search) ||
+            email.includes(search) ||
+            phone.includes(search) ||
+            patientId.includes(search);
+
+
+        const matchesCondition =
+            !condition ||
+            rowConditions.includes(condition);
+
+
+        const matchesStatus =
+            !status ||
+            rowStatuses.includes(status);
+
+
+        const shouldShow =
+            matchesSearch &&
+            matchesCondition &&
+            matchesStatus;
+
+
+        row.style.display =
+            shouldShow
+                ? ""
+                : "none";
+
+
+        if (shouldShow) {
+            visible++;
+        }
+
+    });
+
+
+    const visibleCount =
+        document.getElementById(
+            "visibleCount"
+        );
+
+    if (visibleCount) {
+
+        visibleCount.textContent =
+            visible +
+            (
+                visible === 1
+                    ? " Patient"
+                    : " Patients"
+            );
+
+    }
+
+
+    const filterEmptyRow =
+        document.getElementById(
+            "filterEmptyRow"
+        );
+
+    const originalPatientCount =
+        patientRows.length;
+
+
+    if (filterEmptyRow) {
+
+        filterEmptyRow.style.display =
+            originalPatientCount > 0 &&
+            visible === 0
+                ? ""
+                : "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   FILTER EVENT LISTENERS
+========================================================= */
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        filterPatients
+    );
+
+}
+
+if (conditionFilter) {
+
+    conditionFilter.addEventListener(
+        "change",
+        filterPatients
+    );
+
+}
+
+if (statusFilter) {
+
+    statusFilter.addEventListener(
+        "change",
+        filterPatients
+    );
+
+}
+
+
+/* =========================================================
+   RESET FILTERS
+========================================================= */
+
+function resetFilters() {
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+
+    if (conditionFilter) {
+        conditionFilter.value = "";
+    }
+
+    if (statusFilter) {
+        statusFilter.value = "";
+    }
+
+    filterPatients();
+
+    showToast(
+        "Patient filters have been reset."
+    );
+}
+
+
+/* =========================================================
+   DASHBOARD STATISTICS
+========================================================= */
+
+function updateStatistics() {
+
+    const total =
+        patientRows.length;
+
+
+    let active = 0;
+
+    let pending = 0;
+
+    let newPatients = 0;
+
+
+    const now =
+        new Date();
+
+
+    patientRows.forEach(function(row) {
+
+        const status =
+            normalizeText(
+                row.dataset.status
+            );
+
+
+        const statuses =
+            normalizeText(
+                row.dataset.statuses ||
+                row.dataset.status
+            )
+            .split(",")
+            .map(function(value) {
+                return value.trim();
+            })
+            .filter(Boolean);
+
+
+        /*
+           Active means the patient has an appointment
+           that is currently pending or confirmed.
+        */
+
+        const hasActiveAppointment =
+            statuses.includes("pending") ||
+            statuses.includes("confirmed");
+
+
+        if (hasActiveAppointment) {
+            active++;
+        }
+
+
+        /*
+           Pending appointment count.
+
+           A patient can have multiple appointment
+           statuses, so we check the complete status list.
+        */
+
+        if (
+            statuses.includes("pending")
+        ) {
+            pending++;
+        }
+
+
+        /*
+           New patient calculation.
+
+           Prefer created_at supplied by Flask.
+        */
+
+        const created =
+            row.dataset.created;
+
+
+        if (created) {
+
+            const createdDate =
+                new Date(created);
+
+
+            if (
+                !isNaN(
+                    createdDate.getTime()
+                ) &&
+                createdDate.getMonth() ===
+                    now.getMonth() &&
+                createdDate.getFullYear() ===
+                    now.getFullYear()
+            ) {
+
+                newPatients++;
+
+            }
+
+        }
+
+    });
+
+
+    const totalPatients =
+        document.getElementById(
+            "totalPatients"
+        );
+
+    const activePatients =
+        document.getElementById(
+            "activePatients"
+        );
+
+    const newPatientsElement =
+        document.getElementById(
+            "newPatients"
+        );
+
+    const pendingAppointments =
+        document.getElementById(
+            "pendingAppointments"
+        );
+
+
+    if (totalPatients) {
+        totalPatients.textContent =
+            total;
+    }
+
+
+    if (activePatients) {
+        activePatients.textContent =
+            active;
+    }
+
+
+    if (newPatientsElement) {
+        newPatientsElement.textContent =
+            newPatients;
+    }
+
+
+    if (pendingAppointments) {
+        pendingAppointments.textContent =
+            pending;
+    }
+
+}
+
+
+/* =========================================================
+   SAFE DETAIL VALUE
+========================================================= */
+
+function setDetail(
+    elementId,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    if (
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ""
+    ) {
+
+        element.textContent =
+            String(value);
+
+    }
+
+    else {
+
+        element.textContent =
+            "Not provided";
+
+    }
+
+}
+
+
+/* =========================================================
+   STATUS CLASS
+========================================================= */
+
+function getStatusClass(status) {
+
+    const normalized =
+        String(
+            status || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (normalized === "pending") {
+        return "Pending";
+    }
+
+    if (normalized === "confirmed") {
+        return "Confirmed";
+    }
+
+    if (normalized === "completed") {
+        return "Completed";
+    }
+
+    if (normalized === "cancelled") {
+        return "Cancelled";
+    }
+
+    if (normalized === "rejected") {
+        return "Rejected";
+    }
+
+    return "Unknown";
+}
+
+
+/* =========================================================
+   OPEN PATIENT DETAILS
+========================================================= */
+
+function openPatientDetails(button) {
+
+    if (!button) {
+        return;
+    }
+
+
+    const rawPatient =
+        button.dataset.patient;
+
+
+    if (!rawPatient) {
+
+        showToast(
+            "Patient information is not available."
+        );
+
+        return;
+
+    }
+
+
+    let patient = null;
+
+
+    try {
+
+        patient =
+            JSON.parse(
+                rawPatient
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Patient data could not be read:",
+            error
+        );
+
+
+        showToast(
+            "Patient information could not be loaded."
+        );
+
+
+        return;
+
+    }
+
+
+    if (!patient) {
+
+        showToast(
+            "Patient information is not available."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       =====================================================
+       BASIC PATIENT INFORMATION
+       =====================================================
+    */
+
+    setDetail(
+        "detailName",
+        patient.fullname ||
+        patient.name
+    );
+
+
+    setDetail(
+        "detailId",
+        patient.patient_id ||
+        patient.id
+    );
+
+
+    setDetail(
+        "detailEmail",
+        patient.email
+    );
+
+
+    setDetail(
+        "detailPhone",
+        patient.phone
+    );
+
+
+    setDetail(
+        "detailDob",
+        patient.date_of_birth ||
+        patient.dob
+    );
+
+
+    const age =
+        patient.age ||
+        "Not provided";
+
+
+    const gender =
+        patient.gender ||
+        "Not provided";
+
+
+    setDetail(
+        "detailAgeGender",
+        age +
+        " / " +
+        gender
+    );
+
+
+    setDetail(
+        "detailAddress",
+        patient.address
+    );
+
+
+    /*
+       =====================================================
+       APPOINTMENT INFORMATION
+       =====================================================
+    */
+
+    setDetail(
+        "detailCondition",
+        patient.condition
+    );
+
+
+    setDetail(
+        "detailStatus",
+        patient.latest_status ||
+        patient.status
+    );
+
+
+    setDetail(
+        "detailDate",
+        patient.last_appointment ||
+        patient.appointment_date
+    );
+
+
+    setDetail(
+        "detailTime",
+        patient.appointment_time
+    );
+
+
+    setDetail(
+        "detailConsultationType",
+        patient.consultation_type
+    );
+
+
+    setDetail(
+        "detailReason",
+        patient.reason ||
+        patient.appointment_reason
+    );
+
+
+    /*
+       =====================================================
+       APPOINTMENT HISTORY
+       =====================================================
+    */
+
+    renderAppointmentHistory(
+        patient
+    );
+
+
+    /*
+       =====================================================
+       OPEN MODAL
+       =====================================================
+    */
+
+    const modal =
+        document.getElementById(
+            "patientModal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.add(
+            "show"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER APPOINTMENT HISTORY
+========================================================= */
+
+function renderAppointmentHistory(
+    patient
+) {
+
+    const container =
+        document.getElementById(
+            "appointmentHistory"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    let history =
+        patient.appointment_history ||
+        patient.appointments ||
+        [];
+
+
+    /*
+       If the backend has only one appointment
+       instead of an appointment_history array,
+       create a single history record from it.
+    */
+
+    if (
+        !Array.isArray(history) ||
+        history.length === 0
+    ) {
+
+        if (
+            patient.appointment_date ||
+            patient.last_appointment
+        ) {
+
+            history = [
+                {
+                    appointment_date:
+                        patient.appointment_date ||
+                        patient.last_appointment,
+
+                    appointment_time:
+                        patient.appointment_time,
+
+                    condition:
+                        patient.condition,
+
+                    status:
+                        patient.latest_status ||
+                        patient.status,
+
+                    consultation_type:
+                        patient.consultation_type,
+
+                    reason:
+                        patient.reason ||
+                        patient.appointment_reason
+                }
+            ];
+
+        }
+
+    }
+
+
+    if (
+        Array.isArray(history) &&
+        history.length > 0
+    ) {
+
+        /*
+           Sort newest appointment first when
+           appointment dates are available.
+        */
+
+        history.sort(
+            function(a, b) {
+
+                const dateA =
+                    new Date(
+                        (
+                            a.appointment_date ||
+                            a.date ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            a.appointment_time ||
+                            ""
+                        )
+                    );
+
+
+                const dateB =
+                    new Date(
+                        (
+                            b.appointment_date ||
+                            b.date ||
+                            ""
+                        ) +
+                        " " +
+                        (
+                            b.appointment_time ||
+                            ""
+                        )
+                    );
+
+
+                if (
+                    isNaN(
+                        dateA.getTime()
+                    )
+                ) {
+                    return 1;
+                }
+
+
+                if (
+                    isNaN(
+                        dateB.getTime()
+                    )
+                ) {
+                    return -1;
+                }
+
+
+                return dateB - dateA;
+
+            }
+        );
+
+
+        history.forEach(
+            function(item) {
+
+                const historyItem =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                historyItem.className =
+                    "history-item";
+
+
+                const dateElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                dateElement.className =
+                    "history-date";
+
+
+                dateElement.textContent =
+                    item.appointment_date ||
+                    item.date ||
+                    "Date not provided";
+
+
+                historyItem.appendChild(
+                    dateElement
+                );
+
+
+                if (
+                    item.appointment_time
+                ) {
+
+                    const timeElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    timeElement.textContent =
+                        "Time: " +
+                        item.appointment_time;
+
+
+                    historyItem.appendChild(
+                        timeElement
+                    );
+
+                }
+
+
+                if (
+                    item.condition
+                ) {
+
+                    const conditionElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    conditionElement.textContent =
+                        "Condition: " +
+                        item.condition;
+
+
+                    historyItem.appendChild(
+                        conditionElement
+                    );
+
+                }
+
+
+                if (
+                    item.consultation_type
+                ) {
+
+                    const consultationElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    consultationElement.textContent =
+                        "Consultation: " +
+                        item.consultation_type;
+
+
+                    historyItem.appendChild(
+                        consultationElement
+                    );
+
+                }
+
+
+                if (
+                    item.reason ||
+                    item.appointment_reason
+                ) {
+
+                    const reasonElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    reasonElement.textContent =
+                        "Reason: " +
+                        (
+                            item.reason ||
+                            item.appointment_reason
+                        );
+
+
+                    historyItem.appendChild(
+                        reasonElement
+                    );
+
+                }
+
+
+                const status =
+                    item.status ||
+                    "Pending";
+
+
+                const statusElement =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                statusElement.className =
+                    "status " +
+                    getStatusClass(
+                        status
+                    );
+
+
+                statusElement.textContent =
+                    status;
+
+
+                const statusWrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                statusWrapper.className =
+                    "history-status";
+
+
+                statusWrapper.appendChild(
+                    statusElement
+                );
+
+
+                historyItem.appendChild(
+                    statusWrapper
+                );
+
+
+                container.appendChild(
+                    historyItem
+                );
+
+            }
+        );
+
+    }
+
+    else {
+
+        const message =
+            document.createElement(
+                "p"
+            );
+
+
+        message.className =
+            "no-history";
+
+
+        message.textContent =
+            "No appointment history available.";
+
+
+        container.appendChild(
+            message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE PATIENT DETAILS
+========================================================= */
+
+function closePatientDetails() {
+
+    const modal =
+        document.getElementById(
+            "patientModal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "show"
+        );
+
+    }
+
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE WHEN CLICKING OUTSIDE
+========================================================= */
+
+function closeModalOutside(
+    event
+) {
+
+    if (
+        event &&
+        event.target &&
+        event.target.id ===
+            "patientModal"
+    ) {
+
+        closePatientDetails();
+
+    }
+
+}
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closePatientDetails();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PATIENT DETAILS BUTTONS
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".patient-details-button"
+    )
+    .forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    openPatientDetails(
+                        button
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    if (!toast) {
+        return;
+    }
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    if (toastTimer) {
+
+        clearTimeout(
+            toastTimer
+        );
+
+    }
+
+
+    toastTimer =
+        setTimeout(
+            function() {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+}
+
+
+/* =========================================================
+   INITIALIZE PAGE
+========================================================= */
+
+updateStatistics();
+
+filterPatients();
+
+</script>
+
+</body>
+</html>

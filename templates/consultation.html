@@ -1,0 +1,1899 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCD Nepal | Consultation</title>
+
+    <style>
+        :root {
+            --primary: #167d78;
+            --primary-dark: #11645f;
+            --primary-light: #e8f5f3;
+            --background: #f4f7f9;
+            --surface: #ffffff;
+            --text: #263b45;
+            --muted: #71818a;
+            --border: #e2e9ed;
+            --success: #16845b;
+            --warning: #b7791f;
+            --danger: #c03939;
+            --shadow: 0 5px 22px rgba(30, 55, 70, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+        }
+
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .layout {
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            padding: 25px 17px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 8px 28px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .brand-text h2 {
+            font-size: 17px;
+            color: #24434b;
+        }
+
+        .brand-text span {
+            display: block;
+            font-size: 9px;
+            color: var(--muted);
+            letter-spacing: 1.2px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+
+        .menu-title {
+            font-size: 10px;
+            color: #98a5ac;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            padding: 13px 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 9px;
+            margin-bottom: 5px;
+            color: #61737c;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            padding: 28px 34px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 27px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title h1 {
+            font-size: 25px;
+            color: #253e48;
+        }
+
+        .page-title p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .provider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .provider-info strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .provider-info span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            cursor: pointer;
+        }
+
+        /* PAGE INTRO */
+
+        .welcome {
+            background: linear-gradient(110deg, #176f6b, #258f86);
+            color: white;
+            padding: 27px 30px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+
+        .welcome small {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            opacity: 0.85;
+        }
+
+        .welcome h2 {
+            font-size: 23px;
+            margin: 10px 0;
+        }
+
+        .welcome p {
+            font-size: 13px;
+            line-height: 1.7;
+            max-width: 700px;
+            opacity: 0.92;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 19px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 25px;
+            margin-top: 9px;
+            color: #25454d;
+        }
+
+        /* CONTENT GRID */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.85fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .left-column,
+        .right-column {
+            display: grid;
+            gap: 19px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            min-width: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .panel-header h3 {
+            font-size: 15px;
+            color: #29464f;
+        }
+
+        .panel-header p {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .section-number {
+            width: 29px;
+            height: 29px;
+            border-radius: 8px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            font-size: 12px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        /* FORM */
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #445b64;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #dce5e9;
+            border-radius: 8px;
+            padding: 11px 12px;
+            background: #fff;
+            color: var(--text);
+            outline: none;
+            font-size: 13px;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22, 125, 120, 0.09);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 95px;
+            line-height: 1.6;
+        }
+
+        input:disabled,
+        select:disabled,
+        textarea:disabled {
+            background: #f1f4f5;
+            cursor: not-allowed;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .help-text {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+            margin-top: 6px;
+        }
+
+        /* PATIENT DETAILS */
+
+        .patient-card {
+            display: none;
+            border: 1px solid #dcece9;
+            background: #f5fbfa;
+            border-radius: 10px;
+            padding: 17px;
+            margin-top: 16px;
+        }
+
+        .patient-card.visible {
+            display: block;
+        }
+
+        .patient-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .patient-avatar {
+            width: 43px;
+            height: 43px;
+            border-radius: 50%;
+            background: #d9efeb;
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+        }
+
+        .patient-heading h4 {
+            font-size: 14px;
+            color: #29464f;
+        }
+
+        .patient-heading p {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 13px;
+        }
+
+        .detail-item span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
+
+        .detail-item strong {
+            display: block;
+            color: #354e57;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        /* APPOINTMENT */
+
+        .appointment-info {
+            background: #f8fafb;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 9px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .appointment-info.visible {
+            display: block;
+        }
+
+        .appointment-info p {
+            font-size: 12px;
+            color: #536872;
+            margin-bottom: 9px;
+            line-height: 1.6;
+        }
+
+        .appointment-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* BADGES */
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .badge.pending {
+            background: #fff4dc;
+            color: #9b6a12;
+        }
+
+        .badge.confirmed {
+            background: #e6f3ff;
+            color: #2369a0;
+        }
+
+        .badge.completed {
+            background: #e6f6ee;
+            color: #16845b;
+        }
+
+        .badge.cancelled {
+            background: #fdecec;
+            color: #bd3939;
+        }
+
+        /* HISTORY */
+
+        .history-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .history-item {
+            border-left: 3px solid #a9d7d0;
+            padding: 3px 0 4px 13px;
+        }
+
+        .history-item strong {
+            font-size: 12px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .history-item p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .empty-text {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 15px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #edf2f4;
+            color: #425a64;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e8eb;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1px solid #b8d9d5;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-success {
+            background: #16845b;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            color: var(--danger);
+            border: 1px solid #f1d0d0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        /* NOTICE */
+
+        .notice {
+            padding: 14px;
+            background: #fff9e9;
+            border: 1px solid #f1e2b9;
+            border-radius: 9px;
+            color: #806221;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .notice strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .safety-notice {
+            background: #eef7fa;
+            border-color: #d2e6ed;
+            color: #426471;
+        }
+
+        /* FOLLOW-UP */
+
+        .followup-toggle {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .followup-toggle input {
+            width: auto;
+            accent-color: var(--primary);
+        }
+
+        #followupFields {
+            display: none;
+        }
+
+        #followupFields.visible {
+            display: block;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-state {
+            background: white;
+            border: 1px dashed #cbd8dd;
+            padding: 35px 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-state h3 {
+            color: #405861;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer {
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+            padding: 25px 0 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .right-column {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar.show {
+                display: block;
+                box-shadow: 5px 0 20px rgba(0,0,0,0.1);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 22px 18px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main {
+                padding: 17px 13px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .page-title h1 {
+                font-size: 21px;
+            }
+
+            .provider-info {
+                display: none;
+            }
+
+            .welcome {
+                padding: 22px;
+            }
+
+            .welcome h2 {
+                font-size: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .form-row,
+            .detail-grid,
+            .right-column {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+
+            .action-row .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">N+</div>
+            <div class="brand-text">
+                <h2>NCD Nepal</h2>
+                <span>PROVIDER WORKSPACE</span>
+            </div>
+        </div>
+
+        <div class="menu-title">MAIN MENU</div>
+
+        <a href="{{ url_for('service_provider') }}" class="nav-link">
+            <span class="nav-icon">▦</span> Dashboard
+        </a>
+
+        <a href="{{ url_for('provider_appointments') }}" class="nav-link">
+            <span class="nav-icon">◷</span> Appointments
+        </a>
+
+        <a href="{{ url_for('patients') }}" class="nav-link">
+            <span class="nav-icon">♙</span> Patients
+        </a>
+
+        <a href="{{ url_for('consultation') }}" class="nav-link active">
+            <span class="nav-icon">▤</span> Consultation
+        </a>
+
+        <a href="{{ url_for('follow_up') }}" class="nav-link">
+            <span class="nav-icon">⟳</span> Follow-up
+        </a>
+
+        <a href="{{ url_for('availability') }}" class="nav-link">
+            <span class="nav-icon">◷</span> Availability
+        </a>
+
+        <div class="menu-title">ACCOUNT</div>
+
+        <a href="{{ url_for('provider_profile') }}" class="nav-link">
+            <span class="nav-icon">♙</span> Profile
+        </a>
+
+        <a href="{{ url_for('provider_settings') }}" class="nav-link">
+            <span class="nav-icon">⚙</span> Settings
+        </a>
+
+        <a href="{{ url_for('provider_logout') }}" class="nav-link">
+            <span class="nav-icon">⇥</span> Logout
+        </a>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button class="menu-toggle" type="button"
+                        onclick="toggleSidebar()" aria-label="Toggle menu">
+                    ☰
+                </button>
+
+                <div class="page-title">
+                    <h1>Consultation</h1>
+                    <p>Review patients and document consultation records.</p>
+                </div>
+            </div>
+
+            <div class="provider">
+                <div class="avatar">SP</div>
+                <div class="provider-info">
+                    <strong>
+                        {{ session.get('provider_fullname', 'Service Provider') }}
+                    </strong>
+                    <span>Healthcare Provider</span>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="welcome">
+            <small>PROVIDER CONSULTATION WORKSPACE</small>
+            <h2>Patient Consultation Management</h2>
+            <p>
+                Select a patient, review appointment information,
+                document consultation notes and arrange follow-up care.
+            </p>
+        </section>
+
+        <!-- STATISTICS -->
+        <section class="stats">
+
+            <div class="stat-card">
+                <span>Patients available</span>
+                <strong>{{ patients|length }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Appointments available</span>
+                <strong>
+                    {% set appointment_count = namespace(total=0) %}
+                    {% for patient in patients %}
+                        {% set appointment_count.total = appointment_count.total + (patient.appointments|length) %}
+                    {% endfor %}
+                    {{ appointment_count.total }}
+                </strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Confirmed appointments</span>
+                <strong>
+                    {% set confirmed_count = namespace(total=0) %}
+                    {% for patient in patients %}
+                        {% for appointment in patient.appointments %}
+                            {% if appointment.status == 'Confirmed' %}
+                                {% set confirmed_count.total = confirmed_count.total + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    {{ confirmed_count.total }}
+                </strong>
+            </div>
+
+        </section>
+
+        {% if patients %}
+
+        <div class="content-grid">
+
+            <!-- LEFT COLUMN -->
+            <div class="left-column">
+
+                <!-- PATIENT SELECTION -->
+                <section class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>1. Select Patient</h3>
+                            <p>Choose a patient connected to your provider account.</p>
+                        </div>
+                        <div class="section-number">01</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientSearch">Search patient</label>
+                        <input type="search" id="patientSearch"
+                               placeholder="Search by patient name, email or ID...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientSelect">
+                            Select patient <span class="required">*</span>
+                        </label>
+
+                        <select id="patientSelect">
+                            <option value="">-- Choose a patient --</option>
+
+                            {% for patient in patients %}
+                                <option value="{{ loop.index0 }}">
+                                    {{ patient.fullname }} — {{ patient.patient_id }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <div class="patient-card" id="patientCard">
+
+                        <div class="patient-heading">
+                            <div class="patient-avatar" id="patientInitials">PT</div>
+
+                            <div>
+                                <h4 id="patientName">Patient name</h4>
+                                <p id="patientId">Patient ID</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-grid">
+
+                            <div class="detail-item">
+                                <span>Email</span>
+                                <strong id="patientEmail">-</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Phone</span>
+                                <strong id="patientPhone">-</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Age</span>
+                                <strong id="patientAge">-</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Gender</span>
+                                <strong id="patientGender">-</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Address</span>
+                                <strong id="patientAddress">-</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Known conditions</span>
+                                <strong id="patientConditions">-</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="patient-actions">
+                            <a href="#" id="viewPatientLink"
+                               class="btn btn-outline">
+                                View Patient Details
+                            </a>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- APPOINTMENT INFORMATION -->
+                <section class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>2. Appointment Information</h3>
+                            <p>Select an appointment belonging to the chosen patient.</p>
+                        </div>
+                        <div class="section-number">02</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentSelect">Patient appointment</label>
+
+                        <select id="appointmentSelect" disabled>
+                            <option value="">Select a patient first</option>
+                        </select>
+                    </div>
+
+                    <div class="appointment-info" id="appointmentInfo">
+
+                        <p><strong>Appointment ID:</strong>
+                            <span id="appointmentId">-</span>
+                        </p>
+
+                        <p><strong>Date:</strong>
+                            <span id="appointmentDate">-</span>
+                        </p>
+
+                        <p><strong>Time:</strong>
+                            <span id="appointmentTime">-</span>
+                        </p>
+
+                        <p><strong>Consultation type:</strong>
+                            <span id="appointmentType">-</span>
+                        </p>
+
+                        <p><strong>Condition:</strong>
+                            <span id="appointmentCondition">-</span>
+                        </p>
+
+                        <p><strong>Reason:</strong>
+                            <span id="appointmentReason">-</span>
+                        </p>
+
+                        <p><strong>Status:</strong>
+                            <span id="appointmentStatus">-</span>
+                        </p>
+
+                        <div class="action-row" id="appointmentActions"></div>
+
+                    </div>
+
+                    <p class="help-text">
+                        Only appointments belonging to the selected patient
+                        are displayed here.
+                    </p>
+
+                </section>
+
+                <!-- CONSULTATION NOTES -->
+                <section class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>3. Consultation Notes</h3>
+                            <p>Document the consultation information provided by the patient.</p>
+                        </div>
+                        <div class="section-number">03</div>
+                    </div>
+
+                    <form id="consultationForm" method="POST">
+
+                        <input type="hidden" name="appointment_id"
+                               id="noteAppointmentId" value="">
+
+                        <div class="form-group">
+                            <label for="mainConcern">
+                                Main concern <span class="required">*</span>
+                            </label>
+
+                            <textarea id="mainConcern" required minlength="2"
+                                maxlength="1500"
+                                placeholder="Describe the main concern reported by the patient..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="symptoms">Patient-reported symptoms</label>
+
+                            <textarea id="symptoms" maxlength="1500"
+                                placeholder="Record symptoms reported by the patient..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observations">Provider observations</label>
+
+                            <textarea id="observations" maxlength="1500"
+                                placeholder="Record relevant observations and available information..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="guidance">
+                                Guidance and recommendations
+                            </label>
+
+                            <textarea id="guidance" maxlength="1500"
+                                placeholder="Record appropriate guidance discussed during the consultation..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="additionalNotes">Additional notes</label>
+
+                            <textarea id="additionalNotes" maxlength="1500"
+                                placeholder="Additional relevant information..."></textarea>
+                        </div>
+
+                        <input type="hidden" name="note" id="combinedNote">
+
+                        <div class="notice safety-notice">
+                            <strong>Documentation reminder</strong>
+                            Record accurate information. Do not enter an
+                            unverified diagnosis or treat general information
+                            as a medical prescription.
+                        </div>
+
+                        <div class="action-row">
+
+                            <button type="submit" class="btn btn-primary"
+                                    id="saveConsultationBtn">
+                                Save Consultation Notes
+                            </button>
+
+                            <button type="reset" class="btn btn-secondary"
+                                    id="clearConsultationBtn">
+                                Clear Form
+                            </button>
+
+                        </div>
+
+                        <p class="help-text">
+                            Saving submits the consultation notes to the
+                            existing patient notes route. After saving,
+                            Flask redirects to that patient's details page.
+                        </p>
+
+                    </form>
+
+                </section>
+
+                <!-- FOLLOW-UP -->
+                <section class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>4. Follow-up Planning</h3>
+                            <p>Create a follow-up record when further review is needed.</p>
+                        </div>
+                        <div class="section-number">04</div>
+                    </div>
+
+                    <label class="followup-toggle">
+                        <input type="checkbox" id="followupRequired">
+                        Follow-up is required
+                    </label>
+
+                    <div id="followupFields">
+
+                        <form id="followupForm" method="POST">
+
+                            <input type="hidden" name="appointment_id"
+                                   id="followupAppointmentId" value="">
+
+                            <div class="form-group">
+                                <label for="followupDate">
+                                    Follow-up date <span class="required">*</span>
+                                </label>
+
+                                <input type="date" name="followup_date"
+                                       id="followupDate" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="followupInstructions">
+                                    Follow-up instructions
+                                    <span class="required">*</span>
+                                </label>
+
+                                <textarea name="instructions"
+                                          id="followupInstructions"
+                                          required minlength="2"
+                                          maxlength="2000"
+                                          placeholder="Enter the follow-up instructions..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Add Follow-up Record
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                    <p class="help-text">
+                        Follow-up records are saved using your existing
+                        patient follow-up route.
+                    </p>
+
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="right-column">
+
+                <!-- APPOINTMENT HISTORY -->
+                <section class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Appointment History</h3>
+                            <p>Previous and current appointments.</p>
+                        </div>
+                    </div>
+
+                    <div id="historyList" class="history-list">
+                        <p class="empty-text">
+                            Select a patient to view appointment history.
+                        </p>
+                    </div>
+
+                </section>
+
+                <!-- WORKFLOW -->
+                <section class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Consultation Workflow</h3>
+                            <p>Recommended documentation steps.</p>
+                        </div>
+                    </div>
+
+                    <div class="history-list">
+
+                        <div class="history-item">
+                            <strong>01. Select patient</strong>
+                            <p>Confirm the correct patient record.</p>
+                        </div>
+
+                        <div class="history-item">
+                            <strong>02. Review appointment</strong>
+                            <p>Check the appointment date, condition and reason.</p>
+                        </div>
+
+                        <div class="history-item">
+                            <strong>03. Document consultation</strong>
+                            <p>Record concerns, observations and guidance.</p>
+                        </div>
+
+                        <div class="history-item">
+                            <strong>04. Arrange follow-up</strong>
+                            <p>Record the next review date when required.</p>
+                        </div>
+
+                        <div class="history-item">
+                            <strong>05. Complete appointment</strong>
+                            <p>Use the appointment action when the appointment is confirmed.</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- SAFETY -->
+                <section class="panel">
+
+                    <div class="notice">
+                        <strong>Important Health Notice</strong>
+                        NCD Nepal provides digital support for awareness,
+                        consultation documentation and monitoring.
+                        It does not replace professional medical care.
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+            <h3>No patients available</h3>
+            <p>
+                Patients will appear here after they have appointments
+                with your provider account.
+            </p>
+
+            <div class="action-row" style="justify-content:center;">
+                <a href="{{ url_for('provider_appointments') }}"
+                   class="btn btn-primary">
+                    View Appointments
+                </a>
+
+                <a href="{{ url_for('patients') }}"
+                   class="btn btn-secondary">
+                    Open Patients
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <footer class="footer">
+            NCD Nepal © 2026 | Awareness • Access • Continuity
+        </footer>
+
+    </main>
+
+</div>
+
+{% if patients %}
+
+<!--
+    FIX: Pass Flask patient data through an HTML data attribute.
+    This avoids placing Jinja syntax directly inside JavaScript.
+-->
+<div
+    id="consultation-data"
+    data-patients='{{ patients|tojson|forceescape }}'
+    hidden>
+</div>
+
+<script>
+    /*
+     * Read patient information safely from the HTML data attribute.
+     * This replaces the old line:
+     * const patients = {{ patients|tojson }};
+     */
+    const patientDataElement = document.getElementById("consultation-data");
+
+    let patients = [];
+
+    try {
+        patients = JSON.parse(
+            patientDataElement.dataset.patients || "[]"
+        );
+    } catch (error) {
+        console.error("Unable to read patient data:", error);
+        patients = [];
+    }
+
+    const patientSearch = document.getElementById("patientSearch");
+    const patientSelect = document.getElementById("patientSelect");
+    const appointmentSelect = document.getElementById("appointmentSelect");
+
+    const patientCard = document.getElementById("patientCard");
+    const appointmentInfo = document.getElementById("appointmentInfo");
+
+    const historyList = document.getElementById("historyList");
+    const appointmentActions = document.getElementById("appointmentActions");
+
+    const consultationForm = document.getElementById("consultationForm");
+    const followupForm = document.getElementById("followupForm");
+
+    const followupRequired = document.getElementById("followupRequired");
+    const followupFields = document.getElementById("followupFields");
+
+    let selectedPatient = null;
+    let selectedAppointment = null;
+
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("show");
+    }
+
+    function safeText(value) {
+        if (value === null || value === undefined || value === "") {
+            return "Not provided";
+        }
+
+        return String(value);
+    }
+
+    function makeInitials(name) {
+        if (!name) {
+            return "PT";
+        }
+
+        return name
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map(part => part.charAt(0).toUpperCase())
+            .join("");
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function(character) {
+            const entities = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            };
+
+            return entities[character];
+        });
+    }
+
+    function formatStatus(status) {
+        const normalized = String(status || "Pending").toLowerCase();
+
+        const allowed = ["pending", "confirmed", "completed", "cancelled"];
+
+        const className = allowed.includes(normalized)
+            ? normalized
+            : "pending";
+
+        return '<span class="badge ' + className + '">' +
+            escapeHTML(status || "Pending") +
+            '</span>';
+    }
+
+    function clearPatientDisplay() {
+        patientCard.classList.remove("visible");
+        appointmentInfo.classList.remove("visible");
+
+        appointmentSelect.innerHTML =
+            '<option value="">Select a patient first</option>';
+
+        appointmentSelect.disabled = true;
+
+        historyList.innerHTML =
+            '<p class="empty-text">Select a patient to view appointment history.</p>';
+
+        appointmentActions.innerHTML = "";
+
+        selectedPatient = null;
+        selectedAppointment = null;
+
+        document.getElementById("viewPatientLink").href = "#";
+
+        document.getElementById("noteAppointmentId").value = "";
+        document.getElementById("followupAppointmentId").value = "";
+    }
+
+    function selectPatient(index) {
+        if (index === "" || index === null || index === undefined) {
+            clearPatientDisplay();
+            return;
+        }
+
+        const patientIndex = Number(index);
+
+        if (!Number.isInteger(patientIndex) ||
+            patientIndex < 0 ||
+            patientIndex >= patients.length) {
+            clearPatientDisplay();
+            return;
+        }
+
+        selectedPatient = patients[patientIndex];
+
+        if (!selectedPatient) {
+            clearPatientDisplay();
+            return;
+        }
+
+        selectedAppointment = null;
+
+        patientCard.classList.add("visible");
+
+        document.getElementById("patientInitials").textContent =
+            makeInitials(selectedPatient.fullname);
+
+        document.getElementById("patientName").textContent =
+            safeText(selectedPatient.fullname);
+
+        document.getElementById("patientId").textContent =
+            safeText(selectedPatient.patient_id);
+
+        document.getElementById("patientEmail").textContent =
+            safeText(selectedPatient.email);
+
+        document.getElementById("patientPhone").textContent =
+            safeText(selectedPatient.phone);
+
+        document.getElementById("patientAge").textContent =
+            safeText(selectedPatient.age);
+
+        document.getElementById("patientGender").textContent =
+            safeText(selectedPatient.gender);
+
+        document.getElementById("patientAddress").textContent =
+            safeText(selectedPatient.address);
+
+        document.getElementById("patientConditions").textContent =
+            safeText(selectedPatient.condition);
+
+        document.getElementById("viewPatientLink").href =
+            "/patients/" + encodeURIComponent(selectedPatient.patient_id);
+
+        loadAppointments();
+        loadHistory();
+        resetAppointmentDisplay();
+    }
+
+    function loadAppointments() {
+        appointmentSelect.innerHTML = "";
+
+        const appointments = selectedPatient.appointments || [];
+
+        if (appointments.length === 0) {
+            appointmentSelect.innerHTML =
+                '<option value="">No appointments available</option>';
+
+            appointmentSelect.disabled = true;
+            return;
+        }
+
+        appointmentSelect.disabled = false;
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "-- Select an appointment --";
+
+        appointmentSelect.appendChild(defaultOption);
+
+        appointments.forEach(function(appointment, index) {
+            const option = document.createElement("option");
+
+            option.value = String(index);
+
+            option.textContent =
+                "#" + appointment.id +
+                " | " + (appointment.appointment_date || "No date") +
+                " | " + (appointment.status || "Pending");
+
+            appointmentSelect.appendChild(option);
+        });
+    }
+
+    function resetAppointmentDisplay() {
+        appointmentInfo.classList.remove("visible");
+        appointmentActions.innerHTML = "";
+        selectedAppointment = null;
+
+        document.getElementById("noteAppointmentId").value = "";
+        document.getElementById("followupAppointmentId").value = "";
+    }
+
+    function selectAppointment(index) {
+        if (!selectedPatient || index === "") {
+            resetAppointmentDisplay();
+            return;
+        }
+
+        const appointmentIndex = Number(index);
+        const appointments = selectedPatient.appointments || [];
+
+        if (!Number.isInteger(appointmentIndex) ||
+            appointmentIndex < 0 ||
+            appointmentIndex >= appointments.length) {
+            resetAppointmentDisplay();
+            return;
+        }
+
+        selectedAppointment = appointments[appointmentIndex];
+
+        appointmentInfo.classList.add("visible");
+
+        document.getElementById("appointmentId").textContent =
+            "#" + safeText(selectedAppointment.id);
+
+        document.getElementById("appointmentDate").textContent =
+            safeText(selectedAppointment.appointment_date);
+
+        document.getElementById("appointmentTime").textContent =
+            safeText(selectedAppointment.appointment_time);
+
+        document.getElementById("appointmentType").textContent =
+            safeText(selectedAppointment.consultation_type);
+
+        document.getElementById("appointmentCondition").textContent =
+            safeText(selectedAppointment.condition);
+
+        document.getElementById("appointmentReason").textContent =
+            safeText(selectedAppointment.reason);
+
+        document.getElementById("appointmentStatus").innerHTML =
+            formatStatus(selectedAppointment.status);
+
+        document.getElementById("noteAppointmentId").value =
+            selectedAppointment.id;
+
+        document.getElementById("followupAppointmentId").value =
+            selectedAppointment.id;
+
+        renderAppointmentActions();
+    }
+
+    function renderAppointmentActions() {
+        appointmentActions.innerHTML = "";
+
+        if (!selectedAppointment) {
+            return;
+        }
+
+        const status = selectedAppointment.status;
+
+        if (status === "Confirmed") {
+            const form = document.createElement("form");
+
+            form.method = "POST";
+
+            form.action =
+                "/provider_appointments/" +
+                encodeURIComponent(selectedAppointment.id) +
+                "/complete";
+
+            const button = document.createElement("button");
+
+            button.type = "submit";
+            button.className = "btn btn-success";
+            button.textContent = "Complete Appointment";
+
+            form.appendChild(button);
+            appointmentActions.appendChild(form);
+
+        } else if (status === "Pending") {
+            const message = document.createElement("p");
+
+            message.className = "help-text";
+            message.textContent =
+                "This appointment is still pending. Confirm it from the Appointments page before marking it completed.";
+
+            appointmentActions.appendChild(message);
+
+            const link = document.createElement("a");
+
+            link.href = "{{ url_for('provider_appointments') }}";
+            link.className = "btn btn-outline";
+            link.textContent = "Manage Appointment";
+
+            appointmentActions.appendChild(link);
+
+        } else if (status === "Completed") {
+            const message = document.createElement("p");
+
+            message.className = "help-text";
+            message.textContent =
+                "This appointment has already been completed.";
+
+            appointmentActions.appendChild(message);
+
+        } else {
+            const message = document.createElement("p");
+
+            message.className = "help-text";
+            message.textContent =
+                "This appointment is cancelled. No completion action is available.";
+
+            appointmentActions.appendChild(message);
+        }
+    }
+
+    function loadHistory() {
+        const appointments = selectedPatient.appointment_history || [];
+
+        historyList.innerHTML = "";
+
+        if (appointments.length === 0) {
+            historyList.innerHTML =
+                '<p class="empty-text">No appointment history available.</p>';
+            return;
+        }
+
+        appointments.forEach(function(item) {
+            const historyItem = document.createElement("div");
+
+            historyItem.className = "history-item";
+
+            const title = document.createElement("strong");
+
+            title.textContent =
+                (item.appointment_date || "Date not provided") +
+                " • " +
+                (item.condition || "Condition not specified");
+
+            const details = document.createElement("p");
+
+            details.textContent =
+                (item.appointment_time || "Time not provided") +
+                " | " +
+                (item.consultation_type || "Consultation type not provided");
+
+            const reason = document.createElement("p");
+
+            reason.textContent =
+                "Reason: " + (item.reason || "Not provided");
+
+            const status = document.createElement("div");
+
+            status.innerHTML = formatStatus(item.status);
+
+            historyItem.appendChild(title);
+            historyItem.appendChild(details);
+            historyItem.appendChild(reason);
+            historyItem.appendChild(status);
+
+            historyList.appendChild(historyItem);
+        });
+    }
+
+    /* PATIENT SEARCH */
+
+    patientSearch.addEventListener("input", function() {
+        const query = this.value.trim().toLowerCase();
+
+        const options = patientSelect.options;
+
+        for (let i = 1; i < options.length; i++) {
+            const patient = patients[i - 1];
+
+            if (!patient) {
+                continue;
+            }
+
+            const searchableText = [
+                patient.fullname,
+                patient.patient_id,
+                patient.email,
+                patient.phone
+            ].join(" ").toLowerCase();
+
+            options[i].hidden =
+                query !== "" && !searchableText.includes(query);
+        }
+
+        const selectedOption =
+            patientSelect.options[patientSelect.selectedIndex];
+
+        if (selectedOption && selectedOption.hidden) {
+            patientSelect.value = "";
+            clearPatientDisplay();
+        }
+    });
+
+    patientSelect.addEventListener("change", function() {
+        selectPatient(this.value);
+    });
+
+    appointmentSelect.addEventListener("change", function() {
+        selectAppointment(this.value);
+    });
+
+    /* FOLLOW-UP TOGGLE */
+
+    followupRequired.addEventListener("change", function() {
+        followupFields.classList.toggle("visible", this.checked);
+
+        document.getElementById("followupDate").required = this.checked;
+
+        document.getElementById("followupInstructions").required =
+            this.checked;
+    });
+
+    /* CONSULTATION NOTE FORM */
+
+    consultationForm.addEventListener("submit", function(event) {
+        if (!selectedPatient) {
+            event.preventDefault();
+            alert("Please select a patient first.");
+            return;
+        }
+
+        const concern = document.getElementById("mainConcern").value.trim();
+
+        if (concern.length < 2) {
+            event.preventDefault();
+            alert("Please enter the patient's main concern.");
+            return;
+        }
+
+        const sections = [
+            "MAIN CONCERN:\n" + concern,
+            "PATIENT-REPORTED SYMPTOMS:\n" +
+                document.getElementById("symptoms").value.trim(),
+            "PROVIDER OBSERVATIONS:\n" +
+                document.getElementById("observations").value.trim(),
+            "GUIDANCE AND RECOMMENDATIONS:\n" +
+                document.getElementById("guidance").value.trim(),
+            "ADDITIONAL NOTES:\n" +
+                document.getElementById("additionalNotes").value.trim()
+        ];
+
+        const note = sections
+            .filter(section => section.split("\n")[1].trim() !== "")
+            .join("\n\n");
+
+        document.getElementById("combinedNote").value = note;
+
+        consultationForm.action =
+            "/patients/" +
+            encodeURIComponent(selectedPatient.patient_id) +
+            "/notes";
+    });
+
+    /* FOLLOW-UP FORM */
+
+    followupForm.addEventListener("submit", function(event) {
+        if (!selectedPatient) {
+            event.preventDefault();
+            alert("Please select a patient first.");
+            return;
+        }
+
+        if (!followupRequired.checked) {
+            event.preventDefault();
+            alert("Please select that follow-up is required.");
+            return;
+        }
+
+        const dateValue = document.getElementById("followupDate").value;
+
+        if (!dateValue) {
+            event.preventDefault();
+            alert("Please select a follow-up date.");
+            return;
+        }
+
+        const today = new Date();
+        const localToday = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+        );
+
+        const selectedDate = new Date(dateValue + "T00:00:00");
+
+        if (selectedDate < localToday) {
+            event.preventDefault();
+            alert("Follow-up date must be today or a future date.");
+            return;
+        }
+
+        const instructions =
+            document.getElementById("followupInstructions").value.trim();
+
+        if (instructions.length < 2) {
+            event.preventDefault();
+            alert("Please enter follow-up instructions.");
+            return;
+        }
+
+        followupForm.action =
+            "/patients/" +
+            encodeURIComponent(selectedPatient.patient_id) +
+            "/follow-up";
+    });
+
+    /* CLEAR CONSULTATION FORM */
+
+    document.getElementById("clearConsultationBtn")
+        .addEventListener("click", function() {
+            document.getElementById("noteAppointmentId").value =
+                selectedAppointment ? selectedAppointment.id : "";
+
+            document.getElementById("combinedNote").value = "";
+        });
+
+    /* INITIAL SETUP */
+
+    const today = new Date();
+
+    const minDate = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0")
+    ].join("-");
+
+    document.getElementById("followupDate").min = minDate;
+
+</script>
+
+{% else %}
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("show");
+    }
+</script>
+
+{% endif %}
+
+</body>
+</html>

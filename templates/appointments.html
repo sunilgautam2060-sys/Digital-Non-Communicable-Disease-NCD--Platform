@@ -1,0 +1,3444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NCD Nepal | Appointments</title>
+
+    <style>
+        /* =====================================================
+           NCD NEPAL - APPOINTMENTS PAGE
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8f7;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =====================================================
+           LAYOUT
+        ===================================================== */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e3ece9;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .brand {
+            padding: 25px 22px;
+            border-bottom: 1px solid #e8efed;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: #087f69;
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .brand-text h2 {
+            font-size: 17px;
+            color: #123c35;
+        }
+
+        .brand-text p {
+            font-size: 10px;
+            color: #7b8c88;
+            margin-top: 3px;
+            letter-spacing: 1px;
+        }
+
+        .menu-section {
+            padding: 24px 14px 8px;
+        }
+
+        .menu-title {
+            font-size: 10px;
+            color: #94a39f;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 0 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #61706d;
+            padding: 12px;
+            border-radius: 9px;
+            margin-bottom: 4px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #eef8f5;
+            color: #087f69;
+        }
+
+        .nav-link.active {
+            background: #e5f5f1;
+            color: #087f69;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-footer {
+            padding: 20px 14px;
+            border-top: 1px solid #e8efed;
+            margin-top: 20px;
+        }
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px 36px 50px;
+        }
+
+        /* =====================================================
+           TOP HEADER
+        ===================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .page-title h1 {
+            font-size: 30px;
+            color: #153b35;
+            margin-bottom: 7px;
+        }
+
+        .page-title p {
+            color: #71817d;
+            font-size: 14px;
+        }
+
+        .date {
+            margin-top: 8px;
+            color: #7a8a86;
+            font-size: 13px;
+        }
+
+        .primary-btn {
+            border: none;
+            background: #087f69;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .primary-btn:hover {
+            background: #066c59;
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           CARDS
+        ===================================================== */
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5eeeb;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 14px rgba(30, 70, 60, 0.04);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            color: #153b35;
+            font-size: 18px;
+        }
+
+        .section-header p {
+            color: #7b8986;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* =====================================================
+           UPCOMING APPOINTMENT
+        ===================================================== */
+
+        .appointment-main {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+
+        .doctor-box {
+            display: flex;
+            gap: 17px;
+            align-items: flex-start;
+        }
+
+        .doctor-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #e5f5f1;
+            color: #087f69;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .doctor-info h3 {
+            color: #173d36;
+            font-size: 17px;
+            margin-bottom: 5px;
+        }
+
+        .doctor-info p {
+            color: #71807c;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .confirmed {
+            background: #e6f7ef;
+            color: #087f69;
+        }
+
+        .pending {
+            background: #fff4d6;
+            color: #946b00;
+        }
+
+        .completed {
+            background: #e9eef2;
+            color: #52616b;
+        }
+
+        .cancelled {
+            background: #fdeaea;
+            color: #b42318;
+        }
+
+        .appointment-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 13px;
+        }
+
+        .detail-item {
+            background: #f6faf9;
+            border-radius: 9px;
+            padding: 12px;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            color: #84918e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: #263e39;
+            font-weight: 600;
+        }
+
+        .fee-value {
+            color: #087f69;
+            font-size: 16px;
+        }
+
+        .appointment-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .secondary-btn {
+            border: 1px solid #d7e4e0;
+            background: #ffffff;
+            color: #087f69;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .secondary-btn:hover {
+            background: #eef8f5;
+        }
+
+        .danger-btn {
+            border: 1px solid #f0c8c5;
+            background: #ffffff;
+            color: #b42318;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .danger-btn:hover {
+            background: #fff3f2;
+        }
+
+        /* =====================================================
+           REMINDER
+        ===================================================== */
+
+        .reminder {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #eef8f5;
+            border: 1px solid #d8ebe5;
+            border-radius: 11px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .reminder-icon {
+            width: 40px;
+            height: 40px;
+            background: #087f69;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reminder-text {
+            flex: 1;
+        }
+
+        .reminder-text h3 {
+            color: #174c42;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .reminder-text p {
+            color: #60736e;
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           SEARCH + FILTER
+        ===================================================== */
+
+        .tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .search-box input,
+        .filter-select {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid #dbe6e3;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #263b37;
+            outline: none;
+        }
+
+        .search-box input:focus,
+        .filter-select:focus {
+            border-color: #087f69;
+        }
+
+        .filter-select {
+            width: 170px;
+        }
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            text-align: left;
+            padding: 13px 10px;
+            font-size: 11px;
+            color: #7c8a87;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5eeeb;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #edf2f0;
+            color: #33433f;
+            font-size: 12px;
+        }
+
+        tbody tr:hover {
+            background: #f8fbfa;
+        }
+
+        .doctor-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .small-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e5f5f1;
+            color: #087f69;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .doctor-cell strong {
+            display: block;
+            color: #243b36;
+            margin-bottom: 3px;
+        }
+
+        .doctor-cell span {
+            color: #87938f;
+            font-size: 10px;
+        }
+
+        .fee {
+            color: #087f69;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .table-btn {
+            border: 1px solid #dbe6e3;
+            background: #ffffff;
+            color: #087f69;
+            padding: 7px 9px;
+            border-radius: 6px;
+            font-size: 10px;
+        }
+
+        .table-btn:hover {
+            background: #eef8f5;
+        }
+
+        .table-btn.cancel {
+            color: #b42318;
+            border-color: #f0d0cc;
+        }
+
+        /* =====================================================
+           HEALTH NOTICE
+        ===================================================== */
+
+        .notice {
+            background: #fffaf0;
+            border: 1px solid #f0e2bc;
+            border-radius: 11px;
+            padding: 18px;
+            margin-top: 10px;
+        }
+
+        .notice h3 {
+            color: #806000;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .notice p {
+            color: #6f654c;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* =====================================================
+           MODAL
+        ===================================================== */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 620px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .modal-header h2 {
+            color: #153b35;
+            font-size: 20px;
+        }
+
+        .close-btn {
+            border: none;
+            background: transparent;
+            color: #7d8a87;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #b42318;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #40504c;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #dbe5e2;
+            border-radius: 8px;
+            padding: 11px 12px;
+            font-size: 12px;
+            color: #263b37;
+            background: #ffffff;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #087f69;
+        }
+
+        .fee-preview {
+            background: #eef8f5;
+            border: 1px solid #d8ebe5;
+            border-radius: 9px;
+            padding: 14px;
+            margin: 5px 0 15px;
+        }
+
+        .fee-preview-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 12px;
+            color: #536863;
+        }
+
+        .fee-preview-row.total {
+            border-top: 1px solid #d6e7e2;
+            padding-top: 10px;
+            margin-top: 10px;
+            color: #173d36;
+            font-weight: bold;
+        }
+
+        .fee-preview-row.total span:last-child {
+            color: #087f69;
+            font-size: 16px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+
+        .message.success {
+            display: block;
+            background: #e7f7ef;
+            color: #087f69;
+            border: 1px solid #c9e9dc;
+        }
+
+        .message.error {
+            display: block;
+            background: #fdecec;
+            color: #b42318;
+            border: 1px solid #f2cccc;
+        }
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #173d36;
+            color: white;
+            padding: 13px 18px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 5000;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            text-align: center;
+            color: #899592;
+            font-size: 11px;
+            padding: 15px 0 0;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        .mobile-header {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .appointment-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.25s;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+
+            .mobile-menu-btn {
+                border: none;
+                background: #ffffff;
+                border: 1px solid #dce7e4;
+                border-radius: 8px;
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
+                color: #087f69;
+            }
+
+            .topbar {
+                flex-direction: column;
+            }
+
+            .page-title h1 {
+                font-size: 25px;
+            }
+
+            .topbar .primary-btn {
+                width: 100%;
+            }
+
+            .appointment-details {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .tools {
+                flex-direction: column;
+            }
+
+            .reminder {
+                align-items: flex-start;
+            }
+        }
+
+        /* =====================================================
+           DARK MODE
+           Controlled by static/js/script.js
+           
+           NCD Nepal Theme:
+           Page       = #111827
+           Cards      = #1f2937
+           Text       = #f3f4f6
+           Green      = #4ade80
+        ===================================================== */
+
+        html.dark-mode body {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .sidebar {
+            background: #1f2937;
+            border-right-color: #374151;
+        }
+
+        html.dark-mode .brand {
+            border-bottom-color: #374151;
+        }
+
+        html.dark-mode .brand-text h2 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .brand-text p {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .menu-title {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .nav-link {
+            color: #d1d5db;
+        }
+
+        html.dark-mode .nav-link:hover {
+            background: #293b34;
+            color: #4ade80;
+        }
+
+        html.dark-mode .nav-link.active {
+            background: #294337;
+            color: #4ade80;
+        }
+
+        html.dark-mode .sidebar-footer {
+            border-top-color: #374151;
+        }
+
+        html.dark-mode .main {
+            background: #111827;
+        }
+
+        html.dark-mode .page-title h1 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .page-title p,
+        html.dark-mode .date {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .card {
+            background: #1f2937;
+            border-color: #374151;
+            box-shadow: none;
+        }
+
+        html.dark-mode .section-header h2 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .section-header p {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .doctor-info h3 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .doctor-info p {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .doctor-avatar,
+        html.dark-mode .small-avatar {
+            background: #293b34;
+            color: #4ade80;
+        }
+
+        html.dark-mode .detail-item {
+            background: #273342;
+        }
+
+        html.dark-mode .detail-label {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .detail-value {
+            color: #e5e7eb;
+        }
+
+        html.dark-mode .fee-value {
+            color: #4ade80;
+        }
+
+        html.dark-mode .secondary-btn {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #4ade80;
+        }
+
+        html.dark-mode .secondary-btn:hover {
+            background: #293b34;
+        }
+
+        html.dark-mode .danger-btn {
+            background: #1f2937;
+            border-color: #7f3f3a;
+            color: #f87171;
+        }
+
+        html.dark-mode .danger-btn:hover {
+            background: #351f20;
+        }
+
+        html.dark-mode .reminder {
+            background: #24382f;
+            border-color: #355544;
+        }
+
+        html.dark-mode .reminder-icon {
+            background: #4ade80;
+            color: #111827;
+        }
+
+        html.dark-mode .reminder-text h3 {
+            color: #d1fae5;
+        }
+
+        html.dark-mode .reminder-text p {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .search-box input,
+        html.dark-mode .filter-select,
+        html.dark-mode input,
+        html.dark-mode select,
+        html.dark-mode textarea {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .search-box input:focus,
+        html.dark-mode .filter-select:focus,
+        html.dark-mode input:focus,
+        html.dark-mode select:focus,
+        html.dark-mode textarea:focus {
+            border-color: #4ade80;
+        }
+
+        html.dark-mode input::placeholder,
+        html.dark-mode textarea::placeholder {
+            color: #6b7280;
+        }
+
+        html.dark-mode th {
+            color: #9ca3af;
+            border-bottom-color: #374151;
+        }
+
+        html.dark-mode td {
+            color: #d1d5db;
+            border-bottom-color: #374151;
+        }
+
+        html.dark-mode tbody tr:hover {
+            background: #273342;
+        }
+
+        html.dark-mode .doctor-cell strong {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .doctor-cell span {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .fee {
+            color: #4ade80;
+        }
+
+        html.dark-mode .table-btn {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #4ade80;
+        }
+
+        html.dark-mode .table-btn:hover {
+            background: #293b34;
+        }
+
+        html.dark-mode .table-btn.cancel {
+            color: #f87171;
+            border-color: #7f3f3a;
+        }
+
+        html.dark-mode .notice {
+            background: #302a1b;
+            border-color: #554a29;
+        }
+
+        html.dark-mode .notice h3 {
+            color: #facc15;
+        }
+
+        html.dark-mode .notice p {
+            color: #d1c59c;
+        }
+
+        html.dark-mode .modal {
+            background: rgba(0, 0, 0, 0.72);
+        }
+
+        html.dark-mode .modal-content {
+            background: #1f2937;
+            border: 1px solid #374151;
+        }
+
+        html.dark-mode .modal-header h2 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .close-btn {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .close-btn:hover {
+            color: #f87171;
+        }
+
+        html.dark-mode label {
+            color: #d1d5db;
+        }
+
+        html.dark-mode .fee-preview {
+            background: #24382f;
+            border-color: #355544;
+        }
+
+        html.dark-mode .fee-preview-row {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .fee-preview-row.total {
+            border-top-color: #355544;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .fee-preview-row.total span:last-child {
+            color: #4ade80;
+        }
+
+        html.dark-mode .message.success {
+            background: #1d382b;
+            color: #4ade80;
+            border-color: #315a45;
+        }
+
+        html.dark-mode .message.error {
+            background: #351f20;
+            color: #f87171;
+            border-color: #6b3737;
+        }
+
+        html.dark-mode .toast {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        html.dark-mode footer {
+            color: #6b7280;
+        }
+
+        html.dark-mode .mobile-menu-btn {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #4ade80;
+        }
+
+        /* Primary button remains green in dark mode */
+        html.dark-mode .primary-btn {
+            background: #4ade80;
+            color: #111827;
+        }
+
+        html.dark-mode .primary-btn:hover {
+            background: #22c55e;
+        }
+
+        /* Status badges */
+        html.dark-mode .confirmed {
+            background: #19382c;
+            color: #4ade80;
+        }
+
+        html.dark-mode .pending {
+            background: #3b321d;
+            color: #facc15;
+        }
+
+        html.dark-mode .completed {
+            background: #293342;
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .cancelled {
+            background: #3b2324;
+            color: #f87171;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">
+                <div class="brand-icon">N+</div>
+
+                <div class="brand-text">
+                    <h2>NCD Nepal</h2>
+                    <p>HEALTH &amp; WELLNESS</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-title">MAIN MENU</div>
+
+            <a href="{{ url_for('dashboard') }}" class="nav-link">
+                <span class="nav-icon">▦</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('monitoring') }}" class="nav-link">
+                <span class="nav-icon">♡</span>
+                <span>Health Monitoring</span>
+            </a>
+
+            <a href="{{ url_for('prevention') }}" class="nav-link">
+                <span class="nav-icon">✚</span>
+                <span>Know &amp; Prevent</span>
+            </a>
+
+            <a href="{{ url_for('community') }}" class="nav-link">
+                <span class="nav-icon">♧</span>
+                <span>Community</span>
+            </a>
+
+            <a href="{{ url_for('login') }}" class="nav-link">
+                <span class="nav-icon">⇥</span>
+                <span>Login</span>
+            </a>
+
+            <a href="{{ url_for('register') }}" class="nav-link">
+                <span class="nav-icon">＋</span>
+                <span>Register</span>
+            </a>
+        </div>
+
+        <div class="menu-section">
+
+            <div class="menu-title">ACCOUNT</div>
+
+            <a href="{{ url_for('profile') }}" class="nav-link">
+                <span class="nav-icon">◉</span>
+                <span>Profile</span>
+            </a>
+
+            <a href="{{ url_for('records') }}" class="nav-link">
+                <span class="nav-icon">▤</span>
+                <span>Health Records</span>
+            </a>
+
+            <a href="{{ url_for('appointments') }}" class="nav-link active">
+                <span class="nav-icon">◫</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('notifications') }}" class="nav-link">
+                <span class="nav-icon">♢</span>
+                <span>Notifications</span>
+            </a>
+
+            <a href="{{ url_for('settings') }}" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <a href="{{ url_for('logout') }}" class="nav-link">
+                <span class="nav-icon">⇥</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main">
+
+        <!-- Mobile header -->
+        <div class="mobile-header">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+            <strong>NCD Nepal</strong>
+        </div>
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h1>Appointments</h1>
+
+                <p>
+                    Book, view, and manage your healthcare appointments.
+                </p>
+
+                <div class="date" id="currentDate"></div>
+
+            </div>
+
+            <button class="primary-btn" onclick="openBookingModal()">
+                + Book Appointment
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             UPCOMING APPOINTMENT
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Upcoming Appointment</h2>
+
+                    <p>
+                        Your next scheduled healthcare consultation.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div id="upcomingAppointment">
+
+                <div class="appointment-main">
+
+                    <div>
+
+                        <div class="doctor-box">
+
+                            <div class="doctor-avatar">
+                                AS
+                            </div>
+
+                            <div class="doctor-info">
+
+                                <h3>
+                                    Dr. Anisha Sharma
+                                </h3>
+
+                                <p>
+                                    General Physician
+                                </p>
+
+                                <p>
+                                    Diabetes &amp; Hypertension Consultation
+                                </p>
+
+                                <span class="status confirmed">
+                                    Confirmed
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="appointment-actions">
+
+                            <button
+                                class="secondary-btn"
+                                onclick="viewAppointment(0)">
+                                View Details
+                            </button>
+
+                            <button
+                                class="secondary-btn"
+                                onclick="openRescheduleModal(0)">
+                                Reschedule
+                            </button>
+
+                            <button
+                                class="danger-btn"
+                                onclick="cancelAppointment(0)">
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="appointment-details">
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                Date
+                            </div>
+
+                            <div class="detail-value">
+                                November 15, 2026
+                            </div>
+                        </div>
+
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                Time
+                            </div>
+
+                            <div class="detail-value">
+                                10:30 AM
+                            </div>
+                        </div>
+
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                Type
+                            </div>
+
+                            <div class="detail-value">
+                                Online
+                            </div>
+                        </div>
+
+
+                        <div class="detail-item">
+                            <div class="detail-label">
+                                Consultation Fee
+                            </div>
+
+                            <div class="detail-value fee-value">
+                                NPR 1,000
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REMINDER
+        ================================================== -->
+
+        <div class="reminder">
+
+            <div class="reminder-icon">
+                🔔
+            </div>
+
+            <div class="reminder-text">
+
+                <h3>
+                    Appointment Reminder
+                </h3>
+
+                <p>
+                    Your upcoming consultation is scheduled for
+                    November 15, 2026 at 10:30 AM.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             APPOINTMENT HISTORY
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Appointment History
+                    </h2>
+
+                    <p>
+                        View your previous and upcoming appointments.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- SEARCH + FILTER -->
+
+            <div class="tools">
+
+                <div class="search-box">
+
+                    <input
+                        type="text"
+                        id="searchAppointment"
+                        placeholder="Search doctor, service, or date..."
+                        onkeyup="filterAppointments()">
+
+                </div>
+
+
+                <select
+                    class="filter-select"
+                    id="statusFilter"
+                    onchange="filterAppointments()">
+
+                    <option value="all">
+                        All Appointments
+                    </option>
+
+                    <option value="Upcoming">
+                        Upcoming
+                    </option>
+
+                    <option value="Completed">
+                        Completed
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Doctor
+                            </th>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Date &amp; Time
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Fee
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="appointmentTableBody">
+
+                        <!-- Row 1 -->
+
+                        <tr
+                            data-status="Upcoming"
+                            data-search="anisha sharma general physician diabetes hypertension november 15 2026">
+
+                            <td>
+
+                                <div class="doctor-cell">
+
+                                    <div class="small-avatar">
+                                        AS
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Dr. Anisha Sharma
+                                        </strong>
+
+                                        <span>
+                                            General Physician
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                Diabetes Consultation
+                            </td>
+
+                            <td>
+                                Nov 15, 2026<br>
+                                10:30 AM
+                            </td>
+
+                            <td>
+                                Online
+                            </td>
+
+                            <td class="fee">
+                                NPR 1,000
+                            </td>
+
+                            <td>
+                                <span class="status confirmed">
+                                    Confirmed
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="table-btn"
+                                        onclick="viewAppointment(0)">
+                                        View
+                                    </button>
+
+                                    <button
+                                        class="table-btn"
+                                        onclick="openRescheduleModal(0)">
+                                        Reschedule
+                                    </button>
+
+                                    <button
+                                        class="table-btn cancel"
+                                        onclick="cancelAppointment(0)">
+                                        Cancel
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- Row 2 -->
+
+                        <tr
+                            data-status="Completed"
+                            data-search="suman thapa blood pressure hypertension november 3 2026">
+
+                            <td>
+
+                                <div class="doctor-cell">
+
+                                    <div class="small-avatar">
+                                        ST
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Dr. Suman Thapa
+                                        </strong>
+
+                                        <span>
+                                            Internal Medicine
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                Blood Pressure Consultation
+                            </td>
+
+                            <td>
+                                Nov 03, 2026<br>
+                                2:00 PM
+                            </td>
+
+                            <td>
+                                In-person
+                            </td>
+
+                            <td class="fee">
+                                NPR 1,200
+                            </td>
+
+                            <td>
+                                <span class="status completed">
+                                    Completed
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="table-btn"
+                                        onclick="viewAppointment(1)">
+                                        View
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- Row 3 -->
+
+                        <tr
+                            data-status="Pending"
+                            data-search="riya karki thyroid endocrinology november 20 2026">
+
+                            <td>
+
+                                <div class="doctor-cell">
+
+                                    <div class="small-avatar">
+                                        RK
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Dr. Riya Karki
+                                        </strong>
+
+                                        <span>
+                                            Endocrinology
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                Thyroid Consultation
+                            </td>
+
+                            <td>
+                                Nov 20, 2026<br>
+                                11:00 AM
+                            </td>
+
+                            <td>
+                                Online
+                            </td>
+
+                            <td class="fee">
+                                NPR 1,200
+                            </td>
+
+                            <td>
+                                <span class="status pending">
+                                    Pending
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="table-btn"
+                                        onclick="viewAppointment(2)">
+                                        View
+                                    </button>
+
+                                    <button
+                                        class="table-btn"
+                                        onclick="openRescheduleModal(2)">
+                                        Reschedule
+                                    </button>
+
+                                    <button
+                                        class="table-btn cancel"
+                                        onclick="cancelAppointment(2)">
+                                        Cancel
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- Row 4 -->
+
+                        <tr
+                            data-status="Cancelled"
+                            data-search="nutrition lifestyle cancelled october 20 2026">
+
+                            <td>
+
+                                <div class="doctor-cell">
+
+                                    <div class="doctor-cell">
+
+                                        <div class="small-avatar">
+                                            NM
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Nutrition Specialist
+                                            </strong>
+
+                                            <span>
+                                                Nutrition &amp; Lifestyle
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+                                Nutrition &amp; Lifestyle
+                            </td>
+
+                            <td>
+                                Oct 20, 2026<br>
+                                4:00 PM
+                            </td>
+
+                            <td>
+                                Online
+                            </td>
+
+                            <td class="fee">
+                                NPR 800
+                            </td>
+
+                            <td>
+                                <span class="status cancelled">
+                                    Cancelled
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        class="table-btn"
+                                        onclick="viewAppointment(3)">
+                                        View
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             IMPORTANT NOTICE
+        ================================================== -->
+
+        <section class="notice">
+
+            <h3>
+                Important Health Notice
+            </h3>
+
+            <p>
+                Information and digital services are designed to
+                support—not replace—professional medical care.
+                If you have serious symptoms or an emergency,
+                please contact an appropriate healthcare professional
+                or emergency service.
+            </p>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+            NCD Nepal © 2026
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     BOOK APPOINTMENT MODAL
+========================================================= -->
+
+<div class="modal" id="bookingModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Book Appointment
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('bookingModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="bookingMessage" class="message"></div>
+
+
+        <form id="bookingForm" onsubmit="bookAppointment(event)">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="service">
+                        Service
+                    </label>
+
+                    <select id="service" required onchange="updateDoctorList()">
+
+                        <option value="">
+                            Select service
+                        </option>
+
+                        <option value="General Consultation">
+                            General Consultation
+                        </option>
+
+                        <option value="Diabetes Consultation">
+                            Diabetes Consultation
+                        </option>
+
+                        <option value="Blood Pressure Consultation">
+                            Blood Pressure Consultation
+                        </option>
+
+                        <option value="Thyroid Consultation">
+                            Thyroid Consultation
+                        </option>
+
+                        <option value="Nutrition & Lifestyle">
+                            Nutrition &amp; Lifestyle
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="doctor">
+                        Doctor / Provider
+                    </label>
+
+                    <select id="doctor" required onchange="updateFee()">
+
+                        <option value="">
+                            Select service first
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="appointmentDate">
+                        Appointment Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="appointmentDate"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="appointmentTime">
+                        Preferred Time
+                    </label>
+
+                    <select id="appointmentTime" required>
+
+                        <option value="">
+                            Select time
+                        </option>
+
+                        <option>9:00 AM</option>
+                        <option>10:00 AM</option>
+                        <option>10:30 AM</option>
+                        <option>11:00 AM</option>
+                        <option>2:00 PM</option>
+                        <option>3:00 PM</option>
+                        <option>4:00 PM</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="appointmentType">
+                        Appointment Type
+                    </label>
+
+                    <select id="appointmentType" required>
+
+                        <option value="Online">
+                            Online
+                        </option>
+
+                        <option value="In-person">
+                            In-person
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="location">
+                        Location / Consultation
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="Online consultation or clinic location">
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="reason">
+                        Reason for Appointment
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reason"
+                        placeholder="Example: Regular diabetes follow-up"
+                        required>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="notes">
+                        Additional Notes
+                    </label>
+
+                    <textarea
+                        id="notes"
+                        placeholder="Add any additional information if needed"></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- FEE PREVIEW -->
+
+            <div class="fee-preview">
+
+                <div class="fee-preview-row">
+
+                    <span>
+                        Consultation Fee
+                    </span>
+
+                    <span id="consultationFee">
+                        NPR 0
+                    </span>
+
+                </div>
+
+
+                <div class="fee-preview-row">
+
+                    <span>
+                        Service / Booking Fee
+                    </span>
+
+                    <span>
+                        NPR 0
+                    </span>
+
+                </div>
+
+
+                <div class="fee-preview-row total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <span id="totalFee">
+                        NPR 0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="closeModal('bookingModal')">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn">
+                    Confirm Appointment
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     VIEW DETAILS MODAL
+========================================================= -->
+
+<div class="modal" id="detailsModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Appointment Details
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('detailsModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="appointmentDetailsContent"></div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="closeModal('detailsModal')">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     RESCHEDULE MODAL
+========================================================= -->
+
+<div class="modal" id="rescheduleModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Reschedule Appointment
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('rescheduleModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="rescheduleMessage" class="message"></div>
+
+
+        <div class="form-group">
+
+            <label for="newDate">
+                New Date
+            </label>
+
+            <input
+                type="date"
+                id="newDate">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="newTime">
+                New Time
+            </label>
+
+            <select id="newTime">
+
+                <option value="">
+                    Select time
+                </option>
+
+                <option>9:00 AM</option>
+                <option>10:00 AM</option>
+                <option>10:30 AM</option>
+                <option>11:00 AM</option>
+                <option>2:00 PM</option>
+                <option>3:00 PM</option>
+                <option>4:00 PM</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="closeModal('rescheduleModal')">
+                Cancel
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="confirmReschedule()">
+                Save New Time
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast" id="toast"></div>
+
+
+<!-- Shared NCD Nepal JavaScript -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+
+<!-- =========================================================
+     APPOINTMENT JAVASCRIPT
+========================================================= -->
+
+<script>
+
+    /*
+    ============================================================
+       APPOINTMENT DATA
+    ============================================================
+
+    These are DEMO providers for frontend development.
+
+    In the real production system, these records should come
+    from your organization's verified backend/database/API.
+    */
+
+    const doctors = {
+
+        "General Consultation": [
+            {
+                name: "Dr. Anisha Sharma",
+                specialty: "General Physician",
+                fee: 1000,
+                initials: "AS"
+            }
+        ],
+
+        "Diabetes Consultation": [
+            {
+                name: "Dr. Anisha Sharma",
+                specialty: "General Physician",
+                fee: 1000,
+                initials: "AS"
+            }
+        ],
+
+        "Blood Pressure Consultation": [
+            {
+                name: "Dr. Suman Thapa",
+                specialty: "Internal Medicine",
+                fee: 1200,
+                initials: "ST"
+            }
+        ],
+
+        "Thyroid Consultation": [
+            {
+                name: "Dr. Riya Karki",
+                specialty: "Endocrinology",
+                fee: 1200,
+                initials: "RK"
+            }
+        ],
+
+        "Nutrition & Lifestyle": [
+            {
+                name: "Nutrition Specialist",
+                specialty: "Nutrition & Lifestyle",
+                fee: 800,
+                initials: "NS"
+            }
+        ]
+    };
+
+
+    const appointments = [
+
+        {
+            doctor: "Dr. Anisha Sharma",
+            specialty: "General Physician",
+            service: "Diabetes Consultation",
+            date: "November 15, 2026",
+            time: "10:30 AM",
+            type: "Online",
+            fee: 1000,
+            status: "Confirmed",
+            reason: "Regular diabetes follow-up",
+            location: "Online consultation"
+        },
+
+        {
+            doctor: "Dr. Suman Thapa",
+            specialty: "Internal Medicine",
+            service: "Blood Pressure Consultation",
+            date: "November 03, 2026",
+            time: "2:00 PM",
+            type: "In-person",
+            fee: 1200,
+            status: "Completed",
+            reason: "Blood pressure follow-up",
+            location: "Clinic"
+        },
+
+        {
+            doctor: "Dr. Riya Karki",
+            specialty: "Endocrinology",
+            service: "Thyroid Consultation",
+            date: "November 20, 2026",
+            time: "11:00 AM",
+            type: "Online",
+            fee: 1200,
+            status: "Pending",
+            reason: "Thyroid monitoring",
+            location: "Online consultation"
+        },
+
+        {
+            doctor: "Nutrition Specialist",
+            specialty: "Nutrition & Lifestyle",
+            service: "Nutrition & Lifestyle",
+            date: "October 20, 2026",
+            time: "4:00 PM",
+            type: "Online",
+            fee: 800,
+            status: "Cancelled",
+            reason: "Lifestyle consultation",
+            location: "Online consultation"
+        }
+
+    ];
+
+
+    let rescheduleIndex = null;
+
+
+    /* =========================================================
+       DATE
+    ========================================================== */
+
+    function displayCurrentDate() {
+
+        const dateElement =
+            document.getElementById("currentDate");
+
+        if (!dateElement) {
+            return;
+        }
+
+        const today = new Date();
+
+        const options = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        };
+
+        dateElement.textContent =
+            today.toLocaleDateString("en-US", options);
+    }
+
+
+    /* =========================================================
+       MODAL
+    ========================================================== */
+
+    function openModal(id) {
+
+        const modal =
+            document.getElementById(id);
+
+        if (modal) {
+            modal.classList.add("show");
+        }
+    }
+
+
+    function closeModal(id) {
+
+        const modal =
+            document.getElementById(id);
+
+        if (modal) {
+            modal.classList.remove("show");
+        }
+    }
+
+
+    /* =========================================================
+       BOOKING MODAL
+    ========================================================== */
+
+    function openBookingModal() {
+
+        const form =
+            document.getElementById("bookingForm");
+
+        if (form) {
+            form.reset();
+        }
+
+        document.getElementById("doctor").innerHTML =
+            '<option value="">Select service first</option>';
+
+        document.getElementById("consultationFee").textContent =
+            "NPR 0";
+
+        document.getElementById("totalFee").textContent =
+            "NPR 0";
+
+        hideMessage("bookingMessage");
+
+        openModal("bookingModal");
+    }
+
+
+    /* =========================================================
+       UPDATE DOCTOR LIST
+    ========================================================== */
+
+    function updateDoctorList() {
+
+        const service =
+            document.getElementById("service").value;
+
+        const doctorSelect =
+            document.getElementById("doctor");
+
+        doctorSelect.innerHTML =
+            '<option value="">Select doctor/provider</option>';
+
+        if (!service || !doctors[service]) {
+
+            updateFee();
+
+            return;
+        }
+
+        doctors[service].forEach(function (doctor, index) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = index;
+
+            option.textContent =
+                doctor.name +
+                " — " +
+                doctor.specialty;
+
+            doctorSelect.appendChild(option);
+
+        });
+
+        updateFee();
+    }
+
+
+    /* =========================================================
+       UPDATE FEE
+    ========================================================== */
+
+    function updateFee() {
+
+        const service =
+            document.getElementById("service").value;
+
+        const doctorIndex =
+            document.getElementById("doctor").value;
+
+        let fee = 0;
+
+        if (
+            service &&
+            doctors[service] &&
+            doctorIndex !== ""
+        ) {
+
+            fee =
+                doctors[service][doctorIndex].fee;
+
+        }
+
+        document.getElementById("consultationFee").textContent =
+            "NPR " + fee.toLocaleString();
+
+        document.getElementById("totalFee").textContent =
+            "NPR " + fee.toLocaleString();
+    }
+
+
+    /* =========================================================
+       BOOK APPOINTMENT
+    ========================================================== */
+
+    function bookAppointment(event) {
+
+        event.preventDefault();
+
+        const service =
+            document.getElementById("service").value;
+
+        const doctorIndex =
+            document.getElementById("doctor").value;
+
+        const date =
+            document.getElementById("appointmentDate").value;
+
+        const time =
+            document.getElementById("appointmentTime").value;
+
+        const type =
+            document.getElementById("appointmentType").value;
+
+        const location =
+            document.getElementById("location").value;
+
+        const reason =
+            document.getElementById("reason").value;
+
+        if (
+            !service ||
+            doctorIndex === "" ||
+            !date ||
+            !time ||
+            !type ||
+            !reason
+        ) {
+
+            showMessage(
+                "bookingMessage",
+                "Please complete all required fields.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const doctor =
+            doctors[service][doctorIndex];
+
+
+        const newAppointment = {
+
+            doctor: doctor.name,
+
+            specialty: doctor.specialty,
+
+            service: service,
+
+            date: formatDate(date),
+
+            time: time,
+
+            type: type,
+
+            fee: doctor.fee,
+
+            status: "Pending",
+
+            reason: reason,
+
+            location:
+                location ||
+                (
+                    type === "Online"
+                        ? "Online consultation"
+                        : "Clinic location to be provided"
+                )
+
+        };
+
+
+        appointments.unshift(newAppointment);
+
+
+        showMessage(
+            "bookingMessage",
+            "Appointment booked successfully. Your appointment is currently pending confirmation.",
+            "success"
+        );
+
+
+        showToast(
+            "Appointment booked successfully."
+        );
+
+
+        setTimeout(function () {
+
+            closeModal("bookingModal");
+
+            document.getElementById("bookingForm").reset();
+
+            updateAppointmentTable();
+
+        }, 1200);
+    }
+
+
+    /* =========================================================
+       FORMAT DATE
+    ========================================================== */
+
+    function formatDate(dateString) {
+
+        const date =
+            new Date(dateString + "T00:00:00");
+
+        return date.toLocaleDateString(
+            "en-US",
+            {
+                month: "short",
+                day: "2-digit",
+                year: "numeric"
+            }
+        );
+    }
+
+
+    /* =========================================================
+       VIEW APPOINTMENT
+    ========================================================== */
+
+    function viewAppointment(index) {
+
+        const appointment =
+            appointments[index];
+
+        if (!appointment) {
+            return;
+        }
+
+
+        const html = `
+
+            <div class="appointment-details">
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Doctor / Provider
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.doctor}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Specialty
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.specialty}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Service
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.service}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Date
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.date}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Time
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.time}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Appointment Type
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.type}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Consultation Fee
+                    </div>
+
+                    <div class="detail-value fee-value">
+                        NPR ${appointment.fee.toLocaleString()}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Status
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.status}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Location
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.location}
+                    </div>
+                </div>
+
+
+                <div class="detail-item">
+                    <div class="detail-label">
+                        Reason
+                    </div>
+
+                    <div class="detail-value">
+                        ${appointment.reason}
+                    </div>
+                </div>
+
+            </div>
+
+        `;
+
+
+        document.getElementById(
+            "appointmentDetailsContent"
+        ).innerHTML = html;
+
+
+        openModal("detailsModal");
+    }
+
+
+    /* =========================================================
+       RESCHEDULE
+    ========================================================== */
+
+    function openRescheduleModal(index) {
+
+        const appointment =
+            appointments[index];
+
+        if (!appointment) {
+            return;
+        }
+
+        if (
+            appointment.status === "Cancelled" ||
+            appointment.status === "Completed"
+        ) {
+
+            showToast(
+                "This appointment cannot be rescheduled."
+            );
+
+            return;
+        }
+
+        rescheduleIndex = index;
+
+        hideMessage("rescheduleMessage");
+
+        document.getElementById("newDate").value = "";
+        document.getElementById("newTime").value = "";
+
+        openModal("rescheduleModal");
+    }
+
+
+    function confirmReschedule() {
+
+        if (rescheduleIndex === null) {
+            return;
+        }
+
+        const newDate =
+            document.getElementById("newDate").value;
+
+        const newTime =
+            document.getElementById("newTime").value;
+
+        if (!newDate || !newTime) {
+
+            showMessage(
+                "rescheduleMessage",
+                "Please select a new date and time.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        appointments[rescheduleIndex].date =
+            formatDate(newDate);
+
+        appointments[rescheduleIndex].time =
+            newTime;
+
+        appointments[rescheduleIndex].status =
+            "Pending";
+
+
+        showMessage(
+            "rescheduleMessage",
+            "Appointment rescheduled successfully. It is now pending confirmation.",
+            "success"
+        );
+
+
+        showToast(
+            "Appointment rescheduled successfully."
+        );
+
+
+        setTimeout(function () {
+
+            closeModal("rescheduleModal");
+
+            updateAppointmentTable();
+
+        }, 1000);
+    }
+
+
+    /* =========================================================
+       CANCEL APPOINTMENT
+    ========================================================== */
+
+    function cancelAppointment(index) {
+
+        const appointment =
+            appointments[index];
+
+        if (!appointment) {
+            return;
+        }
+
+        if (
+            appointment.status === "Cancelled"
+        ) {
+
+            showToast(
+                "This appointment is already cancelled."
+            );
+
+            return;
+        }
+
+
+        if (
+            appointment.status === "Completed"
+        ) {
+
+            showToast(
+                "Completed appointments cannot be cancelled."
+            );
+
+            return;
+        }
+
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to cancel this appointment?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        appointments[index].status =
+            "Cancelled";
+
+
+        showToast(
+            "Appointment cancelled successfully."
+        );
+
+
+        updateAppointmentTable();
+    }
+
+
+    /* =========================================================
+       UPDATE TABLE
+    ========================================================== */
+
+    function updateAppointmentTable() {
+
+        const tbody =
+            document.getElementById(
+                "appointmentTableBody"
+            );
+
+        if (!tbody) {
+            return;
+        }
+
+
+        tbody.innerHTML = "";
+
+
+        appointments.forEach(function (appointment, index) {
+
+            let statusClass = "pending";
+
+            if (appointment.status === "Confirmed") {
+                statusClass = "confirmed";
+            }
+
+            if (appointment.status === "Completed") {
+                statusClass = "completed";
+            }
+
+            if (appointment.status === "Cancelled") {
+                statusClass = "cancelled";
+            }
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.dataset.status =
+                appointment.status === "Confirmed"
+                    ? "Upcoming"
+                    : appointment.status;
+
+
+            row.dataset.search =
+                (
+                    appointment.doctor +
+                    " " +
+                    appointment.specialty +
+                    " " +
+                    appointment.service +
+                    " " +
+                    appointment.date
+                ).toLowerCase();
+
+
+            let actionButtons = `
+
+                <button
+                    class="table-btn"
+                    onclick="viewAppointment(${index})">
+                    View
+                </button>
+
+            `;
+
+
+            if (
+                appointment.status !== "Completed" &&
+                appointment.status !== "Cancelled"
+            ) {
+
+                actionButtons += `
+
+                    <button
+                        class="table-btn"
+                        onclick="openRescheduleModal(${index})">
+                        Reschedule
+                    </button>
+
+                    <button
+                        class="table-btn cancel"
+                        onclick="cancelAppointment(${index})">
+                        Cancel
+                    </button>
+
+                `;
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    <div class="doctor-cell">
+
+                        <div class="small-avatar">
+                            ${getInitials(appointment.doctor)}
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                ${appointment.doctor}
+                            </strong>
+
+                            <span>
+                                ${appointment.specialty}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${appointment.service}
+                </td>
+
+
+                <td>
+                    ${appointment.date}<br>
+                    ${appointment.time}
+                </td>
+
+
+                <td>
+                    ${appointment.type}
+                </td>
+
+
+                <td class="fee">
+                    NPR ${appointment.fee.toLocaleString()}
+                </td>
+
+
+                <td>
+
+                    <span class="status ${statusClass}">
+                        ${appointment.status}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="action-buttons">
+                        ${actionButtons}
+                    </div>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(row);
+
+        });
+
+
+        filterAppointments();
+    }
+
+
+    /* =========================================================
+       INITIALS
+    ========================================================== */
+
+    function getInitials(name) {
+
+        const parts =
+            name.replace("Dr. ", "").split(" ");
+
+        let initials = "";
+
+        parts.forEach(function (part) {
+
+            if (part.length > 0) {
+                initials +=
+                    part.charAt(0).toUpperCase();
+            }
+
+        });
+
+        return initials.substring(0, 2);
+    }
+
+
+    /* =========================================================
+       SEARCH + FILTER
+    ========================================================== */
+
+    function filterAppointments() {
+
+        const searchElement =
+            document.getElementById(
+                "searchAppointment"
+            );
+
+        const filterElement =
+            document.getElementById(
+                "statusFilter"
+            );
+
+        if (!searchElement || !filterElement) {
+            return;
+        }
+
+        const search =
+            searchElement.value.toLowerCase();
+
+        const filter =
+            filterElement.value;
+
+
+        const rows =
+            document.querySelectorAll(
+                "#appointmentTableBody tr"
+            );
+
+
+        rows.forEach(function (row) {
+
+            const text =
+                row.dataset.search || "";
+
+            const status =
+                row.dataset.status || "";
+
+            const matchesSearch =
+                text.includes(search);
+
+            const matchesStatus =
+                filter === "all" ||
+                status === filter;
+
+
+            row.style.display =
+                matchesSearch && matchesStatus
+                    ? ""
+                    : "none";
+
+        });
+    }
+
+
+    /* =========================================================
+       MESSAGE
+    ========================================================== */
+
+    function showMessage(
+        elementId,
+        message,
+        type
+    ) {
+
+        const element =
+            document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
+
+        element.textContent =
+            message;
+
+        element.className =
+            "message " + type;
+    }
+
+
+    function hideMessage(elementId) {
+
+        const element =
+            document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
+
+        element.textContent = "";
+        element.className = "message";
+    }
+
+
+    /* =========================================================
+       TOAST
+    ========================================================== */
+
+    function showToast(message) {
+
+        const toast =
+            document.getElementById("toast");
+
+        if (!toast) {
+            return;
+        }
+
+        toast.textContent =
+            message;
+
+        toast.classList.add("show");
+
+
+        setTimeout(function () {
+
+            toast.classList.remove("show");
+
+        }, 3000);
+    }
+
+
+    /* =========================================================
+       MOBILE SIDEBAR
+    ========================================================== */
+
+    function toggleSidebar() {
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+        if (sidebar) {
+            sidebar.classList.toggle("show");
+        }
+    }
+
+
+    /* =========================================================
+       CLOSE MODAL WHEN CLICKING OUTSIDE
+    ========================================================== */
+
+    window.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target.classList.contains("modal")
+            ) {
+
+                event.target.classList.remove("show");
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       INITIALIZATION
+    ========================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            displayCurrentDate();
+
+            updateAppointmentTable();
+
+            /* Set minimum appointment date to today */
+
+            const today =
+                new Date();
+
+            const year =
+                today.getFullYear();
+
+            const month =
+                String(
+                    today.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    today.getDate()
+                ).padStart(2, "0");
+
+            const todayString =
+                `${year}-${month}-${day}`;
+
+            const appointmentDate =
+                document.getElementById(
+                    "appointmentDate"
+                );
+
+            const newDate =
+                document.getElementById(
+                    "newDate"
+                );
+
+            if (appointmentDate) {
+                appointmentDate.min =
+                    todayString;
+            }
+
+            if (newDate) {
+                newDate.min =
+                    todayString;
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Patient profile, appointment history, consultation notes and follow-up management for NCD Nepal.">
+    <title>Patient Details | NCD Nepal</title>
+
+    <style>
+        :root {
+            --primary: #238b68;
+            --primary-dark: #176b50;
+            --primary-light: #e8f5ef;
+            --background: #f5f8f7;
+            --surface: #ffffff;
+            --text: #24332e;
+            --muted: #788780;
+            --border: #e4ebe7;
+            --danger: #d94b4b;
+            --warning: #d89525;
+            --success: #238b68;
+            --sidebar-width: 255px;
+            --shadow: 0 5px 20px rgba(31, 66, 51, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: #173d30;
+            color: white;
+            padding: 25px 17px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 8px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .brand-logo {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            background: #2fa37f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .brand-subtitle {
+            display: block;
+            margin-top: 4px;
+            color: #b6d0c4;
+            font-size: 10px;
+            letter-spacing: 1.2px;
+        }
+
+        .menu-label {
+            color: #9db9ac;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin: 27px 10px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 13px;
+            margin-bottom: 5px;
+            color: #d4e4dc;
+            border-radius: 9px;
+            font-size: 13px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(47,163,127,0.22);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: #2fa37f;
+            color: white;
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-footer {
+            margin-top: 35px;
+            padding: 15px 10px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            color: #a9c4b6;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: var(--sidebar-width);
+            padding: 28px 34px 45px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: 0;
+            background: white;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .page-title {
+            font-size: 25px;
+            font-weight: 750;
+        }
+
+        .provider-label {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 9px;
+            color: #52655b;
+            font-size: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            color: var(--primary-dark);
+        }
+
+        /* COMMON CARDS */
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 19px;
+        }
+
+        .section-heading h2 {
+            font-size: 17px;
+            font-weight: 750;
+        }
+
+        .section-description {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* PATIENT PROFILE */
+
+        .profile-card {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .profile-main {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 18px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .patient-name {
+            font-size: 23px;
+            margin-bottom: 8px;
+        }
+
+        .patient-id {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 9px;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-tag {
+            padding: 6px 10px;
+            background: #f2f6f4;
+            color: #53675d;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            border: 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-light {
+            background: #edf4f0;
+            color: var(--primary-dark);
+        }
+
+        .btn-light:hover {
+            background: #dfeee6;
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #ffe1e1;
+        }
+
+        .btn-small {
+            padding: 7px 10px;
+            font-size: 11px;
+        }
+
+        /* PATIENT INFORMATION */
+
+        .information-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .info-item {
+            min-width: 0;
+        }
+
+        .info-label {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 7px;
+        }
+
+        .info-value {
+            font-size: 13px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        /* STATISTICS */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 19px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .stat-note {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fff5df;
+            color: #a66c0a;
+        }
+
+        .status-confirmed {
+            background: #e7f1ff;
+            color: #2868ae;
+        }
+
+        .status-completed {
+            background: #e7f6ee;
+            color: #238052;
+        }
+
+        .status-cancelled {
+            background: #ffeded;
+            color: #c33f3f;
+        }
+
+        /* TABLE */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            background: #f6f9f7;
+            color: #73847b;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 750;
+            padding: 13px 12px;
+            text-align: left;
+        }
+
+        td {
+            border-bottom: 1px solid #edf1ee;
+            padding: 14px 12px;
+            font-size: 12px;
+            color: #45574d;
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .empty-state {
+            padding: 30px 15px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .empty-state strong {
+            display: block;
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        /* FORMS */
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 1px solid #dfe8e2;
+            background: white;
+            border-radius: 8px;
+            padding: 11px 12px;
+            outline: none;
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(35,139,104,0.09);
+        }
+
+        textarea.form-control {
+            min-height: 115px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-help {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        /* NOTES */
+
+        .note-list {
+            display: grid;
+            gap: 13px;
+        }
+
+        .note-item {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            background: #fff;
+        }
+
+        .note-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .note-date {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .note-content {
+            color: #45574d;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .edit-note-form {
+            display: none;
+            margin-top: 13px;
+            padding-top: 13px;
+            border-top: 1px solid var(--border);
+        }
+
+        .edit-note-form.show {
+            display: block;
+        }
+
+        /* FOLLOW UPS */
+
+        .followup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .followup-item:last-child {
+            border-bottom: 0;
+        }
+
+        .followup-date {
+            color: var(--primary);
+            font-weight: 750;
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        .followup-instructions {
+            color: #53645a;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .followup-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* NOTICE */
+
+        .notice {
+            padding: 15px 17px;
+            background: #fff9e9;
+            border: 1px solid #f1e4bf;
+            border-radius: 10px;
+            color: #806522;
+            font-size: 11px;
+            line-height: 1.7;
+            margin-top: 10px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 11px;
+            padding: 25px 10px 5px;
+        }
+
+        /* MOBILE */
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 900;
+        }
+
+        @media (max-width: 1100px) {
+            .information-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 22px 18px 35px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main {
+                padding: 17px 12px 30px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .provider-label {
+                display: none;
+            }
+
+            .profile-card {
+                flex-direction: column;
+            }
+
+            .profile-main {
+                align-items: flex-start;
+            }
+
+            .avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 22px;
+            }
+
+            .patient-name {
+                font-size: 18px;
+            }
+
+            .profile-actions {
+                width: 100%;
+            }
+
+            .profile-actions .btn {
+                flex: 1;
+            }
+
+            .information-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 18px 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+            }
+
+            .followup-item {
+                flex-direction: column;
+            }
+
+            .followup-actions {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- MOBILE OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"
+         onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">N+</div>
+
+            <div>
+                <div class="brand-name">NCD Nepal</div>
+                <span class="brand-subtitle">HEALTH & WELLNESS</span>
+            </div>
+        </div>
+
+        <div class="menu-label">MAIN MENU</div>
+
+        <a href="{{ url_for('service_provider') }}" class="nav-link">
+            <span class="nav-icon">▦</span>
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('provider_appointments') }}" class="nav-link">
+            <span class="nav-icon">◷</span>
+            Appointments
+        </a>
+
+        <a href="{{ url_for('patients') }}" class="nav-link active">
+            <span class="nav-icon">♙</span>
+            Patients
+        </a>
+
+        <a href="{{ url_for('consultation') }}" class="nav-link">
+            <span class="nav-icon">✚</span>
+            Consultation
+        </a>
+
+        <a href="{{ url_for('follow_up') }}" class="nav-link">
+            <span class="nav-icon">↻</span>
+            Follow Up
+        </a>
+
+        <a href="{{ url_for('availability') }}" class="nav-link">
+            <span class="nav-icon">◷</span>
+            Availability
+        </a>
+
+        <div class="menu-label">ACCOUNT</div>
+
+        <a href="{{ url_for('provider_profile') }}" class="nav-link">
+            <span class="nav-icon">♙</span>
+            My Profile
+        </a>
+
+        <a href="{{ url_for('provider_settings') }}" class="nav-link">
+            <span class="nav-icon">⚙</span>
+            Settings
+        </a>
+
+        <a href="{{ url_for('provider_logout') }}" class="nav-link"
+           onclick="return confirm('Are you sure you want to log out?');">
+            <span class="nav-icon">⇥</span>
+            Logout
+        </a>
+
+        <div class="sidebar-footer">
+            NCD Nepal<br>
+            Digital support for a healthier Nepal.<br><br>
+            © 2026 NCD Nepal
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button class="menu-toggle"
+                        type="button"
+                        onclick="toggleSidebar()"
+                        aria-label="Toggle navigation">
+                    ☰
+                </button>
+
+                <div>
+                    <div class="breadcrumb">
+                        Provider Dashboard / Patients / Patient Details
+                    </div>
+
+                    <h1 class="page-title">Patient Details</h1>
+                </div>
+
+            </div>
+
+            <div class="provider-label">
+                Provider: {{ provider_name or 'Service Provider' }}
+            </div>
+
+        </header>
+
+        <a href="{{ url_for('patients') }}" class="back-link">
+            ← Back to Patients
+        </a>
+
+        <!-- PATIENT PROFILE -->
+        <section class="card profile-card">
+
+            <div class="profile-main">
+
+                <div class="avatar" id="patientAvatar">
+                    {{ (patient.get('fullname') or 'P')[:1]|upper }}
+                </div>
+
+                <div>
+
+                    <h2 class="patient-name">
+                        {{ patient.get('fullname') or 'Patient' }}
+                    </h2>
+
+                    <div class="patient-id">
+                        Patient ID:
+                        {{ patient.get('patient_id') or 'Not available' }}
+                    </div>
+
+                    <div class="profile-meta">
+
+                        <span class="meta-tag">
+                            {{ patient.get('age') or 'Age not provided' }}
+                            {% if patient.get('age') and patient.get('age') != 'Not provided' %}
+                                years
+                            {% endif %}
+                        </span>
+
+                        <span class="meta-tag">
+                            {{ patient.get('gender') or 'Gender not provided' }}
+                        </span>
+
+                        <span class="meta-tag">
+                            {{ patient.get('account_type') or 'Patient' }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="profile-actions">
+
+                <a href="#consultationNotes" class="btn btn-primary">
+                    + Add Consultation Note
+                </a>
+
+                <a href="#addFollowup" class="btn btn-light">
+                    + Schedule Follow-up
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- PATIENT INFORMATION -->
+        <section class="card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Personal Information</h2>
+                    <p class="section-description">
+                        Patient contact and basic information
+                    </p>
+                </div>
+            </div>
+
+            <div class="information-grid">
+
+                <div class="info-item">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">
+                        {{ patient.get('fullname') or 'Not provided' }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value">
+                        {{ patient.get('email') or 'Not provided' }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value">
+                        {{ patient.get('phone') or 'Not provided' }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value">
+                        {{ patient.get('date_of_birth') or 'Not provided' }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Age</div>
+                    <div class="info-value">
+                        {% if patient.get('age') is not none %}
+                            {{ patient.get('age') }}
+                            {% if patient.get('age') != 'Not provided' %}years{% endif %}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Gender</div>
+                    <div class="info-value">
+                        {{ patient.get('gender') or 'Not provided' }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Address</div>
+                    <div class="info-value">
+                        {{ patient.get('address') or 'Not provided' }}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Registered On</div>
+                    <div class="info-value">
+                        {{ patient.get('created_at') or 'Not available' }}
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- PATIENT STATISTICS -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-label">Total Appointments</div>
+                <div class="stat-value">
+                    {{ patient.get('total_appointments', patient.get('appointments', [])|length) }}
+                </div>
+                <div class="stat-note">Appointments with this provider</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Consultation Notes</div>
+                <div class="stat-value">
+                    {{ notes|length }}
+                </div>
+                <div class="stat-note">Recorded consultation notes</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Follow-up Records</div>
+                <div class="stat-value">
+                    {{ followups|length }}
+                </div>
+                <div class="stat-note">Scheduled follow-up records</div>
+            </div>
+
+        </section>
+
+        <!-- HEALTH CONDITIONS -->
+        <section class="card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Health Conditions</h2>
+                    <p class="section-description">
+                        Conditions recorded through the patient's appointments
+                    </p>
+                </div>
+            </div>
+
+            {% if patient.get('conditions') %}
+
+                <div class="profile-meta">
+                    {% for condition in patient.get('conditions', []) %}
+                        <span class="meta-tag">{{ condition }}</span>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    No health conditions have been recorded yet.
+                </div>
+
+            {% endif %}
+
+            <div class="notice">
+                Condition information is based on appointment records.
+                It should not be treated as a confirmed medical diagnosis.
+            </div>
+
+        </section>
+
+        <!-- APPOINTMENT HISTORY -->
+        <section class="card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Appointment History</h2>
+                    <p class="section-description">
+                        All appointments associated with this patient
+                    </p>
+                </div>
+
+                <span class="meta-tag">
+                    {{ patient.get('appointments', [])|length }} Records
+                </span>
+            </div>
+
+            {% if patient.get('appointments') %}
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Appointment ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Condition</th>
+                                <th>Consultation Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for appointment in patient.get('appointments', []) %}
+
+                                <tr>
+
+                                    <td>
+                                        #{{ appointment.get('id', '-') }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment.get('appointment_date') or 'Not available' }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment.get('appointment_time') or 'Not available' }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment.get('condition') or 'Not specified' }}
+                                    </td>
+
+                                    <td>
+                                        {{ appointment.get('consultation_type') or 'Not specified' }}
+                                    </td>
+
+                                    <td>
+
+                                        {% set status = appointment.get('status', 'Pending')|lower %}
+
+                                        <span class="status
+                                            {% if status == 'confirmed' %}
+                                                status-confirmed
+                                            {% elif status == 'completed' %}
+                                                status-completed
+                                            {% elif status == 'cancelled' %}
+                                                status-cancelled
+                                            {% else %}
+                                                status-pending
+                                            {% endif %}">
+                                            {{ appointment.get('status', 'Pending') }}
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                                {% if appointment.get('reason') %}
+
+                                    <tr>
+                                        <td colspan="6">
+                                            <strong>Reason:</strong>
+                                            {{ appointment.get('reason') }}
+                                        </td>
+                                    </tr>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    <strong>No appointment history</strong>
+                    This patient does not have any appointment records yet.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- CONSULTATION NOTES -->
+        <section class="card" id="consultationNotes">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Consultation Notes</h2>
+                    <p class="section-description">
+                        Record and manage consultation notes for this patient
+                    </p>
+                </div>
+
+                <span class="meta-tag">
+                    {{ notes|length }} Notes
+                </span>
+
+            </div>
+
+            <!-- ADD NOTE FORM -->
+            <form method="POST"
+                  action="{{ url_for('add_patient_note', patient_id=patient.get('patient_id')) }}"
+                  onsubmit="return validateNoteForm(this);">
+
+                <div class="form-group">
+
+                    <label for="appointment_id">
+                        Related Appointment (Optional)
+                    </label>
+
+                    <select class="form-control"
+                            id="appointment_id"
+                            name="appointment_id">
+
+                        <option value="">General consultation note</option>
+
+                        {% for appointment in patient.get('appointments', []) %}
+
+                            <option value="{{ appointment.get('id') }}">
+                                #{{ appointment.get('id') }}
+                                -
+                                {{ appointment.get('appointment_date') }}
+                                -
+                                {{ appointment.get('condition') or 'General' }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="newNote">
+                        Consultation Note *
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        id="newNote"
+                        name="note"
+                        minlength="2"
+                        maxlength="5000"
+                        required
+                        placeholder="Write consultation observations, advice, recommendations or relevant information..."></textarea>
+
+                    <div class="form-help">
+                        Enter clear and relevant consultation information.
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Save Consultation Note
+                </button>
+
+            </form>
+
+            <hr style="border:0;border-top:1px solid #e9efeb;margin:24px 0;">
+
+            <h3 style="font-size:14px;margin-bottom:15px;">
+                Previous Consultation Notes
+            </h3>
+
+            {% if notes %}
+
+                <div class="note-list">
+
+                    {% for note in notes|reverse %}
+
+                        <article class="note-item">
+
+                            <div class="note-top">
+
+                                <div>
+                                    <div style="font-size:12px;font-weight:750;margin-bottom:5px;">
+                                        Consultation Note
+                                    </div>
+
+                                    <div class="note-date">
+                                        {{ note.get('created_at') or 'Date not available' }}
+
+                                        {% if note.get('updated_at') %}
+                                            · Updated: {{ note.get('updated_at') }}
+                                        {% endif %}
+                                    </div>
+
+                                    {% if note.get('appointment_id') %}
+                                        <div class="note-date" style="margin-top:5px;">
+                                            Appointment #{{ note.get('appointment_id') }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="note-actions">
+
+                                    <!-- FIXED EDIT BUTTON -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-light btn-small"
+                                        data-note-id="{{ note.get('id') }}"
+                                        onclick="toggleEditNote('edit-note-' + this.dataset.noteId)">
+                                        Edit
+                                    </button>
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('delete_patient_note', patient_id=patient.get('patient_id'), note_id=note.get('id')) }}"
+                                        onsubmit="return confirm('Are you sure you want to delete this consultation note?');">
+
+                                        <button type="submit"
+                                                class="btn btn-danger btn-small">
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                            <div class="note-content">
+                                {{ note.get('note') or '' }}
+                            </div>
+
+                            <!-- EDIT NOTE FORM -->
+                            <form
+                                id="edit-note-{{ note.get('id') }}"
+                                class="edit-note-form"
+                                method="POST"
+                                action="{{ url_for('edit_patient_note', patient_id=patient.get('patient_id'), note_id=note.get('id')) }}"
+                                onsubmit="return validateNoteForm(this);">
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Edit Consultation Note
+                                    </label>
+
+                                    <textarea
+                                        class="form-control"
+                                        name="note"
+                                        minlength="2"
+                                        maxlength="5000"
+                                        required>{{ note.get('note') or '' }}</textarea>
+
+                                </div>
+
+                                <div class="note-actions">
+
+                                    <button type="submit"
+                                            class="btn btn-primary btn-small">
+                                        Save Changes
+                                    </button>
+
+                                    <!-- FIXED CANCEL BUTTON -->
+                                    <button type="button"
+                                            class="btn btn-light btn-small"
+                                            data-note-id="{{ note.get('id') }}"
+                                            onclick="toggleEditNote('edit-note-' + this.dataset.noteId)">
+                                        Cancel
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    <strong>No consultation notes yet</strong>
+                    Use the form above to record the first consultation note.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- PATIENT FOLLOW UPS -->
+        <section class="card">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Follow-up Management</h2>
+                    <p class="section-description">
+                        Schedule and track the patient's follow-up activities
+                    </p>
+                </div>
+
+                <span class="meta-tag">
+                    {{ followups|length }} Records
+                </span>
+
+            </div>
+
+            <!-- ADD FOLLOW UP FORM -->
+            <div id="addFollowup">
+
+                <form
+                    method="POST"
+                    action="{{ url_for('add_patient_followup', patient_id=patient.get('patient_id')) }}"
+                    onsubmit="return validateFollowupForm(this);">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="followup_date">
+                                Follow-up Date *
+                            </label>
+
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="followup_date"
+                                name="followup_date"
+                                required>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="followup_appointment">
+                                Related Appointment (Optional)
+                            </label>
+
+                            <select
+                                class="form-control"
+                                id="followup_appointment"
+                                name="appointment_id">
+
+                                <option value="">
+                                    General follow-up
+                                </option>
+
+                                {% for appointment in patient.get('appointments', []) %}
+
+                                    <option value="{{ appointment.get('id') }}">
+                                        Appointment #{{ appointment.get('id') }}
+                                        -
+                                        {{ appointment.get('appointment_date') }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="instructions">
+                            Follow-up Instructions *
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            id="instructions"
+                            name="instructions"
+                            minlength="2"
+                            maxlength="3000"
+                            required
+                            placeholder="Enter follow-up instructions, recommended next steps or monitoring guidance..."></textarea>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        + Schedule Follow-up
+                    </button>
+
+                </form>
+
+            </div>
+
+            <hr style="border:0;border-top:1px solid #e9efeb;margin:24px 0;">
+
+            <h3 style="font-size:14px;margin-bottom:10px;">
+                Follow-up History
+            </h3>
+
+            {% if followups %}
+
+                {% for item in followups|reverse %}
+
+                    <div class="followup-item">
+
+                        <div>
+
+                            <div class="followup-date">
+                                {{ item.get('followup_date') or 'Date not available' }}
+                            </div>
+
+                            <div class="followup-instructions">
+                                {{ item.get('instructions') or 'No instructions provided.' }}
+                            </div>
+
+                            {% if item.get('appointment_id') %}
+                                <div class="note-date" style="margin-top:8px;">
+                                    Related appointment #{{ item.get('appointment_id') }}
+                                </div>
+                            {% endif %}
+
+                            {% if item.get('completed_at') %}
+                                <div class="note-date" style="margin-top:6px;">
+                                    Completed: {{ item.get('completed_at') }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="followup-actions">
+
+                            {% if item.get('status') == 'Completed' %}
+
+                                <span class="status status-completed">
+                                    Completed
+                                </span>
+
+                            {% else %}
+
+                                <span class="status status-pending">
+                                    Pending
+                                </span>
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('complete_patient_followup', patient_id=patient.get('patient_id'), followup_id=item.get('id')) }}"
+                                    onsubmit="return confirm('Mark this follow-up as completed?');">
+
+                                    <button type="submit"
+                                            class="btn btn-primary btn-small">
+                                        Mark Completed
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+                    <strong>No follow-ups scheduled</strong>
+                    Schedule a follow-up using the form above.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- IMPORTANT NOTICE -->
+        <div class="notice">
+            <strong>Important Health Notice</strong><br>
+
+            Patient information and consultation records must be handled
+            confidentially. Record only relevant information and follow
+            applicable privacy and professional standards.
+
+            Information and digital services are designed to support,
+            not replace, professional medical care.
+        </div>
+
+        <footer class="footer">
+            NCD Nepal © 2026. All rights reserved.
+            <br>
+            AWARENESS • ACCESS • CONTINUITY
+        </footer>
+
+    </main>
+
+    <script>
+        // MOBILE SIDEBAR
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+
+            sidebar.classList.toggle("show");
+            overlay.classList.toggle("show");
+        }
+
+        // CLOSE SIDEBAR WHEN A NAVIGATION LINK IS SELECTED ON MOBILE
+
+        document.querySelectorAll(".sidebar .nav-link").forEach(function(link) {
+            link.addEventListener("click", function() {
+                if (window.innerWidth <= 850) {
+                    document.getElementById("sidebar").classList.remove("show");
+                    document.getElementById("sidebarOverlay").classList.remove("show");
+                }
+            });
+        });
+
+        // EDIT CONSULTATION NOTE
+
+        function toggleEditNote(id) {
+            const form = document.getElementById(id);
+
+            if (form) {
+                form.classList.toggle("show");
+            }
+        }
+
+        // VALIDATE NOTE FORM
+
+        function validateNoteForm(form) {
+            const noteField = form.querySelector('textarea[name="note"]');
+
+            if (!noteField) {
+                return false;
+            }
+
+            const note = noteField.value.trim();
+
+            if (note.length < 2) {
+                alert("Please enter at least 2 characters in the consultation note.");
+                noteField.focus();
+                return false;
+            }
+
+            if (note.length > 5000) {
+                alert("Consultation note cannot exceed 5000 characters.");
+                noteField.focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        // VALIDATE FOLLOW-UP FORM
+
+        function validateFollowupForm(form) {
+            const dateField = form.querySelector('[name="followup_date"]');
+            const instructionsField = form.querySelector('[name="instructions"]');
+
+            if (!dateField.value) {
+                alert("Please select a follow-up date.");
+                dateField.focus();
+                return false;
+            }
+
+            if (!instructionsField.value.trim() ||
+                instructionsField.value.trim().length < 2) {
+
+                alert("Please enter follow-up instructions.");
+                instructionsField.focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        // PREVENT FOLLOW-UP DATES IN THE PAST
+
+        (function() {
+            const dateField = document.getElementById("followup_date");
+
+            if (!dateField) {
+                return;
+            }
+
+            const today = new Date();
+
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+
+            dateField.min = `${year}-${month}-${day}`;
+        })();
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings - NCD Nepal</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f7f5;
+            color: #1f2937;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* ==================================================
+           DARK MODE
+        ================================================== */
+
+        html.dark-mode body {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .sidebar {
+            background: #1f2937;
+            border-right: 1px solid #374151;
+        }
+
+
+        html.dark-mode .main-content {
+            background: #111827;
+        }
+
+
+        html.dark-mode .topbar {
+            background: #1f2937;
+            border-bottom: 1px solid #374151;
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .topbar h1,
+        html.dark-mode .topbar-right {
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .settings-card {
+            background: #1f2937;
+            border: 1px solid #374151;
+            box-shadow: none;
+        }
+
+
+        html.dark-mode .settings-card h2,
+        html.dark-mode .settings-card h3 {
+            color: #4ade80;
+        }
+
+
+        html.dark-mode .section-description,
+        html.dark-mode .setting-description {
+            color: #cbd5e1;
+        }
+
+
+        html.dark-mode .setting-row {
+            border-bottom: 1px solid #374151;
+        }
+
+
+        html.dark-mode .setting-title {
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode select {
+            background: #111827;
+            color: #f3f4f6;
+            border: 1px solid #4b5563;
+        }
+
+
+        html.dark-mode select:focus {
+            border-color: #4ade80;
+        }
+
+
+        html.dark-mode .button {
+            background: #4ade80;
+            color: #111827;
+        }
+
+
+        html.dark-mode .button:hover {
+            background: #22c55e;
+        }
+
+
+        html.dark-mode .secondary-button {
+            background: #374151;
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .secondary-button:hover {
+            background: #4b5563;
+        }
+
+
+        html.dark-mode .slider {
+            background: #4b5563;
+        }
+
+
+        html.dark-mode input:checked + .slider {
+            background: #4ade80;
+        }
+
+
+        html.dark-mode .status {
+            color: #4ade80;
+        }
+
+
+        html.dark-mode .user-circle {
+            background: #4ade80;
+            color: #111827;
+        }
+
+
+        html.dark-mode .danger-card {
+            background: #2b1f1f;
+            border-color: #5b3030;
+        }
+
+
+        html.dark-mode .danger-card h3 {
+            color: #fca5a5;
+        }
+
+
+        html.dark-mode .danger-card p {
+            color: #d1a8a8;
+        }
+
+
+        html.dark-mode .logout-button {
+            background: #dc2626;
+            color: white;
+        }
+
+
+        html.dark-mode .logout-button:hover {
+            background: #b91c1c;
+        }
+
+
+        html.dark-mode .modal {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+
+        html.dark-mode .modal-content {
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .modal-content h2 {
+            color: #4ade80;
+        }
+
+
+        html.dark-mode .modal-subtitle {
+            color: #cbd5e1;
+        }
+
+
+        html.dark-mode .modal-content label {
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .password-box {
+            background: #111827;
+            border-color: #4b5563;
+        }
+
+
+        html.dark-mode .password-box:focus-within {
+            border-color: #4ade80;
+        }
+
+
+        html.dark-mode .password-box input {
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .password-box input::placeholder {
+            color: #9ca3af;
+        }
+
+
+        html.dark-mode .show-password {
+            color: #4ade80;
+        }
+
+
+        html.dark-mode .close-btn {
+            color: #f3f4f6;
+        }
+
+
+        html.dark-mode .success-message {
+            background: #173524;
+            color: #86efac;
+            border-color: #2f6b43;
+        }
+
+
+        html.dark-mode .error-message {
+            background: #3a1d1d;
+            color: #fca5a5;
+            border-color: #6b3030;
+        }
+
+
+        /* ==================================================
+           SIDEBAR
+        ================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #176b5b;
+            color: white;
+            padding: 25px 18px;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 10px 30px;
+        }
+
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: white;
+            color: #176b5b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+
+        html.dark-mode .logo-icon {
+            background: #4ade80;
+            color: #111827;
+        }
+
+
+        .logo h2 {
+            font-size: 20px;
+        }
+
+
+        .logo small {
+            font-size: 9px;
+        }
+
+
+        .menu-title {
+            font-size: 11px;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin: 10px 12px;
+        }
+
+
+        .nav-menu {
+            list-style: none;
+        }
+
+
+        .nav-menu li {
+            margin-bottom: 6px;
+        }
+
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+
+        .account-title {
+            margin-top: 28px;
+        }
+
+
+        /* ==================================================
+           MAIN
+        ================================================== */
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+
+        .topbar {
+            height: 75px;
+            background: white;
+            border-bottom: 1px solid #dfe8e5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            transition:
+                background 0.3s ease,
+                color 0.3s ease;
+        }
+
+
+        .topbar h1 {
+            font-size: 23px;
+        }
+
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+
+        .user-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #176b5b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+
+        .container {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 0 25px 50px;
+        }
+
+
+        /* ==================================================
+           SETTINGS CARDS
+        ================================================== */
+
+        .settings-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 22px;
+            border: 1px solid #e0e9e6;
+            box-shadow: 0 5px 18px rgba(23, 107, 91, 0.06);
+            transition:
+                background 0.3s ease,
+                border 0.3s ease,
+                color 0.3s ease;
+        }
+
+
+        .settings-card h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #176b5b;
+        }
+
+
+        .section-description {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+
+        .setting-row {
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid #e7eeec;
+            padding: 15px 0;
+        }
+
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .setting-info {
+            flex: 1;
+        }
+
+
+        .setting-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+
+        .setting-description {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+
+        /* ==================================================
+           TOGGLE
+        ================================================== */
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #cbd5d1;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+
+        input:checked + .slider {
+            background: #176b5b;
+        }
+
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+
+        /* ==================================================
+           SELECT
+        ================================================== */
+
+        select {
+            width: 190px;
+            padding: 10px 12px;
+            border: 1px solid #d6e1de;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            transition:
+                background 0.3s,
+                color 0.3s,
+                border 0.3s;
+        }
+
+
+        select:focus {
+            border-color: #176b5b;
+        }
+
+
+        /* ==================================================
+           BUTTONS
+        ================================================== */
+
+        .button {
+            border: none;
+            background: #176b5b;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+
+        .button:hover {
+            background: #125447;
+        }
+
+
+        .secondary-button {
+            background: #e7f0ed;
+            color: #176b5b;
+        }
+
+
+        .secondary-button:hover {
+            background: #d7e8e2;
+        }
+
+
+        .save-container {
+            text-align: right;
+            margin: 25px 0;
+        }
+
+
+        .save-button {
+            min-width: 150px;
+        }
+
+
+        /* ==================================================
+           STATUS
+        ================================================== */
+
+        .status {
+            font-size: 12px;
+            color: #176b5b;
+            font-weight: 600;
+        }
+
+
+        /* ==================================================
+           DANGER
+        ================================================== */
+
+        .danger-card {
+            background: #fff7f7;
+            border: 1px solid #f1d6d6;
+            border-radius: 14px;
+            padding: 25px;
+            margin-top: 10px;
+        }
+
+
+        .danger-card h3 {
+            color: #b42318;
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+
+        .danger-card p {
+            color: #7a4b4b;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+
+        .logout-button {
+            display: inline-block;
+            background: #b42318;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+
+        .logout-button:hover {
+            background: #8f1d15;
+        }
+
+
+        /* ==================================================
+           PASSWORD MODAL
+        ================================================== */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+
+        .modal.show {
+            display: flex;
+        }
+
+
+        .modal-content {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 15px;
+            padding: 28px;
+            position: relative;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+
+
+        .modal-content h2 {
+            color: #176b5b;
+            margin-bottom: 8px;
+        }
+
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 17px;
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            cursor: pointer;
+            color: #555;
+        }
+
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+
+        .password-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d6e1de;
+            border-radius: 8px;
+            padding-right: 10px;
+            background: white;
+        }
+
+
+        .password-box:focus-within {
+            border-color: #176b5b;
+        }
+
+
+        .password-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 11px;
+            font-size: 13px;
+            background: transparent;
+        }
+
+
+        .show-password {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #176b5b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+
+        .message {
+            display: none;
+            padding: 10px 12px;
+            border-radius: 7px;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+
+        .success-message {
+            background: #e8f6f0;
+            color: #176b5b;
+            border: 1px solid #b8dfd0;
+        }
+
+
+        .error-message {
+            background: #fff0f0;
+            color: #a31d1d;
+            border: 1px solid #edc4c4;
+        }
+
+
+        /* ==================================================
+           MOBILE
+        ================================================== */
+
+        .mobile-menu {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+
+            .main-content {
+                margin-left: 0;
+            }
+
+
+            .mobile-menu {
+                display: block;
+            }
+
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+
+            .topbar h1 {
+                font-size: 19px;
+            }
+
+
+            .topbar-right span {
+                display: none;
+            }
+
+
+            .container {
+                margin-top: 25px;
+                padding: 0 15px 40px;
+            }
+
+
+            .setting-row {
+                align-items: flex-start;
+            }
+
+
+            select {
+                width: 150px;
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+            select {
+                width: 100%;
+            }
+
+
+            .save-container {
+                text-align: left;
+            }
+
+
+            .save-button {
+                width: 100%;
+            }
+
+
+            .modal-content {
+                padding: 23px 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     SIDEBAR
+====================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            N+
+        </div>
+
+        <div>
+
+            <h2>NCD Nepal</h2>
+
+            <small>HEALTH & WELLNESS</small>
+
+        </div>
+
+    </div>
+
+
+    <div class="menu-title" data-i18n="mainMenu">
+        MAIN MENU
+    </div>
+
+
+    <ul class="nav-menu">
+
+        <li>
+            <a href="/dashboard">
+                ▦ <span data-i18n="dashboard">Dashboard</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/monitoring">
+                ♡ <span data-i18n="healthMonitoring">Health Monitoring</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/prevention">
+                ✚ <span data-i18n="knowPrevent">Know & Prevent</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/community">
+                ♧ <span data-i18n="community">Community</span>
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="menu-title account-title" data-i18n="account">
+        ACCOUNT
+    </div>
+
+
+    <ul class="nav-menu">
+
+        <li>
+            <a href="/profile">
+                👤 <span data-i18n="profile">Profile</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/records">
+                📋 <span data-i18n="healthRecords">Health Records</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/appointments">
+                📅 <span data-i18n="appointments">Appointments</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/notifications">
+                🔔 <span data-i18n="notifications">Notifications</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/settings" class="active">
+                ⚙ <span data-i18n="settings">Settings</span>
+            </a>
+        </li>
+
+
+        <li>
+            <a href="/logout">
+                ↪ <span data-i18n="logout">Logout</span>
+            </a>
+        </li>
+
+    </ul>
+
+</aside>
+
+
+
+<!-- ======================================================
+     MAIN CONTENT
+====================================================== -->
+
+<main class="main-content">
+
+
+    <div class="topbar">
+
+        <div style="display:flex; align-items:center; gap:15px;">
+
+            <button
+                class="mobile-menu"
+                onclick="toggleSidebar()">
+                ☰
+            </button>
+
+            <h1 data-i18n="settings">
+                Settings
+            </h1>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <span data-i18n="accountSettings">
+                Account Settings
+            </span>
+
+            <div class="user-circle">
+                N
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="container">
+
+
+        <!-- ==================================================
+             NOTIFICATIONS
+        ================================================== -->
+
+        <div class="settings-card">
+
+            <h2 data-i18n="notifications">
+                Notifications
+            </h2>
+
+
+            <p class="section-description"
+               data-i18n="notificationDescription">
+                Choose which notifications you would like to receive.
+            </p>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="healthReminders">
+                        Health Reminders
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="healthRemindersDescription">
+                        Receive reminders for health monitoring and daily health activities.
+                    </div>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="healthReminders"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="appointmentAlerts">
+                        Appointment Alerts
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="appointmentAlertsDescription">
+                        Receive reminders about upcoming healthcare appointments.
+                    </div>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="appointmentAlerts"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="healthInformation">
+                        Health Information
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="healthInformationDescription">
+                        Receive useful information about NCD prevention and healthy living.
+                    </div>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="healthInformation"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             PREFERENCES
+        ================================================== -->
+
+        <div class="settings-card">
+
+            <h2 data-i18n="preferences">
+                Preferences
+            </h2>
+
+
+            <p class="section-description"
+               data-i18n="preferencesDescription">
+                Customize the way NCD Nepal looks and behaves.
+            </p>
+
+
+
+            <!-- LANGUAGE -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="language">
+                        Language
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="languageDescription">
+                        Select your preferred language.
+                    </div>
+
+                </div>
+
+
+                <select id="language">
+
+                    <option value="english">
+                        English
+                    </option>
+
+                    <option value="nepali">
+                        नेपाली
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- APPEARANCE -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="appearance">
+                        Appearance
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="appearanceDescription">
+                        Choose how the NCD Nepal interface should appear.
+                    </div>
+
+                </div>
+
+
+                <select id="appearance">
+
+                    <option value="light">
+                        Light
+                    </option>
+
+                    <option value="dark">
+                        Dark
+                    </option>
+
+                    <option value="system">
+                        System Default
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- TIMEZONE -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="timezone">
+                        Timezone
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="timezoneDescription">
+                        Select your preferred timezone.
+                    </div>
+
+                </div>
+
+
+                <select id="timezone">
+
+                    <option value="nepal">
+                        Nepal Time (NPT)
+                    </option>
+
+                    <option value="utc">
+                        UTC
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             SECURITY
+        ================================================== -->
+
+        <div class="settings-card">
+
+            <h2 data-i18n="security">
+                Security
+            </h2>
+
+
+            <p class="section-description"
+               data-i18n="securityDescription">
+                Manage your account security and password.
+            </p>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="changePassword">
+                        Change Password
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="changePasswordDescription">
+                        Update your account password to keep your account secure.
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="button"
+                    onclick="openPasswordModal()"
+                    data-i18n="changePassword">
+                    Change Password
+                </button>
+
+            </div>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="loginSession">
+                        Login Session
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="loginSessionDescription">
+                        Your current login session is active.
+                    </div>
+
+                </div>
+
+
+                <span class="status"
+                      data-i18n="active">
+                    ● Active
+                </span>
+
+            </div>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="accountPrivacy">
+                        Account Privacy
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="accountPrivacyDescription">
+                        Your account information is protected.
+                    </div>
+
+                </div>
+
+
+                <span class="status"
+                      data-i18n="protected">
+                    Protected
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             ACCOUNT PREFERENCES
+        ================================================== -->
+
+        <div class="settings-card">
+
+            <h2 data-i18n="accountPreferences">
+                Account Preferences
+            </h2>
+
+
+            <p class="section-description"
+               data-i18n="accountPreferencesDescription">
+                Manage your account and health data preferences.
+            </p>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="profileVisibility">
+                        Profile Visibility
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="profileVisibilityDescription">
+                        Allow your basic profile information to be visible to authorized services.
+                    </div>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="profileVisibility">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="rememberLogin">
+                        Remember Login
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="rememberLoginDescription">
+                        Keep your login preference for easier access.
+                    </div>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="rememberLogin"
+                        checked>
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <div class="setting-title"
+                         data-i18n="healthDataSharing">
+                        Health Data Sharing
+                    </div>
+
+                    <div class="setting-description"
+                         data-i18n="healthDataSharingDescription">
+                        Allow health information to be shared with authorized healthcare services.
+                    </div>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        type="checkbox"
+                        id="healthDataSharing">
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             SAVE SETTINGS
+        ================================================== -->
+
+        <div class="save-container">
+
+            <button
+                class="button save-button"
+                onclick="saveSettings()"
+                data-i18n="saveSettings">
+                Save Settings
+            </button>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             DANGER ZONE
+        ================================================== -->
+
+        <div class="danger-card">
+
+            <h3 data-i18n="accountActions">
+                Account Actions
+            </h3>
+
+
+            <p data-i18n="logoutDescription">
+                If you want to leave your account, you can safely log out from this device.
+            </p>
+
+
+            <a
+                href="/logout"
+                class="logout-button"
+                data-i18n="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<!-- ======================================================
+     CHANGE PASSWORD MODAL
+====================================================== -->
+
+<div class="modal" id="passwordModal">
+
+    <div class="modal-content">
+
+        <button
+            class="close-btn"
+            onclick="closePasswordModal()">
+            ×
+        </button>
+
+
+        <h2 data-i18n="changePassword">
+            Change Password
+        </h2>
+
+
+        <p class="modal-subtitle"
+           data-i18n="passwordSubtitle">
+            Enter your current password and create a new password for your account.
+        </p>
+
+
+
+        <form
+            id="passwordForm"
+            method="POST"
+            action="/settings/change-password">
+
+
+            <div class="form-group">
+
+                <label
+                    for="currentPassword"
+                    data-i18n="currentPassword">
+                    Current Password
+                </label>
+
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="currentPassword"
+                        name="current_password"
+                        placeholder="Enter current password"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('currentPassword', this)"
+                        data-i18n="show">
+                        Show
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label
+                    for="newPassword"
+                    data-i18n="newPassword">
+                    New Password
+                </label>
+
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="newPassword"
+                        name="new_password"
+                        placeholder="Enter new password"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('newPassword', this)"
+                        data-i18n="show">
+                        Show
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label
+                    for="confirmNewPassword"
+                    data-i18n="confirmNewPassword">
+                    Confirm New Password
+                </label>
+
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="confirmNewPassword"
+                        name="confirm_new_password"
+                        placeholder="Confirm new password"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('confirmNewPassword', this)"
+                        data-i18n="show">
+                        Show
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <div
+                id="passwordError"
+                class="message error-message">
+            </div>
+
+
+            <div
+                id="passwordSuccess"
+                class="message success-message">
+            </div>
+
+
+
+            <div class="modal-buttons">
+
+                <button
+                    type="button"
+                    class="button secondary-button"
+                    onclick="closePasswordModal()"
+                    data-i18n="cancel">
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="button"
+                    data-i18n="updatePassword">
+                    Update Password
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+
+function toggleSidebar() {
+
+    const sidebar = document.getElementById("sidebar");
+
+    if (sidebar) {
+        sidebar.classList.toggle("open");
+    }
+
+}
+
+
+
+/* ==========================================================
+   LANGUAGE TRANSLATIONS
+========================================================== */
+
+const translations = {
+
+    english: {
+
+        mainMenu: "MAIN MENU",
+        account: "ACCOUNT",
+
+        dashboard: "Dashboard",
+        healthMonitoring: "Health Monitoring",
+        knowPrevent: "Know & Prevent",
+        community: "Community",
+
+        profile: "Profile",
+        healthRecords: "Health Records",
+        appointments: "Appointments",
+        notifications: "Notifications",
+        settings: "Settings",
+        logout: "Logout",
+
+        accountSettings: "Account Settings",
+
+        notificationDescription:
+            "Choose which notifications you would like to receive.",
+
+        healthReminders:
+            "Health Reminders",
+
+        healthRemindersDescription:
+            "Receive reminders for health monitoring and daily health activities.",
+
+        appointmentAlerts:
+            "Appointment Alerts",
+
+        appointmentAlertsDescription:
+            "Receive reminders about upcoming healthcare appointments.",
+
+        healthInformation:
+            "Health Information",
+
+        healthInformationDescription:
+            "Receive useful information about NCD prevention and healthy living.",
+
+        preferences:
+            "Preferences",
+
+        preferencesDescription:
+            "Customize the way NCD Nepal looks and behaves.",
+
+        language:
+            "Language",
+
+        languageDescription:
+            "Select your preferred language.",
+
+        appearance:
+            "Appearance",
+
+        appearanceDescription:
+            "Choose how the NCD Nepal interface should appear.",
+
+        timezone:
+            "Timezone",
+
+        timezoneDescription:
+            "Select your preferred timezone.",
+
+        security:
+            "Security",
+
+        securityDescription:
+            "Manage your account security and password.",
+
+        changePassword:
+            "Change Password",
+
+        changePasswordDescription:
+            "Update your account password to keep your account secure.",
+
+        loginSession:
+            "Login Session",
+
+        loginSessionDescription:
+            "Your current login session is active.",
+
+        active:
+            "● Active",
+
+        accountPrivacy:
+            "Account Privacy",
+
+        accountPrivacyDescription:
+            "Your account information is protected.",
+
+        protected:
+            "Protected",
+
+        accountPreferences:
+            "Account Preferences",
+
+        accountPreferencesDescription:
+            "Manage your account and health data preferences.",
+
+        profileVisibility:
+            "Profile Visibility",
+
+        profileVisibilityDescription:
+            "Allow your basic profile information to be visible to authorized services.",
+
+        rememberLogin:
+            "Remember Login",
+
+        rememberLoginDescription:
+            "Keep your login preference for easier access.",
+
+        healthDataSharing:
+            "Health Data Sharing",
+
+        healthDataSharingDescription:
+            "Allow health information to be shared with authorized healthcare services.",
+
+        saveSettings:
+            "Save Settings",
+
+        accountActions:
+            "Account Actions",
+
+        logoutDescription:
+            "If you want to leave your account, you can safely log out from this device.",
+
+        passwordSubtitle:
+            "Enter your current password and create a new password for your account.",
+
+        currentPassword:
+            "Current Password",
+
+        newPassword:
+            "New Password",
+
+        confirmNewPassword:
+            "Confirm New Password",
+
+        show:
+            "Show",
+
+        hide:
+            "Hide",
+
+        cancel:
+            "Cancel",
+
+        updatePassword:
+            "Update Password"
+
+    },
+
+
+    nepali: {
+
+        mainMenu: "मुख्य मेनु",
+        account: "खाता",
+
+        dashboard: "ड्यासबोर्ड",
+        healthMonitoring: "स्वास्थ्य निगरानी",
+        knowPrevent: "जान्नुहोस् र रोकथाम गर्नुहोस्",
+        community: "समुदाय",
+
+        profile: "प्रोफाइल",
+        healthRecords: "स्वास्थ्य अभिलेख",
+        appointments: "अपोइन्टमेन्टहरू",
+        notifications: "सूचनाहरू",
+        settings: "सेटिङहरू",
+        logout: "लगआउट",
+
+        accountSettings: "खाता सेटिङहरू",
+
+        notificationDescription:
+            "तपाईंले प्राप्त गर्न चाहनुभएको सूचनाहरू छनोट गर्नुहोस्।",
+
+        healthReminders:
+            "स्वास्थ्य सम्झना",
+
+        healthRemindersDescription:
+            "स्वास्थ्य निगरानी र दैनिक स्वास्थ्य गतिविधिहरूका लागि सम्झना प्राप्त गर्नुहोस्।",
+
+        appointmentAlerts:
+            "अपोइन्टमेन्ट सूचना",
+
+        appointmentAlertsDescription:
+            "आगामी स्वास्थ्य अपोइन्टमेन्टहरूका बारेमा सम्झना प्राप्त गर्नुहोस्।",
+
+        healthInformation:
+            "स्वास्थ्य जानकारी",
+
+        healthInformationDescription:
+            "NCD रोकथाम र स्वस्थ जीवनशैलीसम्बन्धी उपयोगी जानकारी प्राप्त गर्नुहोस्।",
+
+        preferences:
+            "प्राथमिकताहरू",
+
+        preferencesDescription:
+            "NCD Nepal को रूप र व्यवहारलाई आफ्नो आवश्यकता अनुसार परिवर्तन गर्नुहोस्।",
+
+        language:
+            "भाषा",
+
+        languageDescription:
+            "आफ्नो मनपर्ने भाषा चयन गर्नुहोस्।",
+
+        appearance:
+            "रूप",
+
+        appearanceDescription:
+            "NCD Nepal को इन्टरफेस कस्तो देखिनेछ भनेर छनोट गर्नुहोस्।",
+
+        timezone:
+            "समय क्षेत्र",
+
+        timezoneDescription:
+            "आफ्नो मनपर्ने समय क्षेत्र चयन गर्नुहोस्।",
+
+        security:
+            "सुरक्षा",
+
+        securityDescription:
+            "आफ्नो खाता सुरक्षा र पासवर्ड व्यवस्थापन गर्नुहोस्।",
+
+        changePassword:
+            "पासवर्ड परिवर्तन गर्नुहोस्",
+
+        changePasswordDescription:
+            "आफ्नो खाता सुरक्षित राख्न पासवर्ड परिवर्तन गर्नुहोस्।",
+
+        loginSession:
+            "लगइन सत्र",
+
+        loginSessionDescription:
+            "तपाईंको हालको लगइन सत्र सक्रिय छ।",
+
+        active:
+            "● सक्रिय",
+
+        accountPrivacy:
+            "खाता गोपनीयता",
+
+        accountPrivacyDescription:
+            "तपाईंको खाता जानकारी सुरक्षित छ।",
+
+        protected:
+            "सुरक्षित",
+
+        accountPreferences:
+            "खाता प्राथमिकताहरू",
+
+        accountPreferencesDescription:
+            "आफ्नो खाता र स्वास्थ्य डेटा प्राथमिकताहरू व्यवस्थापन गर्नुहोस्।",
+
+        profileVisibility:
+            "प्रोफाइल दृश्यता",
+
+        profileVisibilityDescription:
+            "आधिकारिक सेवाहरूलाई तपाईंको आधारभूत प्रोफाइल जानकारी हेर्न अनुमति दिनुहोस्।",
+
+        rememberLogin:
+            "लगइन सम्झनुहोस्",
+
+        rememberLoginDescription:
+            "सजिलो पहुँचका लागि आफ्नो लगइन प्राथमिकता सुरक्षित राख्नुहोस्।",
+
+        healthDataSharing:
+            "स्वास्थ्य डेटा साझेदारी",
+
+        healthDataSharingDescription:
+            "आधिकारिक स्वास्थ्य सेवाहरूसँग स्वास्थ्य जानकारी साझेदारी गर्न अनुमति दिनुहोस्।",
+
+        saveSettings:
+            "सेटिङहरू सुरक्षित गर्नुहोस्",
+
+        accountActions:
+            "खाता कार्यहरू",
+
+        logoutDescription:
+            "यदि तपाईं आफ्नो खाताबाट बाहिरिन चाहनुहुन्छ भने यस उपकरणबाट सुरक्षित रूपमा लगआउट गर्न सक्नुहुन्छ।",
+
+        passwordSubtitle:
+            "आफ्नो हालको पासवर्ड प्रविष्ट गर्नुहोस् र नयाँ पासवर्ड बनाउनुहोस्।",
+
+        currentPassword:
+            "हालको पासवर्ड",
+
+        newPassword:
+            "नयाँ पासवर्ड",
+
+        confirmNewPassword:
+            "नयाँ पासवर्ड पुष्टि गर्नुहोस्",
+
+        show:
+            "देखाउनुहोस्",
+
+        hide:
+            "लुकाउनुहोस्",
+
+        cancel:
+            "रद्द गर्नुहोस्",
+
+        updatePassword:
+            "पासवर्ड अपडेट गर्नुहोस्"
+
+    }
+
+};
+
+
+
+/* ==========================================================
+   APPLY LANGUAGE
+========================================================== */
+
+function applyLanguage(language) {
+
+    const selectedLanguage =
+        translations[language] || translations.english;
+
+
+    document.querySelectorAll("[data-i18n]").forEach(function(element) {
+
+        const key = element.getAttribute("data-i18n");
+
+        if (selectedLanguage[key]) {
+
+            element.textContent = selectedLanguage[key];
+
+        }
+
+    });
+
+
+    document.documentElement.lang =
+        language === "nepali" ? "ne" : "en";
+
+}
+
+
+
+/* ==========================================================
+   APPLY APPEARANCE
+========================================================== */
+
+function applyAppearance(value) {
+
+    const html = document.documentElement;
+
+
+    if (value === "dark") {
+
+        html.classList.add("dark-mode");
+
+    }
+
+    else if (value === "light") {
+
+        html.classList.remove("dark-mode");
+
+    }
+
+    else if (value === "system") {
+
+        if (
+            window.matchMedia &&
+            window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            ).matches
+        ) {
+
+            html.classList.add("dark-mode");
+
+        }
+
+        else {
+
+            html.classList.remove("dark-mode");
+
+        }
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   LOAD SETTINGS
+========================================================== */
+
+function loadSettings() {
+
+    const saved = JSON.parse(
+        localStorage.getItem("ncdNepalSettings") || "{}"
+    );
+
+
+    if (saved.healthReminders !== undefined) {
+
+        document.getElementById("healthReminders").checked =
+            saved.healthReminders;
+
+    }
+
+
+    if (saved.appointmentAlerts !== undefined) {
+
+        document.getElementById("appointmentAlerts").checked =
+            saved.appointmentAlerts;
+
+    }
+
+
+    if (saved.healthInformation !== undefined) {
+
+        document.getElementById("healthInformation").checked =
+            saved.healthInformation;
+
+    }
+
+
+    if (saved.language) {
+
+        document.getElementById("language").value =
+            saved.language;
+
+    }
+
+
+    if (saved.appearance) {
+
+        document.getElementById("appearance").value =
+            saved.appearance;
+
+    }
+
+
+    if (saved.timezone) {
+
+        document.getElementById("timezone").value =
+            saved.timezone;
+
+    }
+
+
+    if (saved.profileVisibility !== undefined) {
+
+        document.getElementById("profileVisibility").checked =
+            saved.profileVisibility;
+
+    }
+
+
+    if (saved.rememberLogin !== undefined) {
+
+        document.getElementById("rememberLogin").checked =
+            saved.rememberLogin;
+
+    }
+
+
+    if (saved.healthDataSharing !== undefined) {
+
+        document.getElementById("healthDataSharing").checked =
+            saved.healthDataSharing;
+
+    }
+
+
+    const language =
+        document.getElementById("language").value;
+
+    const appearance =
+        document.getElementById("appearance").value;
+
+
+    applyLanguage(language);
+
+    applyAppearance(appearance);
+
+}
+
+
+
+/* ==========================================================
+   SAVE SETTINGS
+========================================================== */
+
+function saveSettings() {
+
+    const settings = {
+
+        healthReminders:
+            document.getElementById("healthReminders").checked,
+
+        appointmentAlerts:
+            document.getElementById("appointmentAlerts").checked,
+
+        healthInformation:
+            document.getElementById("healthInformation").checked,
+
+        language:
+            document.getElementById("language").value,
+
+        appearance:
+            document.getElementById("appearance").value,
+
+        timezone:
+            document.getElementById("timezone").value,
+
+        profileVisibility:
+            document.getElementById("profileVisibility").checked,
+
+        rememberLogin:
+            document.getElementById("rememberLogin").checked,
+
+        healthDataSharing:
+            document.getElementById("healthDataSharing").checked
+
+    };
+
+
+    localStorage.setItem(
+        "ncdNepalSettings",
+        JSON.stringify(settings)
+    );
+
+
+    applyLanguage(settings.language);
+
+    applyAppearance(settings.appearance);
+
+
+    alert(
+        settings.language === "nepali"
+            ? "सेटिङहरू सफलतापूर्वक सुरक्षित गरियो।"
+            : "Settings saved successfully."
+    );
+
+}
+
+
+
+/* ==========================================================
+   CHANGE LANGUAGE IMMEDIATELY
+========================================================== */
+
+document
+    .getElementById("language")
+    .addEventListener("change", function() {
+
+        const language = this.value;
+
+        applyLanguage(language);
+
+
+        const saved = JSON.parse(
+            localStorage.getItem("ncdNepalSettings") || "{}"
+        );
+
+        saved.language = language;
+
+        localStorage.setItem(
+            "ncdNepalSettings",
+            JSON.stringify(saved)
+        );
+
+    });
+
+
+
+/* ==========================================================
+   CHANGE APPEARANCE IMMEDIATELY
+========================================================== */
+
+document
+    .getElementById("appearance")
+    .addEventListener("change", function() {
+
+        const appearance = this.value;
+
+        applyAppearance(appearance);
+
+
+        const saved = JSON.parse(
+            localStorage.getItem("ncdNepalSettings") || "{}"
+        );
+
+        saved.appearance = appearance;
+
+        localStorage.setItem(
+            "ncdNepalSettings",
+            JSON.stringify(saved)
+        );
+
+    });
+
+
+
+/* ==========================================================
+   SYSTEM THEME CHANGE
+========================================================== */
+
+if (window.matchMedia) {
+
+    window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", function() {
+
+            const appearance =
+                document.getElementById("appearance").value;
+
+            if (appearance === "system") {
+
+                applyAppearance("system");
+
+            }
+
+        });
+
+}
+
+
+
+/* ==========================================================
+   PASSWORD MODAL
+========================================================== */
+
+function openPasswordModal() {
+
+    document
+        .getElementById("passwordModal")
+        .classList.add("show");
+
+
+    document
+        .getElementById("passwordForm")
+        .reset();
+
+
+    hidePasswordMessages();
+
+}
+
+
+
+/* ==========================================================
+   CLOSE PASSWORD MODAL
+========================================================== */
+
+function closePasswordModal() {
+
+    document
+        .getElementById("passwordModal")
+        .classList.remove("show");
+
+
+    hidePasswordMessages();
+
+}
+
+
+
+/* ==========================================================
+   CLOSE WHEN CLICKING OUTSIDE
+========================================================== */
+
+document
+    .getElementById("passwordModal")
+    .addEventListener("click", function(event) {
+
+        if (event.target === this) {
+
+            closePasswordModal();
+
+        }
+
+    });
+
+
+
+/* ==========================================================
+   SHOW / HIDE PASSWORD
+========================================================== */
+
+function togglePassword(inputId, button) {
+
+    const input =
+        document.getElementById(inputId);
+
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+        button.textContent =
+            document.documentElement.lang === "ne"
+                ? "लुकाउनुहोस्"
+                : "Hide";
+
+    }
+
+    else {
+
+        input.type = "password";
+
+        button.textContent =
+            document.documentElement.lang === "ne"
+                ? "देखाउनुहोस्"
+                : "Show";
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   PASSWORD FORM
+========================================================== */
+
+document
+    .getElementById("passwordForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const currentPassword =
+            document.getElementById("currentPassword").value;
+
+
+        const newPassword =
+            document.getElementById("newPassword").value;
+
+
+        const confirmNewPassword =
+            document.getElementById("confirmNewPassword").value;
+
+
+        hidePasswordMessages();
+
+
+
+        /* Check password length */
+
+        if (newPassword.length < 8) {
+
+            showPasswordError(
+                document.documentElement.lang === "ne"
+                    ? "नयाँ पासवर्ड कम्तीमा ८ अक्षरको हुनुपर्छ।"
+                    : "New password must be at least 8 characters long."
+            );
+
+            return;
+
+        }
+
+
+
+        /* Check password match */
+
+        if (newPassword !== confirmNewPassword) {
+
+            showPasswordError(
+                document.documentElement.lang === "ne"
+                    ? "नयाँ पासवर्डहरू मिलेनन्।"
+                    : "New passwords do not match."
+            );
+
+            return;
+
+        }
+
+
+
+        try {
+
+            const response = await fetch(
+                "/settings/change-password",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        current_password:
+                            currentPassword,
+
+                        new_password:
+                            newPassword
+
+                    })
+
+                }
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                showPasswordError(
+                    data.message ||
+                    (
+                        document.documentElement.lang === "ne"
+                            ? "पासवर्ड परिवर्तन गर्न सकिएन।"
+                            : "Unable to change password."
+                    )
+                );
+
+                return;
+
+            }
+
+
+            showPasswordSuccess(
+                data.message ||
+                (
+                    document.documentElement.lang === "ne"
+                        ? "पासवर्ड सफलतापूर्वक परिवर्तन भयो।"
+                        : "Password changed successfully."
+                )
+            );
+
+
+            document
+                .getElementById("passwordForm")
+                .reset();
+
+
+            setTimeout(function() {
+
+                closePasswordModal();
+
+            }, 1500);
+
+
+        }
+
+        catch (error) {
+
+            showPasswordError(
+                document.documentElement.lang === "ne"
+                    ? "खाता सेवामा जडान हुन सकेन।"
+                    : "Unable to connect to the account service."
+            );
+
+        }
+
+    });
+
+
+
+/* ==========================================================
+   PASSWORD MESSAGES
+========================================================== */
+
+function showPasswordError(message) {
+
+    const box =
+        document.getElementById("passwordError");
+
+    box.textContent = message;
+
+    box.style.display = "block";
+
+}
+
+
+
+function showPasswordSuccess(message) {
+
+    const box =
+        document.getElementById("passwordSuccess");
+
+    box.textContent = message;
+
+    box.style.display = "block";
+
+}
+
+
+
+function hidePasswordMessages() {
+
+    document
+        .getElementById("passwordError")
+        .style.display = "none";
+
+
+    document
+        .getElementById("passwordSuccess")
+        .style.display = "none";
+
+}
+
+
+
+/* ==========================================================
+   INITIAL LOAD
+========================================================== */
+
+loadSettings();
+
+</script>
+
+
+</body>
+
+</html>

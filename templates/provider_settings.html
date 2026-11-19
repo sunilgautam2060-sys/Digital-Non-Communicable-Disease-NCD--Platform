@@ -1,0 +1,1249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Settings | NCD Nepal</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #087f8c;
+            --primary-dark: #066b76;
+            --primary-light: #e8f6f7;
+            --background: #f5f7fa;
+            --surface: #ffffff;
+            --text: #243247;
+            --muted: #718096;
+            --border: #e5eaf0;
+            --success: #16845b;
+            --danger: #d64545;
+            --sidebar-width: 255px;
+            --shadow: 0 3px 15px rgba(25, 42, 70, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            --background: #111827;
+            --surface: #1f2937;
+            --text: #f3f4f6;
+            --muted: #a6b1c2;
+            --border: #374151;
+            --primary-light: #153c43;
+            --shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 25px 17px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 9px 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-logo {
+            width: 43px;
+            height: 43px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 750;
+        }
+
+        .brand-subtitle {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 1.1px;
+            margin-top: 3px;
+        }
+
+        .nav-heading {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 750;
+            letter-spacing: 1.2px;
+            padding: 25px 10px 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 13px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 550;
+            color: var(--muted);
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        /* MAIN CONTENT */
+
+        .main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 27px 35px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 27px;
+            gap: 15px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .menu-toggle {
+            display: none;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 750;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .top-avatar {
+            width: 39px;
+            height: 39px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            font-weight: 750;
+        }
+
+        .top-user-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .top-user-role {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        /* INTRO */
+
+        .intro {
+            background: linear-gradient(115deg, #087f8c, #0b6877);
+            color: white;
+            padding: 25px 27px;
+            border-radius: 13px;
+            margin-bottom: 25px;
+        }
+
+        .intro h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .intro p {
+            font-size: 13px;
+            line-height: 1.7;
+            max-width: 680px;
+            color: #e0f4f5;
+        }
+
+        /* SETTINGS LAYOUT */
+
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .settings-menu {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            position: sticky;
+            top: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .settings-menu a {
+            display: block;
+            padding: 12px 13px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .settings-menu a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .settings-content {
+            min-width: 0;
+        }
+
+        .settings-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 23px;
+            margin-bottom: 19px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 20px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding-bottom: 17px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 19px;
+        }
+
+        .section-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-heading h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .section-heading p {
+            font-size: 11px;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        /* FORM ELEMENTS */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 650;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 12px;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.09);
+        }
+
+        .form-control:disabled,
+        .form-control[readonly] {
+            background: var(--background);
+            color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        .help-text {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+            margin-top: 6px;
+        }
+
+        /* TOGGLE ROWS */
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-info h4 {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .setting-info p {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .switch {
+            position: relative;
+            width: 43px;
+            height: 23px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 30px;
+            transition: 0.25s;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            height: 17px;
+            width: 17px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.25s;
+        }
+
+        .switch input:checked + .slider {
+            background: var(--primary);
+        }
+
+        .switch input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        .switch input:focus-visible + .slider {
+            outline: 3px solid rgba(8, 127, 140, 0.25);
+        }
+
+        /* BUTTONS */
+
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 19px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 7px;
+            padding: 10px 17px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--background);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            color: var(--danger);
+            border: 1px solid #f3d0d0;
+        }
+
+        .btn-danger:hover {
+            background: #ffe2e2;
+        }
+
+        /* THEME OPTIONS */
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+            margin-top: 15px;
+        }
+
+        .theme-option {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 13px;
+            cursor: pointer;
+            text-align: left;
+            color: var(--text);
+        }
+
+        .theme-option.selected {
+            border: 2px solid var(--primary);
+            background: var(--primary-light);
+        }
+
+        .theme-preview {
+            height: 65px;
+            border-radius: 7px;
+            margin-bottom: 10px;
+            padding: 9px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .light-preview {
+            background: #eef2f7;
+        }
+
+        .dark-preview {
+            background: #17202e;
+        }
+
+        .preview-sidebar {
+            width: 22%;
+            border-radius: 4px;
+            background: #087f8c;
+        }
+
+        .preview-content {
+            flex: 1;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .dark-preview .preview-content {
+            background: #374151;
+        }
+
+        .theme-option strong {
+            font-size: 11px;
+        }
+
+        .theme-option small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        /* SECURITY */
+
+        .security-note {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 10px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        .danger-zone {
+            border: 1px solid #f0d1d1;
+            background: var(--surface);
+        }
+
+        .danger-zone .section-icon {
+            background: #fff0f0;
+            color: var(--danger);
+        }
+
+        .danger-zone p {
+            font-size: 11px;
+            line-height: 1.7;
+            color: var(--muted);
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 10px;
+            padding: 25px 0 5px;
+        }
+
+        .overlay {
+            display: none;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1000px) {
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-menu {
+                position: static;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .settings-menu a {
+                margin: 0;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .overlay.show {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.35);
+                z-index: 900;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .top-user-details {
+                display: none;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .settings-card {
+                padding: 17px;
+            }
+
+            .intro {
+                padding: 20px;
+            }
+
+            .intro h2 {
+                font-size: 17px;
+            }
+
+            .theme-options {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">N+</div>
+            <div>
+                <div class="brand-name">NCD Nepal</div>
+                <div class="brand-subtitle">HEALTH & WELLNESS</div>
+            </div>
+        </div>
+
+        <div class="nav-heading">PROVIDER WORKSPACE</div>
+
+        <nav class="nav-menu">
+            <a href="{{ url_for('service_provider') }}" class="nav-link">
+                <span class="nav-icon">⌂</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('provider_appointments') }}" class="nav-link">
+                <span class="nav-icon">◷</span>
+                Appointments
+            </a>
+
+            <a href="{{ url_for('patients') }}" class="nav-link">
+                <span class="nav-icon">♙</span>
+                Patients
+            </a>
+
+            <a href="{{ url_for('consultation') }}" class="nav-link">
+                <span class="nav-icon">▤</span>
+                Consultation
+            </a>
+
+            <a href="{{ url_for('follow_up') }}" class="nav-link">
+                <span class="nav-icon">↻</span>
+                Follow Up
+            </a>
+
+            <a href="{{ url_for('availability') }}" class="nav-link">
+                <span class="nav-icon">▦</span>
+                Availability
+            </a>
+        </nav>
+
+        <div class="nav-heading">ACCOUNT</div>
+
+        <nav class="nav-menu">
+            <a href="{{ url_for('provider_notifications') }}" class="nav-link">
+                <span class="nav-icon">♧</span>
+                Notifications
+            </a>
+
+            <a href="{{ url_for('provider_profile') }}" class="nav-link">
+                <span class="nav-icon">♙</span>
+                My Profile
+            </a>
+
+            <a href="{{ url_for('provider_settings') }}" class="nav-link active">
+                <span class="nav-icon">⚙</span>
+                Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="{{ url_for('provider_logout') }}" class="nav-link">
+                <span class="nav-icon">⇥</span>
+                Logout
+            </a>
+        </div>
+
+    </aside>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Open menu">
+                    ☰
+                </button>
+
+                <div>
+                    <div class="breadcrumb">Provider Workspace / Account</div>
+                    <h1 class="page-title">Settings</h1>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="top-avatar">
+                    {{ (session.get('provider_fullname', 'P') or 'P')[0]|upper }}
+                </div>
+
+                <div class="top-user-details">
+                    <div class="top-user-name">
+                        {{ session.get('provider_fullname', 'Service Provider') }}
+                    </div>
+                    <div class="top-user-role">Service Provider</div>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="intro">
+            <h2>Manage Your Account Settings</h2>
+            <p>
+                Customize your provider account, notification preferences,
+                privacy options, and security settings. Keep your account
+                information accurate and up to date.
+            </p>
+        </section>
+
+        <div class="settings-layout">
+
+            <!-- SETTINGS NAVIGATION -->
+            <nav class="settings-menu">
+                <a href="#account">Account Preferences</a>
+                <a href="#notifications">Notifications</a>
+                <a href="#privacy">Privacy</a>
+                <a href="#appearance">Appearance</a>
+                <a href="#security">Security</a>
+                <a href="#account-management">Account Management</a>
+            </nav>
+
+            <div class="settings-content">
+
+                <!-- ACCOUNT PREFERENCES -->
+                <section class="settings-card" id="account">
+
+                    <div class="section-heading">
+                        <div class="section-icon">♙</div>
+                        <div>
+                            <h3>Account Preferences</h3>
+                            <p>Review your provider account information.</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('provider_settings') }}">
+                        <input type="hidden" name="action" value="save_preferences">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="fullname">Full Name</label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="fullname"
+                                    name="fullname"
+                                    value="{{ session.get('provider_fullname', '') }}"
+                                    required
+                                    maxlength="100"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input
+                                    class="form-control"
+                                    type="email"
+                                    id="email"
+                                    value="{{ session.get('provider_email', '') }}"
+                                    readonly
+                                >
+                                <div class="help-text">
+                                    Contact the administrator if your registered email needs to be changed.
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input
+                                    class="form-control"
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    value="{{ session.get('provider_phone', '') }}"
+                                    maxlength="20"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="organization">Organization</label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    id="organization"
+                                    name="organization"
+                                    value="{{ session.get('provider_organization', '') }}"
+                                    maxlength="150"
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="button-row">
+                            <a href="{{ url_for('provider_profile') }}" class="btn btn-secondary">
+                                View Profile
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Save Preferences
+                            </button>
+                        </div>
+                    </form>
+
+                </section>
+
+                <!-- NOTIFICATIONS -->
+                <section class="settings-card" id="notifications">
+
+                    <div class="section-heading">
+                        <div class="section-icon">♧</div>
+                        <div>
+                            <h3>Notification Preferences</h3>
+                            <p>Choose which updates you want to receive.</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('provider_settings') }}">
+                        <input type="hidden" name="action" value="save_notifications">
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Appointment Notifications</h4>
+                                <p>Receive updates about new, confirmed, rescheduled, and cancelled appointments.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="appointment_notifications" value="on"
+                                    {% if provider_settings is not defined or provider_settings.get('appointment_notifications', True) %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Patient Updates</h4>
+                                <p>Receive notifications about patient-related updates and follow-up activities.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="patient_notifications" value="on"
+                                    {% if provider_settings is not defined or provider_settings.get('patient_notifications', True) %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Follow-up Reminders</h4>
+                                <p>Receive reminders about scheduled patient follow-ups.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="followup_notifications" value="on"
+                                    {% if provider_settings is not defined or provider_settings.get('followup_notifications', True) %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>System Notifications</h4>
+                                <p>Receive important platform updates and account-related notices.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="system_notifications" value="on"
+                                    {% if provider_settings is not defined or provider_settings.get('system_notifications', True) %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="button-row">
+                            <button type="submit" class="btn btn-primary">
+                                Save Notification Settings
+                            </button>
+                        </div>
+                    </form>
+
+                </section>
+
+                <!-- PRIVACY -->
+                <section class="settings-card" id="privacy">
+
+                    <div class="section-heading">
+                        <div class="section-icon">◈</div>
+                        <div>
+                            <h3>Privacy Settings</h3>
+                            <p>Manage how your professional information is displayed.</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('provider_settings') }}">
+                        <input type="hidden" name="action" value="save_privacy">
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Show Professional Profile</h4>
+                                <p>Allow your professional profile to appear in provider discovery, if supported by the platform.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="profile_visible" value="on"
+                                    {% if provider_settings is not defined or provider_settings.get('profile_visible', True) %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Show Organization Information</h4>
+                                <p>Allow your registered organization to be displayed on your professional profile.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" name="organization_visible" value="on"
+                                    {% if provider_settings is not defined or provider_settings.get('organization_visible', True) %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="security-note">
+                            Patient records and confidential health information must remain protected.
+                            These preferences should never override patient consent, access permissions,
+                            or applicable privacy requirements.
+                        </div>
+
+                        <div class="button-row">
+                            <button type="submit" class="btn btn-primary">
+                                Save Privacy Settings
+                            </button>
+                        </div>
+                    </form>
+
+                </section>
+
+                <!-- APPEARANCE -->
+                <section class="settings-card" id="appearance">
+
+                    <div class="section-heading">
+                        <div class="section-icon">◐</div>
+                        <div>
+                            <h3>Appearance</h3>
+                            <p>Choose how the provider workspace looks on your device.</p>
+                        </div>
+                    </div>
+
+                    <div class="setting-info">
+                        <h4>Display Theme</h4>
+                        <p>Select your preferred appearance. This choice is saved in this browser.</p>
+                    </div>
+
+                    <div class="theme-options">
+
+                        <button type="button" class="theme-option" id="lightTheme"
+                                onclick="setTheme('light')">
+                            <div class="theme-preview light-preview">
+                                <div class="preview-sidebar"></div>
+                                <div class="preview-content"></div>
+                            </div>
+                            <strong>Light Mode</strong>
+                            <small>Clean and bright appearance</small>
+                        </button>
+
+                        <button type="button" class="theme-option" id="darkTheme"
+                                onclick="setTheme('dark')">
+                            <div class="theme-preview dark-preview">
+                                <div class="preview-sidebar"></div>
+                                <div class="preview-content"></div>
+                            </div>
+                            <strong>Dark Mode</strong>
+                            <small>Comfortable low-light appearance</small>
+                        </button>
+
+                    </div>
+
+                </section>
+
+                <!-- SECURITY -->
+                <section class="settings-card" id="security">
+
+                    <div class="section-heading">
+                        <div class="section-icon">▣</div>
+                        <div>
+                            <h3>Security</h3>
+                            <p>Protect your provider account and login credentials.</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('provider_settings') }}"
+                          onsubmit="return validatePasswordForm()">
+
+                        <input type="hidden" name="action" value="change_password">
+
+                        <div class="form-group">
+                            <label for="current_password">Current Password</label>
+                            <input
+                                class="form-control"
+                                type="password"
+                                id="current_password"
+                                name="current_password"
+                                autocomplete="current-password"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="new_password">New Password</label>
+                                <input
+                                    class="form-control"
+                                    type="password"
+                                    id="new_password"
+                                    name="new_password"
+                                    minlength="8"
+                                    autocomplete="new-password"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirm_password">Confirm New Password</label>
+                                <input
+                                    class="form-control"
+                                    type="password"
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    minlength="8"
+                                    autocomplete="new-password"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="help-text">
+                            Use at least 8 characters. A strong password should include
+                            uppercase and lowercase letters, numbers, and symbols.
+                        </div>
+
+                        <div class="security-note">
+                            Your password must be verified and securely hashed by the server.
+                            Never store passwords in browser storage or plain text.
+                        </div>
+
+                        <div class="button-row">
+                            <button type="submit" class="btn btn-primary">
+                                Update Password
+                            </button>
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- ACCOUNT MANAGEMENT -->
+                <section class="settings-card danger-zone" id="account-management">
+
+                    <div class="section-heading">
+                        <div class="section-icon">⚠</div>
+                        <div>
+                            <h3>Account Management</h3>
+                            <p>Manage your provider session.</p>
+                        </div>
+                    </div>
+
+                    <div class="setting-info">
+                        <h4>Logout from NCD Nepal</h4>
+                        <p>
+                            End your current provider session. You will need to log in again
+                            to access your provider workspace.
+                        </p>
+                    </div>
+
+                    <div class="button-row">
+                        <a href="{{ url_for('provider_logout') }}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Are you sure you want to log out?')">
+                            Logout
+                        </a>
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            NCD Nepal © 2026 · Awareness · Access · Continuity
+        </footer>
+
+    </main>
+
+    <script>
+        // Sidebar for mobile screens
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("show");
+            document.getElementById("overlay").classList.toggle("show");
+        }
+
+        // Theme selection
+        function setTheme(theme) {
+            if (theme === "dark") {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+
+            try {
+                localStorage.setItem("ncd_provider_theme", theme);
+            } catch (error) {
+                // Theme still changes for the current page if storage is unavailable.
+            }
+
+            updateThemeButtons();
+        }
+
+        function updateThemeButtons() {
+            const isDark = document.body.classList.contains("dark-mode");
+
+            document.getElementById("lightTheme").classList.toggle("selected", !isDark);
+            document.getElementById("darkTheme").classList.toggle("selected", isDark);
+        }
+
+        function loadTheme() {
+            let savedTheme = "light";
+
+            try {
+                savedTheme = localStorage.getItem("ncd_provider_theme") || "light";
+            } catch (error) {
+                savedTheme = "light";
+            }
+
+            document.body.classList.toggle("dark-mode", savedTheme === "dark");
+            updateThemeButtons();
+        }
+
+        // Basic client-side password confirmation.
+        // The server must still verify the current password and enforce password rules.
+        function validatePasswordForm() {
+            const newPassword = document.getElementById("new_password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+
+            if (newPassword.length < 8) {
+                alert("Your new password must contain at least 8 characters.");
+                return false;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert("The new password and confirmation do not match.");
+                return false;
+            }
+
+            return confirm("Are you sure you want to update your password?");
+        }
+
+        document.addEventListener("DOMContentLoaded", loadTheme);
+    </script>
+
+</body>
+</html>

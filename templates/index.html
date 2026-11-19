@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="NCD Nepal - Digital support for awareness, prevention, monitoring and continuity of care.">
+
+    <title>NCD Nepal | Digital Health Support</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7f6;
+            color: #1f2937;
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+
+        /* =========================
+           DARK MODE
+        ========================= */
+
+        body.dark {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+
+        body.dark nav {
+            background: #111827;
+            border-bottom: 1px solid #374151;
+        }
+
+
+        body.dark .nav-links a {
+            color: #f3f4f6;
+        }
+
+
+        body.dark .nav-links a:hover {
+            color: #4ade80;
+        }
+
+
+        body.dark .hero {
+            background: #111827;
+        }
+
+
+        body.dark .hero-content h1 {
+            color: #f3f4f6;
+        }
+
+
+        body.dark .hero-content p {
+            color: #d1d5db;
+        }
+
+
+        body.dark .section {
+            background: #111827;
+        }
+
+
+        body.dark .section-title {
+            color: #f3f4f6;
+        }
+
+
+        body.dark .section-subtitle {
+            color: #d1d5db;
+        }
+
+
+        body.dark .card {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+
+        body.dark .card h3 {
+            color: #f3f4f6;
+        }
+
+
+        body.dark .card p {
+            color: #d1d5db;
+        }
+
+
+        body.dark .about {
+            background: #1f2937;
+        }
+
+
+        body.dark .about-text h2 {
+            color: #f3f4f6;
+        }
+
+
+        body.dark .about-text p {
+            color: #d1d5db;
+        }
+
+
+        body.dark .notice {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+
+        body.dark .notice p {
+            color: #d1d5db;
+        }
+
+
+        body.dark footer {
+            background: #0f172a;
+        }
+
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 18px 7%;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            transition: background 0.3s ease,
+                        border-color 0.3s ease;
+        }
+
+
+        .logo {
+            text-decoration: none;
+            color: #166534;
+
+            font-size: 25px;
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+        }
+
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+
+        .nav-links a {
+            text-decoration: none;
+
+            color: #374151;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: color 0.3s ease;
+        }
+
+
+        .nav-links a:hover {
+            color: #166534;
+        }
+
+
+        .register-nav {
+            background: #166534 !important;
+            color: #ffffff !important;
+
+            padding: 10px 18px;
+
+            border-radius: 7px;
+
+            transition:
+                background 0.3s ease,
+                transform 0.2s ease;
+        }
+
+
+        .register-nav:hover {
+            background: #14532d !important;
+            color: #ffffff !important;
+
+            transform: translateY(-1px);
+        }
+
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+
+            border: 1px solid #d1d5db;
+
+            background: transparent;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+
+            font-size: 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: all 0.3s ease;
+        }
+
+
+        .theme-toggle:hover {
+            background: #f3f4f6;
+        }
+
+
+        body.dark .theme-toggle {
+            border-color: #4b5563;
+            color: #ffffff;
+        }
+
+
+        body.dark .theme-toggle:hover {
+            background: #1f2937;
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 680px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 80px 7%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f4f7f6 0%,
+                    #ffffff 100%
+                );
+
+            transition: background 0.3s ease;
+        }
+
+
+        .hero-container {
+            width: 100%;
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns:
+                1.1fr 0.9fr;
+
+            gap: 70px;
+
+            align-items: center;
+        }
+
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+
+        .hero-badge {
+            display: inline-block;
+
+            padding: 8px 14px;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            border-radius: 30px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            margin-bottom: 22px;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        .hero-content h1 {
+            font-size: 54px;
+
+            line-height: 1.1;
+
+            color: #111827;
+
+            margin-bottom: 24px;
+
+            letter-spacing: -1.5px;
+        }
+
+
+        .hero-content h1 span {
+            color: #166534;
+        }
+
+
+        .hero-content p {
+            font-size: 17px;
+
+            color: #4b5563;
+
+            max-width: 620px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .hero-buttons {
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .btn-primary {
+            display: inline-block;
+
+            text-decoration: none;
+
+            background: #166534;
+
+            color: #ffffff;
+
+            padding: 13px 24px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            transition:
+                background 0.3s ease,
+                transform 0.2s ease;
+        }
+
+
+        .btn-primary:hover {
+            background: #14532d;
+
+            transform: translateY(-2px);
+        }
+
+
+        .btn-secondary {
+            display: inline-block;
+
+            text-decoration: none;
+
+            background: transparent;
+
+            color: #166534;
+
+            border: 1px solid #166534;
+
+            padding: 12px 24px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            transition:
+                background 0.3s ease,
+                color 0.3s ease;
+        }
+
+
+        .btn-secondary:hover {
+            background: #166534;
+            color: #ffffff;
+        }
+
+
+        .hero-visual {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+        }
+
+
+        .health-card {
+            width: 100%;
+            max-width: 420px;
+
+            background: #ffffff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 18px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.08);
+        }
+
+
+        body.dark .health-card {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+
+        .health-card-top {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+
+        .health-card-title {
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #166534;
+        }
+
+
+        body.dark .health-card-title {
+            color: #4ade80;
+        }
+
+
+        .status {
+            font-size: 11px;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            font-weight: 700;
+        }
+
+
+        .health-score {
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .score-circle {
+            width: 95px;
+            height: 95px;
+
+            border-radius: 50%;
+
+            border: 8px solid #bbf7d0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #166534;
+        }
+
+
+        .score-text h3 {
+            font-size: 16px;
+
+            color: #111827;
+
+            margin-bottom: 5px;
+        }
+
+
+        body.dark .score-text h3 {
+            color: #f3f4f6;
+        }
+
+
+        .score-text p {
+            font-size: 12px;
+
+            color: #6b7280;
+        }
+
+
+        body.dark .score-text p {
+            color: #9ca3af;
+        }
+
+
+        .mini-stat {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .mini-stat-item {
+            background: #f8faf9;
+
+            border-radius: 9px;
+
+            padding: 12px;
+
+            text-align: center;
+        }
+
+
+        body.dark .mini-stat-item {
+            background: #111827;
+        }
+
+
+        .mini-stat-item strong {
+            display: block;
+
+            color: #166534;
+
+            font-size: 16px;
+        }
+
+
+        body.dark .mini-stat-item strong {
+            color: #4ade80;
+        }
+
+
+        .mini-stat-item span {
+            font-size: 9px;
+
+            color: #6b7280;
+        }
+
+
+        body.dark .mini-stat-item span {
+            color: #9ca3af;
+        }
+
+
+        /* =========================
+           GENERAL SECTION
+        ========================= */
+
+        .section {
+            padding: 90px 7%;
+
+            background: #ffffff;
+
+            transition: background 0.3s ease;
+        }
+
+
+        .section-inner {
+            max-width: 1200px;
+
+            margin: 0 auto;
+        }
+
+
+        .section-heading {
+            text-align: center;
+
+            max-width: 700px;
+
+            margin: 0 auto 50px;
+        }
+
+
+        .section-label {
+            color: #166534;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+        }
+
+
+        .section-title {
+            font-size: 35px;
+
+            color: #111827;
+
+            margin-bottom: 15px;
+        }
+
+
+        .section-subtitle {
+            color: #6b7280;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           SERVICE CARDS
+        ========================= */
+
+        .services-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .card {
+            background: #ffffff;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 28px;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.3s ease;
+        }
+
+
+        .card:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            font-size: 21px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .card h3 {
+            font-size: 17px;
+
+            color: #111827;
+
+            margin-bottom: 10px;
+        }
+
+
+        .card p {
+            color: #6b7280;
+
+            font-size: 13px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .card-link {
+            text-decoration: none;
+
+            color: #166534;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+
+        .card-link:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           CONDITIONS
+        ========================= */
+
+        .conditions {
+            background: #f4f7f6;
+        }
+
+
+        body.dark .conditions {
+            background: #111827;
+        }
+
+
+        .condition-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 25px;
+        }
+
+
+        .condition-card {
+            background: #ffffff;
+
+            border-radius: 14px;
+
+            padding: 30px;
+
+            border: 1px solid #e5e7eb;
+        }
+
+
+        body.dark .condition-card {
+            background: #1f2937;
+
+            border-color: #374151;
+        }
+
+
+        .condition-number {
+            font-size: 13px;
+
+            color: #166534;
+
+            font-weight: 800;
+
+            margin-bottom: 12px;
+        }
+
+
+        .condition-card h3 {
+            font-size: 22px;
+
+            color: #111827;
+
+            margin-bottom: 10px;
+        }
+
+
+        body.dark .condition-card h3 {
+            color: #f3f4f6;
+        }
+
+
+        .condition-card p {
+            font-size: 13px;
+
+            color: #6b7280;
+
+            margin-bottom: 20px;
+        }
+
+
+        body.dark .condition-card p {
+            color: #9ca3af;
+        }
+
+
+        .condition-points {
+            list-style: none;
+        }
+
+
+        .condition-points li {
+            font-size: 12px;
+
+            color: #4b5563;
+
+            padding: 7px 0;
+
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+
+        body.dark .condition-points li {
+            color: #d1d5db;
+
+            border-bottom-color: #374151;
+        }
+
+
+        .condition-points li:last-child {
+            border-bottom: none;
+        }
+
+
+        .condition-points li::before {
+            content: "✓";
+
+            color: #166534;
+
+            font-weight: bold;
+
+            margin-right: 8px;
+        }
+
+
+        /* =========================
+           ABOUT
+        ========================= */
+
+        .about {
+            padding: 90px 7%;
+
+            background: #f4f7f6;
+
+            transition: background 0.3s ease;
+        }
+
+
+        .about-container {
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 70px;
+
+            align-items: center;
+        }
+
+
+        .about-text h2 {
+            font-size: 35px;
+
+            color: #111827;
+
+            margin-bottom: 20px;
+        }
+
+
+        .about-text p {
+            font-size: 14px;
+
+            color: #6b7280;
+
+            margin-bottom: 16px;
+        }
+
+
+        .about-points {
+            margin-top: 25px;
+
+            display: grid;
+
+            gap: 12px;
+        }
+
+
+        .about-point {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 12px;
+        }
+
+
+        .about-point-icon {
+            min-width: 32px;
+            height: 32px;
+
+            border-radius: 50%;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+
+        .about-point-text strong {
+            display: block;
+
+            color: #111827;
+
+            font-size: 13px;
+
+            margin-bottom: 3px;
+        }
+
+
+        body.dark .about-point-text strong {
+            color: #f3f4f6;
+        }
+
+
+        .about-point-text span {
+            font-size: 12px;
+
+            color: #6b7280;
+        }
+
+
+        body.dark .about-point-text span {
+            color: #9ca3af;
+        }
+
+
+        .about-visual {
+            display: flex;
+
+            justify-content: center;
+        }
+
+
+        .awareness-box {
+            width: 100%;
+
+            max-width: 470px;
+
+            background: #166534;
+
+            border-radius: 18px;
+
+            padding: 38px;
+
+            color: #ffffff;
+        }
+
+
+        .awareness-box h3 {
+            font-size: 25px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .awareness-box p {
+            font-size: 13px;
+
+            color: #dcfce7;
+
+            margin-bottom: 25px;
+        }
+
+
+        .awareness-items {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .awareness-item {
+            background: rgba(255, 255, 255, 0.1);
+
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            border-radius: 9px;
+
+            padding: 14px 10px;
+
+            text-align: center;
+        }
+
+
+        .awareness-item strong {
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 3px;
+        }
+
+
+        .awareness-item span {
+            font-size: 9px;
+
+            color: #dcfce7;
+        }
+
+
+        /* =========================
+           JOURNEY
+        ========================= */
+
+        .journey {
+            padding: 90px 7%;
+
+            background: #ffffff;
+        }
+
+
+        body.dark .journey {
+            background: #111827;
+        }
+
+
+        .journey-grid {
+            max-width: 1000px;
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+        }
+
+
+        .journey-step {
+            text-align: center;
+
+            padding: 25px 15px;
+
+            position: relative;
+        }
+
+
+        .journey-step:not(:last-child)::after {
+            content: "";
+
+            position: absolute;
+
+            top: 39px;
+
+            right: -15px;
+
+            width: 30px;
+
+            height: 1px;
+
+            background: #d1d5db;
+        }
+
+
+        .journey-number {
+            width: 45px;
+            height: 45px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 14px;
+
+            font-weight: 800;
+        }
+
+
+        .journey-step h3 {
+            font-size: 14px;
+
+            color: #111827;
+
+            margin-bottom: 7px;
+        }
+
+
+        body.dark .journey-step h3 {
+            color: #f3f4f6;
+        }
+
+
+        .journey-step p {
+            color: #6b7280;
+
+            font-size: 11px;
+        }
+
+
+        body.dark .journey-step p {
+            color: #9ca3af;
+        }
+
+
+        /* =========================
+           NOTICE
+        ========================= */
+
+        .notice-section {
+            padding: 50px 7%;
+
+            background: #f4f7f6;
+        }
+
+
+        body.dark .notice-section {
+            background: #111827;
+        }
+
+
+        .notice {
+            max-width: 1000px;
+
+            margin: 0 auto;
+
+            background: #ffffff;
+
+            border: 1px solid #e5e7eb;
+
+            border-left: 5px solid #166534;
+
+            border-radius: 10px;
+
+            padding: 22px 25px;
+        }
+
+
+        body.dark .notice {
+            background: #1f2937;
+
+            border-color: #374151;
+
+            border-left-color: #4ade80;
+        }
+
+
+        .notice-title {
+            font-size: 13px;
+
+            font-weight: 800;
+
+            color: #166534;
+
+            margin-bottom: 6px;
+        }
+
+
+        body.dark .notice-title {
+            color: #4ade80;
+        }
+
+
+        .notice p {
+            color: #6b7280;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            padding: 85px 7%;
+
+            background: #166534;
+
+            color: #ffffff;
+
+            text-align: center;
+        }
+
+
+        .cta h2 {
+            font-size: 34px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .cta p {
+            font-size: 14px;
+
+            color: #dcfce7;
+
+            max-width: 650px;
+
+            margin: 0 auto 28px;
+        }
+
+
+        .cta-buttons {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .cta .btn-white {
+            display: inline-block;
+
+            text-decoration: none;
+
+            background: #ffffff;
+
+            color: #166534;
+
+            padding: 12px 22px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+        }
+
+
+        .cta .btn-outline {
+            display: inline-block;
+
+            text-decoration: none;
+
+            background: transparent;
+
+            color: #ffffff;
+
+            border: 1px solid rgba(255,255,255,0.7);
+
+            padding: 11px 22px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+        }
+
+
+        .cta .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: #111827;
+
+            color: #ffffff;
+
+            padding: 45px 7% 25px;
+        }
+
+
+        .footer-container {
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            display: grid;
+
+            grid-template-columns:
+                1.5fr 1fr 1fr 1fr;
+
+            gap: 35px;
+
+            margin-bottom: 35px;
+        }
+
+
+        .footer-brand h3 {
+            color: #ffffff;
+
+            font-size: 20px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .footer-brand p {
+            color: #9ca3af;
+
+            font-size: 11px;
+
+            max-width: 280px;
+        }
+
+
+        .footer-column h4 {
+            color: #ffffff;
+
+            font-size: 12px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .footer-column a {
+            display: block;
+
+            text-decoration: none;
+
+            color: #9ca3af;
+
+            font-size: 11px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .footer-column a:hover {
+            color: #4ade80;
+        }
+
+
+        .footer-bottom {
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding-top: 20px;
+
+            border-top: 1px solid #374151;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .footer-bottom p {
+            color: #6b7280;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .services-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .condition-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .hero-container {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .hero-content {
+                max-width: 100%;
+                text-align: center;
+            }
+
+
+            .hero-content p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+
+            .about-container {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .about-text {
+                text-align: center;
+            }
+
+
+            .about-points {
+                text-align: left;
+            }
+
+
+            .journey-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .journey-step:not(:last-child)::after {
+                display: none;
+            }
+
+
+            .footer-container {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            nav {
+                padding: 15px 5%;
+            }
+
+
+            .nav-links {
+                gap: 12px;
+            }
+
+
+            .nav-links a {
+                font-size: 11px;
+            }
+
+
+            .register-nav {
+                padding: 8px 12px;
+            }
+
+
+            .hero {
+                padding: 60px 5%;
+            }
+
+
+            .hero-content h1 {
+                font-size: 38px;
+            }
+
+
+            .section,
+            .about,
+            .journey {
+                padding: 65px 5%;
+            }
+
+
+            .section-title,
+            .about-text h2 {
+                font-size: 28px;
+            }
+
+
+            .services-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .journey-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .footer-container {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .footer-bottom {
+                flex-direction: column;
+            }
+
+
+            .mini-stat {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .awareness-items {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .nav-links {
+                gap: 8px;
+            }
+
+
+            .nav-links a {
+                font-size: 10px;
+            }
+
+
+            .theme-toggle {
+                width: 34px;
+                height: 34px;
+
+                font-size: 15px;
+            }
+
+
+            .logo {
+                font-size: 20px;
+            }
+
+
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav>
+
+    <a href="{{ url_for('home') }}" class="logo">
+        NCD Nepal
+    </a>
+
+
+    <div class="nav-right">
+
+        <div class="nav-links">
+
+            <!-- PUBLIC HOME -->
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
+
+
+            <!-- PATIENT LOGIN -->
+            <a href="{{ url_for('login') }}">
+                Patient Login
+            </a>
+
+
+            <!-- PATIENT REGISTER -->
+            <a href="{{ url_for('register') }}">
+                Patient Register
+            </a>
+
+
+            <!-- SERVICE PROVIDER LOGIN -->
+            <a href="{{ url_for('provider_login') }}">
+                Provider Login
+            </a>
+
+
+            <!-- SERVICE PROVIDER REGISTER -->
+            <a href="{{ url_for('provider_register') }}"
+               class="register-nav">
+                Provider Register
+            </a>
+
+        </div>
+
+
+        <!-- DARK MODE -->
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Toggle dark mode">
+
+            🌙
+
+        </button>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================
+     HERO SECTION
+========================= -->
+
+<section class="hero">
+
+    <div class="hero-container">
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                DIGITAL SUPPORT FOR A HEALTHIER NEPAL
+            </span>
+
+
+            <h1>
+                Manage Your Health
+                <span>With Confidence.</span>
+            </h1>
+
+
+            <p>
+                NCD Nepal provides digital support for awareness,
+                prevention, monitoring and continuity of care for
+                non-communicable diseases.
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <a href="{{ url_for('register') }}"
+                   class="btn-primary">
+                    Get Started
+                </a>
+
+
+                <a href="#services"
+                   class="btn-secondary">
+                    Explore Services
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HEALTH CARD -->
+
+        <div class="hero-visual">
+
+            <div class="health-card">
+
+                <div class="health-card-top">
+
+                    <span class="health-card-title">
+                        HEALTH OVERVIEW
+                    </span>
+
+                    <span class="status">
+                        ACTIVE
+                    </span>
+
+                </div>
+
+
+                <div class="health-score">
+
+                    <div class="score-circle">
+                        82
+                    </div>
+
+
+                    <div class="score-text">
+
+                        <h3>
+                            Health Progress
+                        </h3>
+
+                        <p>
+                            Keep monitoring your health regularly.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-stat-item">
+
+                        <strong>
+                            120/78
+                        </strong>
+
+                        <span>
+                            Blood Pressure
+                        </span>
+
+                    </div>
+
+
+                    <div class="mini-stat-item">
+
+                        <strong>
+                            94
+                        </strong>
+
+                        <span>
+                            Glucose
+                        </span>
+
+                    </div>
+
+
+                    <div class="mini-stat-item">
+
+                        <strong>
+                            48.1
+                        </strong>
+
+                        <span>
+                            Weight (kg)
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     SERVICES
+========================= -->
+
+<section class="section"
+         id="services">
+
+    <div class="section-inner">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                OUR SERVICES
+            </div>
+
+
+            <h2 class="section-title">
+                Support For Your Health Journey
+            </h2>
+
+
+            <p class="section-subtitle">
+                Simple digital tools and trusted information
+                to help you stay informed, active and connected.
+            </p>
+
+        </div>
+
+
+
+        <div class="services-grid">
+
+
+            <!-- SERVICE 1 -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ♥
+                </div>
+
+
+                <h3>
+                    Health Monitoring
+                </h3>
+
+
+                <p>
+                    Record and monitor important health
+                    measurements such as blood pressure,
+                    glucose and weight.
+                </p>
+
+
+                <a href="{{ url_for('login') }}"
+                   class="card-link">
+                    START MONITORING →
+                </a>
+
+            </div>
+
+
+
+            <!-- SERVICE 2 -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    +
+                </div>
+
+
+                <h3>
+                    Know & Prevent
+                </h3>
+
+
+                <p>
+                    Learn about diabetes, blood pressure
+                    and thyroid health and understand
+                    prevention practices.
+                </p>
+
+
+                <a href="{{ url_for('login') }}"
+                   class="card-link">
+                    LEARN MORE →
+                </a>
+
+            </div>
+
+
+
+            <!-- SERVICE 3 -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ✓
+                </div>
+
+
+                <h3>
+                    Consultation
+                </h3>
+
+
+                <p>
+                    Explore digital support for connecting
+                    with healthcare service providers.
+                </p>
+
+
+                <a href="{{ url_for('login') }}"
+                   class="card-link">
+                    EXPLORE →
+                </a>
+
+            </div>
+
+
+
+            <!-- SERVICE 4 -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ♧
+                </div>
+
+
+                <h3>
+                    Community
+                </h3>
+
+
+                <p>
+                    Learn, share and stay connected with
+                    a supportive health community.
+                </p>
+
+
+                <a href="{{ url_for('login') }}"
+                   class="card-link">
+                    JOIN COMMUNITY →
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     CONDITIONS
+========================= -->
+
+<section class="section conditions">
+
+    <div class="section-inner">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                PRIORITY CONDITIONS
+            </div>
+
+
+            <h2 class="section-title">
+                Focused On Three Key Health Areas
+            </h2>
+
+
+            <p class="section-subtitle">
+                NCD Nepal focuses on three important
+                non-communicable health conditions.
+            </p>
+
+        </div>
+
+
+
+        <div class="condition-grid">
+
+
+            <!-- DIABETES -->
+
+            <div class="condition-card">
+
+                <div class="condition-number">
+                    01
+                </div>
+
+
+                <h3>
+                    Diabetes
+                </h3>
+
+
+                <p>
+                    Know, test and manage your blood glucose
+                    and understand healthy lifestyle practices.
+                </p>
+
+
+                <ul class="condition-points">
+
+                    <li>
+                        Understand diabetes
+                    </li>
+
+                    <li>
+                        Monitor blood glucose
+                    </li>
+
+                    <li>
+                        Improve healthy habits
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+
+            <!-- BLOOD PRESSURE -->
+
+            <div class="condition-card">
+
+                <div class="condition-number">
+                    02
+                </div>
+
+
+                <h3>
+                    Blood Pressure
+                </h3>
+
+
+                <p>
+                    Check your blood pressure regularly and
+                    learn how to maintain healthy levels.
+                </p>
+
+
+                <ul class="condition-points">
+
+                    <li>
+                        Check blood pressure
+                    </li>
+
+                    <li>
+                        Control risk factors
+                    </li>
+
+                    <li>
+                        Follow up regularly
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+
+            <!-- THYROID -->
+
+            <div class="condition-card">
+
+                <div class="condition-number">
+                    03
+                </div>
+
+
+                <h3>
+                    Thyroid
+                </h3>
+
+
+                <p>
+                    Learn about thyroid health, screening,
+                    treatment and ongoing monitoring.
+                </p>
+
+
+                <ul class="condition-points">
+
+                    <li>
+                        Understand thyroid health
+                    </li>
+
+                    <li>
+                        Screen when appropriate
+                    </li>
+
+                    <li>
+                        Monitor regularly
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     ABOUT
+========================= -->
+
+<section class="about">
+
+    <div class="about-container">
+
+
+        <div class="about-text">
+
+            <div class="section-label">
+                WHY NCD NEPAL
+            </div>
+
+
+            <h2>
+                Awareness. Access. Continuity.
+            </h2>
+
+
+            <p>
+                NCD Nepal is designed to make important
+                health information and digital support easier
+                to access.
+            </p>
+
+
+            <p>
+                The platform helps people understand their
+                health, monitor selected measurements and
+                stay connected with available health services.
+            </p>
+
+
+
+            <div class="about-points">
+
+
+                <div class="about-point">
+
+                    <div class="about-point-icon">
+                        1
+                    </div>
+
+
+                    <div class="about-point-text">
+
+                        <strong>
+                            Awareness
+                        </strong>
+
+                        <span>
+                            Learn about common non-communicable
+                            diseases and prevention.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="about-point">
+
+                    <div class="about-point-icon">
+                        2
+                    </div>
+
+
+                    <div class="about-point-text">
+
+                        <strong>
+                            Access
+                        </strong>
+
+                        <span>
+                            Explore digital health information
+                            and available services.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="about-point">
+
+                    <div class="about-point-icon">
+                        3
+                    </div>
+
+
+                    <div class="about-point-text">
+
+                        <strong>
+                            Continuity
+                        </strong>
+
+                        <span>
+                            Support regular monitoring and
+                            follow-up of health activities.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="about-visual">
+
+            <div class="awareness-box">
+
+                <h3>
+                    Digital Support
+                </h3>
+
+
+                <p>
+                    Simple tools designed to help you
+                    stay informed and engaged with your health.
+                </p>
+
+
+                <div class="awareness-items">
+
+                    <div class="awareness-item">
+
+                        <strong>
+                            Learn
+                        </strong>
+
+                        <span>
+                            Health information
+                        </span>
+
+                    </div>
+
+
+                    <div class="awareness-item">
+
+                        <strong>
+                            Assess
+                        </strong>
+
+                        <span>
+                            Track health
+                        </span>
+
+                    </div>
+
+
+                    <div class="awareness-item">
+
+                        <strong>
+                            Monitor
+                        </strong>
+
+                        <span>
+                            Follow progress
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     HEALTH JOURNEY
+========================= -->
+
+<section class="journey">
+
+    <div class="section-inner">
+
+        <div class="section-heading">
+
+            <div class="section-label">
+                YOUR JOURNEY
+            </div>
+
+
+            <h2 class="section-title">
+                Learn. Assess. Connect. Monitor.
+            </h2>
+
+
+            <p class="section-subtitle">
+                A simple journey to help you stay engaged
+                with your health.
+            </p>
+
+        </div>
+
+
+
+        <div class="journey-grid">
+
+
+            <div class="journey-step">
+
+                <div class="journey-number">
+                    01
+                </div>
+
+
+                <h3>
+                    Learn
+                </h3>
+
+
+                <p>
+                    Understand conditions,
+                    symptoms and prevention.
+                </p>
+
+            </div>
+
+
+
+            <div class="journey-step">
+
+                <div class="journey-number">
+                    02
+                </div>
+
+
+                <h3>
+                    Assess
+                </h3>
+
+
+                <p>
+                    Record selected health
+                    measurements.
+                </p>
+
+            </div>
+
+
+
+            <div class="journey-step">
+
+                <div class="journey-number">
+                    03
+                </div>
+
+
+                <h3>
+                    Connect
+                </h3>
+
+
+                <p>
+                    Explore health services
+                    and community support.
+                </p>
+
+            </div>
+
+
+
+            <div class="journey-step">
+
+                <div class="journey-number">
+                    04
+                </div>
+
+
+                <h3>
+                    Monitor & Follow Up
+                </h3>
+
+
+                <p>
+                    Continue monitoring and
+                    health-related activities.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     NOTICE
+========================= -->
+
+<section class="notice-section">
+
+    <div class="notice">
+
+        <div class="notice-title">
+            IMPORTANT HEALTH NOTICE
+        </div>
+
+
+        <p>
+            Information and digital services are designed
+            to support—not replace—professional medical care.
+            If you have health concerns or symptoms, please
+            consult a qualified healthcare professional.
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     CTA
+========================= -->
+
+<section class="cta">
+
+    <h2>
+        Start Your Health Journey
+    </h2>
+
+
+    <p>
+        Create your account to explore health monitoring,
+        prevention information, community support and
+        available digital services.
+    </p>
+
+
+    <div class="cta-buttons">
+
+        <a href="{{ url_for('register') }}"
+           class="btn-white">
+            Create Patient Account
+        </a>
+
+
+        <a href="{{ url_for('provider_register') }}"
+           class="btn-outline">
+            Register as Service Provider
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <div class="footer-container">
+
+
+        <div class="footer-brand">
+
+            <h3>
+                NCD Nepal
+            </h3>
+
+
+            <p>
+                Digital support for a healthier Nepal
+                through awareness, access and continuity.
+            </p>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                PLATFORM
+            </h4>
+
+
+            <a href="{{ url_for('home') }}">
+                Home
+            </a>
+
+
+            <a href="{{ url_for('login') }}">
+                Patient Login
+            </a>
+
+
+            <a href="{{ url_for('register') }}">
+                Patient Register
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                SERVICE PROVIDERS
+            </h4>
+
+
+            <a href="{{ url_for('provider_login') }}">
+                Provider Login
+            </a>
+
+
+            <a href="{{ url_for('provider_register') }}">
+                Provider Register
+            </a>
+
+        </div>
+
+
+
+        <div class="footer-column">
+
+            <h4>
+                HEALTH
+            </h4>
+
+
+            <a href="#services">
+                Health Monitoring
+            </a>
+
+
+            <a href="#services">
+                Know & Prevent
+            </a>
+
+
+            <a href="#services">
+                Community
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="footer-bottom">
+
+        <p>
+            NCD Nepal © 2026
+        </p>
+
+
+        <p>
+            Digital support for awareness, access and continuity.
+        </p>
+
+    </div>
+
+</footer>
+
+
+
+<!-- =========================
+     DARK MODE JAVASCRIPT
+========================= -->
+
+<script>
+
+    const themeToggle =
+        document.getElementById("themeToggle");
+
+
+    const savedTheme =
+        localStorage.getItem("ncd-theme");
+
+
+    if (savedTheme === "dark") {
+
+        document.body.classList.add("dark");
+
+        themeToggle.textContent = "☀️";
+
+    }
+
+
+    themeToggle.addEventListener("click", function () {
+
+        document.body.classList.toggle("dark");
+
+
+        if (document.body.classList.contains("dark")) {
+
+            localStorage.setItem("ncd-theme", "dark");
+
+            themeToggle.textContent = "☀️";
+
+        } else {
+
+            localStorage.setItem("ncd-theme", "light");
+
+            themeToggle.textContent = "🌙";
+
+        }
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

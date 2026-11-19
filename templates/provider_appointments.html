@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Appointments | NCD Nepal</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7f6;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ==============================
+           SIDEBAR
+        ============================== */
+
+        .sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .brand {
+            padding: 25px 22px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .brand-logo {
+            width: 45px;
+            height: 45px;
+            background: #0f766e;
+            color: #ffffff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .brand h2 {
+            font-size: 20px;
+            color: #0f766e;
+            margin-bottom: 4px;
+        }
+
+        .brand p {
+            font-size: 11px;
+            color: #6b7280;
+            letter-spacing: 1px;
+        }
+
+        .menu-title {
+            padding: 24px 22px 10px;
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav {
+            padding: 0 12px 20px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: #f0fdfa;
+            color: #0f766e;
+        }
+
+        .nav a.active {
+            background: #ccfbf1;
+            color: #0f766e;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 18px;
+            border-top: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+
+        .provider-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .provider-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #0f766e;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .provider-mini-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .provider-mini-info strong {
+            display: block;
+            font-size: 13px;
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .provider-mini-info span {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        /* ==============================
+           MAIN
+        ============================== */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+
+        .page-title h1 {
+            font-size: 22px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .page-title p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .provider-name {
+            font-size: 13px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .top-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #0f766e;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .mobile-menu {
+            display: none;
+            border: 0;
+            background: transparent;
+            font-size: 22px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        /* ==============================
+           CONTENT
+        ============================== */
+
+        .content {
+            padding: 30px;
+        }
+
+        .welcome {
+            background: linear-gradient(135deg, #0f766e, #115e59);
+            color: #ffffff;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 21px;
+            margin-bottom: 7px;
+        }
+
+        .welcome p {
+            font-size: 13px;
+            opacity: 0.92;
+            line-height: 1.6;
+        }
+
+        /* ==============================
+           STATISTICS
+        ============================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .stat-card.pending {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .stat-card.confirmed {
+            border-left: 4px solid #0f766e;
+        }
+
+        .stat-card.completed {
+            border-left: 4px solid #2563eb;
+        }
+
+        .stat-card.cancelled {
+            border-left: 4px solid #6b7280;
+        }
+
+        .stat-card.rejected {
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ==============================
+           TOOLBAR
+        ============================== */
+
+        .toolbar {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 350px;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 14px 0 40px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.08);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 11px;
+            font-size: 15px;
+            color: #6b7280;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filters select {
+            height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 35px 0 12px;
+            font-size: 13px;
+            color: #374151;
+            background: #ffffff;
+            outline: none;
+        }
+
+        .filters select:focus {
+            border-color: #0f766e;
+        }
+
+        /* ==============================
+           TABLE
+        ============================== */
+
+        .table-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+            color: #111827;
+        }
+
+        .table-header span {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 950px;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th {
+            padding: 13px 15px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #6b7280;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f1f2;
+            font-size: 12px;
+            color: #374151;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .patient-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .patient-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ccfbf1;
+            color: #0f766e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .patient-info strong {
+            display: block;
+            color: #111827;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .patient-info span {
+            display: block;
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .condition {
+            display: inline-block;
+            background: #f0fdfa;
+            color: #0f766e;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .date {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .time {
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.confirmed {
+            background: #ccfbf1;
+            color: #115e59;
+        }
+
+        .status.completed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status.cancelled {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+
+        .btn {
+            height: 32px;
+            border: 0;
+            border-radius: 7px;
+            padding: 0 11px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-view {
+            background: #f0fdfa;
+            color: #0f766e;
+        }
+
+        .btn-view:hover {
+            background: #ccfbf1;
+        }
+
+        .btn-confirm {
+            background: #0f766e;
+            color: #ffffff;
+        }
+
+        .btn-confirm:hover {
+            background: #115e59;
+        }
+
+        .btn-reject {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-reject:hover {
+            background: #fecaca;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-complete {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 65px 25px;
+        }
+
+        .empty-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f0fdfa;
+            color: #0f766e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        .empty-state p {
+            max-width: 500px;
+            margin: auto;
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        /* ==============================
+           MODAL
+        ============================== */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.55);
+            z-index: 2000;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 760px;
+            background: #ffffff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border: 0;
+            background: transparent;
+            color: #6b7280;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 7px;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-section h3 {
+            font-size: 12px;
+            color: #0f766e;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 13px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .detail-item label {
+            display: block;
+            color: #9ca3af;
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .detail-item p {
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .reason-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 50px;
+        }
+
+        .modal-footer {
+            padding: 18px 22px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filters {
+                width: 100%;
+            }
+
+            .filters select {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .provider-name {
+                display: none;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- ==============================
+         SIDEBAR
+    ============================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">N+</div>
+
+            <h2>NCD Nepal</h2>
+
+            <p>HEALTH &amp; WELLNESS</p>
+        </div>
+
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="{{ url_for('service_provider') }}">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('provider_appointments') }}" class="active">
+                <span class="nav-icon">◷</span>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{{ url_for('patients') }}">
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+            <a href="{{ url_for('consultation') }}">
+                <span class="nav-icon">▤</span>
+                <span>Consultation</span>
+            </a>
+
+            <a href="{{ url_for('follow_up') }}">
+                <span class="nav-icon">↻</span>
+                <span>Follow-up</span>
+            </a>
+
+            <a href="{{ url_for('availability') }}">
+                <span class="nav-icon">◫</span>
+                <span>Availability</span>
+            </a>
+
+        </nav>
+
+
+        <div class="menu-title">
+            Account
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="{{ url_for('provider_profile') }}">
+                <span class="nav-icon">◎</span>
+                <span>Profile</span>
+            </a>
+
+            <a href="{{ url_for('provider_settings') }}">
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+            <a href="{{ url_for('provider_logout') }}">
+                <span class="nav-icon">↪</span>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="provider-mini">
+
+                <div class="provider-avatar">
+                    {{ provider_initial|default('S') }}
+                </div>
+
+                <div class="provider-mini-info">
+
+                    <strong>
+                        {{ provider_name|default(session.get('provider_fullname', 'Service Provider')) }}
+                    </strong>
+
+                    <span>
+                        Service Provider
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ==============================
+         MAIN
+    ============================== -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div style="display:flex;align-items:center;">
+
+                <button
+                    type="button"
+                    class="mobile-menu"
+                    id="mobileMenuButton">
+                    ☰
+                </button>
+
+                <div class="page-title">
+
+                    <h1>
+                        Appointments
+                    </h1>
+
+                    <p>
+                        Manage patient appointment requests and consultations
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <span class="provider-name">
+                    {{ provider_name|default(session.get('provider_fullname', 'Service Provider')) }}
+                </span>
+
+                <div class="top-avatar">
+                    {{ provider_initial|default('S') }}
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="content">
+
+            <!-- ==============================
+                 WELCOME
+            ============================== -->
+
+            <div class="welcome">
+
+                <h2>
+                    Appointment Management
+                </h2>
+
+                <p>
+                    Review patient appointment requests, confirm consultations,
+                    update appointment status, and manage scheduled patient visits.
+                </p>
+
+            </div>
+
+
+            <!-- ==============================
+                 STATISTICS
+            ============================== -->
+
+            {% set appointment_list = appointments|default([], true) %}
+
+            <div class="stats">
+
+                <div class="stat-card pending">
+                    <div class="stat-label">
+                        Pending
+                    </div>
+
+                    <div class="stat-number">
+                        {{ appointment_list|selectattr('status', 'equalto', 'Pending')|list|length }}
+                    </div>
+                </div>
+
+
+                <div class="stat-card confirmed">
+                    <div class="stat-label">
+                        Confirmed
+                    </div>
+
+                    <div class="stat-number">
+                        {{ appointment_list|selectattr('status', 'equalto', 'Confirmed')|list|length }}
+                    </div>
+                </div>
+
+
+                <div class="stat-card completed">
+                    <div class="stat-label">
+                        Completed
+                    </div>
+
+                    <div class="stat-number">
+                        {{ appointment_list|selectattr('status', 'equalto', 'Completed')|list|length }}
+                    </div>
+                </div>
+
+
+                <div class="stat-card cancelled">
+                    <div class="stat-label">
+                        Cancelled
+                    </div>
+
+                    <div class="stat-number">
+                        {{ appointment_list|selectattr('status', 'equalto', 'Cancelled')|list|length }}
+                    </div>
+                </div>
+
+
+                <div class="stat-card rejected">
+                    <div class="stat-label">
+                        Rejected
+                    </div>
+
+                    <div class="stat-number">
+                        {{ appointment_list|selectattr('status', 'equalto', 'Rejected')|list|length }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- ==============================
+                 SEARCH / FILTER
+            ============================== -->
+
+            <div class="toolbar">
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search patient, condition, email..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <div class="filters">
+
+                    <select id="statusFilter">
+
+                        <option value="all">
+                            All Status
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Confirmed">
+                            Confirmed
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                        <option value="Cancelled">
+                            Cancelled
+                        </option>
+
+                        <option value="Rejected">
+                            Rejected
+                        </option>
+
+                    </select>
+
+
+                    <select id="typeFilter">
+
+                        <option value="all">
+                            All Types
+                        </option>
+
+                        <option value="Online">
+                            Online
+                        </option>
+
+                        <option value="In-person">
+                            In-person
+                        </option>
+
+                        <option value="In Person">
+                            In Person
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==============================
+                 APPOINTMENT TABLE
+            ============================== -->
+
+            <div class="table-card">
+
+                <div class="table-header">
+
+                    <h3>
+                        Patient Appointments
+                    </h3>
+
+                    <span id="appointmentCount">
+                        {{ appointment_list|length }}
+                        appointment{% if appointment_list|length != 1 %}s{% endif %}
+                    </span>
+
+                </div>
+
+
+                {% if appointment_list|length > 0 %}
+
+                <div class="table-wrapper">
+
+                    <table id="appointmentsTable">
+
+                        <thead>
+
+                        <tr>
+                            <th>Patient</th>
+                            <th>Condition</th>
+                            <th>Date &amp; Time</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody id="appointmentTableBody">
+
+                        {% for appointment in appointment_list %}
+
+                        {% set patient_name = appointment.get('patient_name', 'Patient') %}
+                        {% set current_status = appointment.get('status', 'Pending') %}
+                        {% set consultation_type = appointment.get('consultation_type', 'Not specified') %}
+                        {% set condition = appointment.get('condition', 'General Consultation') %}
+
+                        <tr
+                            class="appointment-row"
+                            data-index="{{ loop.index0 }}"
+                            data-search="{{ (
+                                patient_name ~ ' ' ~
+                                appointment.get('patient_email', '') ~ ' ' ~
+                                condition ~ ' ' ~
+                                consultation_type ~ ' ' ~
+                                current_status
+                            )|lower|e }}"
+                            data-status="{{ current_status|e }}"
+                            data-type="{{ consultation_type|e }}"
+                        >
+
+                            <!-- PATIENT -->
+
+                            <td>
+
+                                <div class="patient-cell">
+
+                                    <div class="patient-avatar">
+                                        {{ patient_name[:1]|upper }}
+                                    </div>
+
+                                    <div class="patient-info">
+
+                                        <strong>
+                                            {{ patient_name }}
+                                        </strong>
+
+                                        <span>
+                                            {{ appointment.get('patient_email', 'Email not provided') }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- CONDITION -->
+
+                            <td>
+
+                                <span class="condition">
+                                    {{ condition }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- DATE / TIME -->
+
+                            <td>
+
+                                <div class="date">
+                                    {{ appointment.get('appointment_date', 'Not specified') }}
+                                </div>
+
+                                <div class="time">
+                                    {{ appointment.get('appointment_time', 'Not specified') }}
+                                </div>
+
+                            </td>
+
+
+                            <!-- TYPE -->
+
+                            <td>
+                                {{ consultation_type }}
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span class="status {{ current_status|lower|replace(' ', '-')|e }}">
+
+                                    <span class="status-dot"></span>
+
+                                    {{ current_status }}
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-view view-btn"
+                                        data-index="{{ loop.index0 }}">
+                                        View
+                                    </button>
+
+
+                                    {% if current_status == 'Pending' %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('appointment_action', appointment_id=appointment.get('id'), action='confirm') }}"
+                                        style="display:inline;">
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-confirm">
+                                            Confirm
+                                        </button>
+
+                                    </form>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('appointment_action', appointment_id=appointment.get('id'), action='reject') }}"
+                                        style="display:inline;">
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-reject">
+                                            Reject
+                                        </button>
+
+                                    </form>
+
+                                    {% elif current_status == 'Confirmed' %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('appointment_action', appointment_id=appointment.get('id'), action='complete') }}"
+                                        style="display:inline;">
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-complete">
+                                            Complete
+                                        </button>
+
+                                    </form>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('appointment_action', appointment_id=appointment.get('id'), action='cancel') }}"
+                                        style="display:inline;">
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-cancel">
+                                            Cancel
+                                        </button>
+
+                                    </form>
+
+                                    {% else %}
+
+                                    <span style="font-size:10px;color:#9ca3af;">
+                                        No action
+                                    </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ◷
+                    </div>
+
+                    <h3>
+                        No appointments yet
+                    </h3>
+
+                    <p>
+                        Patient appointment requests will appear here when
+                        patients book a consultation with you.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     APPOINTMENT DETAILS MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="appointmentModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                Appointment Details
+            </h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                id="closeModalButton">
+                &times;
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <!-- PATIENT INFORMATION -->
+
+            <div class="detail-section">
+
+                <h3>
+                    Patient Information
+                </h3>
+
+                <div class="detail-grid">
+
+                    <div class="detail-item">
+                        <label>Full Name</label>
+                        <p id="detailPatientName">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Email</label>
+                        <p id="detailPatientEmail">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Phone</label>
+                        <p id="detailPatientPhone">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Gender</label>
+                        <p id="detailPatientGender">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Date of Birth</label>
+                        <p id="detailPatientDob">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Address</label>
+                        <p id="detailPatientAddress">-</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- APPOINTMENT INFORMATION -->
+
+            <div class="detail-section">
+
+                <h3>
+                    Appointment Information
+                </h3>
+
+                <div class="detail-grid">
+
+                    <div class="detail-item">
+                        <label>Appointment ID</label>
+                        <p id="detailAppointmentId">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Condition</label>
+                        <p id="detailCondition">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Service</label>
+                        <p id="detailService">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Date</label>
+                        <p id="detailDate">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Time</label>
+                        <p id="detailTime">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Consultation Type</label>
+                        <p id="detailType">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Status</label>
+                        <p id="detailStatus">-</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <label>Provider</label>
+                        <p id="detailProvider">-</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- REASON -->
+
+            <div class="detail-section">
+
+                <h3>
+                    Reason for Appointment
+                </h3>
+
+                <div
+                    class="reason-box"
+                    id="detailReason">
+                    -
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn btn-cancel"
+                id="modalCloseButton">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+"use strict";
+
+
+/* ==========================================================
+   ELEMENTS
+========================================================== */
+
+const appointmentModal = document.getElementById("appointmentModal");
+const closeModalButton = document.getElementById("closeModalButton");
+const modalCloseButton = document.getElementById("modalCloseButton");
+
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const typeFilter = document.getElementById("typeFilter");
+
+const appointmentCount = document.getElementById("appointmentCount");
+
+const appointmentRows =
+    document.querySelectorAll(".appointment-row");
+
+const viewButtons =
+    document.querySelectorAll(".view-btn");
+
+const mobileMenuButton =
+    document.getElementById("mobileMenuButton");
+
+const sidebar =
+    document.getElementById("sidebar");
+
+
+/* ==========================================================
+   SAFE VALUE
+========================================================== */
+
+function safeValue(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+        return "-";
+    }
+
+    return String(value);
+}
+
+
+/* ==========================================================
+   GET VALUE FROM ROW
+========================================================== */
+
+function getRowValue(row, field) {
+
+    const element =
+        row.querySelector("[data-field='" + field + "']");
+
+    if (!element) {
+        return "";
+    }
+
+    return element.textContent.trim();
+}
+
+
+/* ==========================================================
+   OPEN DETAILS
+========================================================== */
+
+function openAppointmentDetails(button) {
+
+    const row =
+        button.closest(".appointment-row");
+
+    if (!row) {
+        return;
+    }
+
+
+    /*
+     * Instead of sending Jinja JSON into JavaScript,
+     * all appointment information needed by the modal
+     * is stored in hidden data elements inside the row.
+     */
+
+    document.getElementById("detailPatientName").textContent =
+        getRowValue(row, "patient_name");
+
+    document.getElementById("detailPatientEmail").textContent =
+        getRowValue(row, "patient_email");
+
+    document.getElementById("detailPatientPhone").textContent =
+        getRowValue(row, "patient_phone");
+
+    document.getElementById("detailPatientGender").textContent =
+        getRowValue(row, "patient_gender");
+
+    document.getElementById("detailPatientDob").textContent =
+        getRowValue(row, "patient_dob");
+
+    document.getElementById("detailPatientAddress").textContent =
+        getRowValue(row, "patient_address");
+
+    document.getElementById("detailAppointmentId").textContent =
+        getRowValue(row, "appointment_id");
+
+    document.getElementById("detailCondition").textContent =
+        getRowValue(row, "condition");
+
+    document.getElementById("detailService").textContent =
+        getRowValue(row, "service");
+
+    document.getElementById("detailDate").textContent =
+        getRowValue(row, "appointment_date");
+
+    document.getElementById("detailTime").textContent =
+        getRowValue(row, "appointment_time");
+
+    document.getElementById("detailType").textContent =
+        getRowValue(row, "consultation_type");
+
+    document.getElementById("detailStatus").textContent =
+        getRowValue(row, "status");
+
+    document.getElementById("detailProvider").textContent =
+        getRowValue(row, "provider_name");
+
+    document.getElementById("detailReason").textContent =
+        getRowValue(row, "reason");
+
+
+    appointmentModal.classList.add("show");
+
+    document.body.style.overflow = "hidden";
+}
+
+
+/* ==========================================================
+   CLOSE DETAILS
+========================================================== */
+
+function closeAppointmentDetails() {
+
+    appointmentModal.classList.remove("show");
+
+    document.body.style.overflow = "";
+}
+
+
+/* ==========================================================
+   VIEW BUTTONS
+========================================================== */
+
+viewButtons.forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+        openAppointmentDetails(button);
+
+    });
+
+});
+
+
+/* ==========================================================
+   CLOSE BUTTONS
+========================================================== */
+
+closeModalButton.addEventListener(
+    "click",
+    closeAppointmentDetails
+);
+
+modalCloseButton.addEventListener(
+    "click",
+    closeAppointmentDetails
+);
+
+
+/* ==========================================================
+   CLICK OUTSIDE MODAL
+========================================================== */
+
+appointmentModal.addEventListener(
+    "click",
+    function(event) {
+
+        if (event.target === appointmentModal) {
+            closeAppointmentDetails();
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   ESCAPE KEY
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+            closeAppointmentDetails();
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   SEARCH AND FILTER
+========================================================== */
+
+function filterAppointments() {
+
+    const searchValue =
+        searchInput.value.trim().toLowerCase();
+
+    const selectedStatus =
+        statusFilter.value;
+
+    const selectedType =
+        typeFilter.value;
+
+    let visibleCount = 0;
+
+
+    appointmentRows.forEach(function(row) {
+
+        const searchText =
+            row.dataset.search || "";
+
+        const rowStatus =
+            row.dataset.status || "";
+
+        const rowType =
+            row.dataset.type || "";
+
+
+        const matchesSearch =
+            searchText.indexOf(searchValue) !== -1;
+
+
+        const matchesStatus =
+            selectedStatus === "all" ||
+            rowStatus === selectedStatus;
+
+
+        const matchesType =
+            selectedType === "all" ||
+            rowType === selectedType;
+
+
+        const shouldShow =
+            matchesSearch &&
+            matchesStatus &&
+            matchesType;
+
+
+        if (shouldShow) {
+
+            row.style.display = "";
+
+            visibleCount++;
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+
+    appointmentCount.textContent =
+        visibleCount +
+        " appointment" +
+        (visibleCount === 1 ? "" : "s");
+}
+
+
+/* ==========================================================
+   SEARCH EVENTS
+========================================================== */
+
+searchInput.addEventListener(
+    "input",
+    filterAppointments
+);
+
+statusFilter.addEventListener(
+    "change",
+    filterAppointments
+);
+
+typeFilter.addEventListener(
+    "change",
+    filterAppointments
+);
+
+
+/* ==========================================================
+   MOBILE MENU
+========================================================== */
+
+if (mobileMenuButton) {
+
+    mobileMenuButton.addEventListener(
+        "click",
+        function() {
+
+            if (!sidebar) {
+                return;
+            }
+
+            if (sidebar.style.display === "block") {
+
+                sidebar.style.display = "none";
+
+            } else {
+
+                sidebar.style.display = "block";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   REJECT CONFIRMATION
+========================================================== */
+
+document
+    .querySelectorAll(".btn-reject")
+    .forEach(function(button) {
+
+        const form =
+            button.closest("form");
+
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener(
+            "submit",
+            function(event) {
+
+                const answer =
+                    window.confirm(
+                        "Are you sure you want to reject this appointment?"
+                    );
+
+                if (!answer) {
+                    event.preventDefault();
+                }
+
+            }
+        );
+
+    });
+
+
+/* ==========================================================
+   CANCEL CONFIRMATION
+========================================================== */
+
+document
+    .querySelectorAll(".btn-cancel")
+    .forEach(function(button) {
+
+        const form =
+            button.closest("form");
+
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener(
+            "submit",
+            function(event) {
+
+                const answer =
+                    window.confirm(
+                        "Are you sure you want to cancel this appointment?"
+                    );
+
+                if (!answer) {
+                    event.preventDefault();
+                }
+
+            }
+        );
+
+    });
+
+
+/* ==========================================================
+   INITIAL FILTER
+========================================================== */
+
+filterAppointments();
+
+</script>
+
+</body>
+</html>

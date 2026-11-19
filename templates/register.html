@@ -1,0 +1,1062 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register | NCD Nepal</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f7f5;
+            color: #25433f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ==========================================
+           MAIN CONTAINER
+        ========================================== */
+
+        .page {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 610px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #e0ece9;
+            box-shadow: 0 12px 40px rgba(23, 107, 91, 0.12);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* ==========================================
+           LEFT SIDE
+        ========================================== */
+
+        .welcome {
+            background: #176b5b;
+            color: white;
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* LOGO */
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 23px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo::before {
+            content: "N+";
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        /* WELCOME CONTENT */
+
+        .welcome-content {
+            margin-top: 38px;
+        }
+
+        .welcome h1 {
+            font-size: 34px;
+            line-height: 1.3;
+            color: white;
+            margin-bottom: 18px;
+        }
+
+        .welcome p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #d9eeea;
+            max-width: 430px;
+        }
+
+        /* FEATURES */
+
+        .features {
+            margin-top: 35px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            color: #e3f1ef;
+            position: relative;
+            padding-left: 42px;
+        }
+
+        .feature::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* LEFT FOOTER */
+
+        .welcome-footer {
+            color: #b9d8d2;
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            margin-top: auto;
+            padding-top: 35px;
+        }
+
+        .welcome-footer::after {
+            content: "AWARENESS • ACCESS • CONTINUITY";
+        }
+
+        /* ==========================================
+           RIGHT SIDE
+        ========================================== */
+
+        .register-section {
+            background: #ffffff;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        /* REGISTER CARD */
+
+        .register-card {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        /* HEADING */
+
+        .register-card h2 {
+            font-size: 29px;
+            color: #176b5b;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #82918f;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        /* FORM */
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #405b56;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d8e6e2;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background: #ffffff;
+            color: #25433f;
+            transition: 0.2s;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #a0adaa;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #176b5b;
+            box-shadow: 0 0 0 3px rgba(23, 107, 91, 0.10);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 85px;
+            line-height: 1.5;
+        }
+
+        /* DATE OF BIRTH + GENDER */
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* PASSWORD */
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 75px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #176b5b;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .show-password:hover {
+            color: #0f4f43;
+        }
+
+        /* TERMS */
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 18px 0;
+            font-size: 12px;
+            color: #71817e;
+        }
+
+        .terms input {
+            width: 15px;
+            height: 15px;
+            margin-top: 1px;
+            accent-color: #176b5b;
+            flex-shrink: 0;
+        }
+
+        .terms label {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 400;
+            color: #71817e;
+            line-height: 1.5;
+        }
+
+        .terms a {
+            color: #176b5b;
+            text-decoration: none;
+        }
+
+        /* REGISTER BUTTON */
+
+        .register-button {
+            width: 100%;
+            border: none;
+            background: #176b5b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 16px rgba(23, 107, 91, 0.18);
+        }
+
+        .register-button:hover {
+            background: #125747;
+            transform: translateY(-1px);
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        /* MESSAGE */
+
+        .message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .error {
+            display: block;
+            background: #fff0ef;
+            color: #a33c35;
+            border: 1px solid #f3d3d0;
+        }
+
+        /* LOGIN LINK */
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #84918f;
+            font-size: 13px;
+        }
+
+        .login-link a {
+            color: #176b5b;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* BACK HOME */
+
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-home a {
+            color: #758580;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back-home a:hover {
+            color: #176b5b;
+        }
+
+        /* ==========================================
+           DARK MODE
+           Activated by shared script.js
+        ========================================== */
+
+        html.dark-mode body {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .page {
+            background: #1f2937;
+            border-color: #374151;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        html.dark-mode .welcome {
+            background: #1f2937;
+            color: #f3f4f6;
+            border-right: 1px solid #374151;
+        }
+
+        html.dark-mode .logo {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .logo::before {
+            background: #374151;
+            border-color: #4b5563;
+            color: #4ade80;
+        }
+
+        html.dark-mode .welcome h1 {
+            color: #f3f4f6;
+        }
+
+        html.dark-mode .welcome p {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .feature {
+            color: #e5e7eb;
+        }
+
+        html.dark-mode .feature::before {
+            background: #374151;
+            border-color: #4b5563;
+            color: #4ade80;
+        }
+
+        html.dark-mode .welcome-footer {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .register-section {
+            background: #1f2937;
+        }
+
+        html.dark-mode .register-card h2 {
+            color: #4ade80;
+        }
+
+        html.dark-mode .subtitle {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode label {
+            color: #e5e7eb;
+        }
+
+        html.dark-mode input,
+        html.dark-mode select,
+        html.dark-mode textarea {
+            background: #111827;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+
+        html.dark-mode input::placeholder,
+        html.dark-mode textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        html.dark-mode input:focus,
+        html.dark-mode select:focus,
+        html.dark-mode textarea:focus {
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.12);
+        }
+
+        html.dark-mode .show-password {
+            color: #4ade80;
+        }
+
+        html.dark-mode .show-password:hover {
+            color: #86efac;
+        }
+
+        html.dark-mode .terms {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .terms label {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .terms input {
+            accent-color: #4ade80;
+        }
+
+        html.dark-mode .terms a {
+            color: #4ade80;
+        }
+
+        html.dark-mode .register-button {
+            background: #4ade80;
+            color: #111827;
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.12);
+        }
+
+        html.dark-mode .register-button:hover {
+            background: #86efac;
+        }
+
+        html.dark-mode .error {
+            background: #3b2025;
+            color: #fecaca;
+            border-color: #71343b;
+        }
+
+        html.dark-mode .login-link {
+            color: #cbd5e1;
+        }
+
+        html.dark-mode .login-link a {
+            color: #4ade80;
+        }
+
+        html.dark-mode .back-home a {
+            color: #9ca3af;
+        }
+
+        html.dark-mode .back-home a:hover {
+            color: #4ade80;
+        }
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 850px) {
+            body {
+                padding: 15px;
+            }
+
+            .page {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+                min-height: auto;
+            }
+
+            .welcome {
+                padding: 30px;
+                min-height: 280px;
+            }
+
+            .welcome-content {
+                margin-top: 25px;
+            }
+
+            .welcome h1 {
+                font-size: 25px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .welcome-footer {
+                display: none;
+            }
+
+            .register-section {
+                padding: 35px 28px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .register-section {
+                padding: 30px 22px;
+            }
+
+            .welcome {
+                padding: 25px;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- LEFT SIDE -->
+
+        <section class="welcome">
+
+            <div class="logo">
+                NCD Nepal
+            </div>
+
+            <div class="welcome-content">
+
+                <h1>
+                    Create Your NCD Nepal Account
+                </h1>
+
+                <p>
+                    Join NCD Nepal to access digital health information,
+                    health monitoring tools and NCD prevention resources.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        Health monitoring
+                    </div>
+
+                    <div class="feature">
+                        NCD awareness and prevention
+                    </div>
+
+                    <div class="feature">
+                        Personal health dashboard
+                    </div>
+
+                    <div class="feature">
+                        Community health resources
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="welcome-footer"></div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+
+        <section class="register-section">
+
+            <div class="register-card">
+
+                <h2>
+                    Create Account
+                </h2>
+
+                <p class="subtitle">
+                    Register to continue to NCD Nepal.
+                </p>
+
+
+                <!-- REGISTRATION FORM -->
+
+                <form
+                    id="registerForm"
+                    method="POST"
+                    action="{{ url_for('register') }}"
+                >
+
+                    <!-- FULL NAME -->
+
+                    <div class="form-group">
+
+                        <label for="fullname">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fullname"
+                            name="fullname"
+                            placeholder="Enter your full name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="+977 98XXXXXXXX"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- DATE OF BIRTH + GENDER -->
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="date_of_birth">
+                                Date of Birth
+                            </label>
+
+                            <input
+                                type="date"
+                                id="date_of_birth"
+                                name="date_of_birth"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="gender">
+                                Gender
+                            </label>
+
+                            <select
+                                id="gender"
+                                name="gender"
+                                required
+                            >
+
+                                <option value="">
+                                    Select gender
+                                </option>
+
+                                <option value="male">
+                                    Male
+                                </option>
+
+                                <option value="female">
+                                    Female
+                                </option>
+
+                                <option value="other">
+                                    Other
+                                </option>
+
+                                <option value="prefer_not_to_say">
+                                    Prefer not to say
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ADDRESS -->
+
+                    <div class="form-group">
+
+                        <label for="address">
+                            Address
+                        </label>
+
+                        <textarea
+                            id="address"
+                            name="address"
+                            placeholder="Enter your address"
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- ACCOUNT TYPE -->
+
+                    <div class="form-group">
+
+                        <label for="accountType">
+                            Account Type
+                        </label>
+
+                        <select
+                            id="accountType"
+                            name="account_type"
+                            required
+                        >
+
+                            <option value="">
+                                Select account type
+                            </option>
+
+                            <option value="regular">
+                                Regular Population
+                            </option>
+
+                            <option value="patient">
+                                Patient
+                            </option>
+
+                            <option value="provider">
+                                Service Provider
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create a password"
+                                minlength="8"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="show-password"
+                                onclick="togglePassword('password', this)"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+                            Confirm Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirm_password"
+                                placeholder="Confirm your password"
+                                minlength="8"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="show-password"
+                                onclick="togglePassword('confirmPassword', this)"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TERMS -->
+
+                    <div class="terms">
+
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            name="terms"
+                            required
+                        >
+
+                        <label for="terms">
+                            I agree to the NCD Nepal
+                            <a href="#">
+                                terms and conditions
+                            </a>.
+                        </label>
+
+                    </div>
+
+
+                    <!-- REGISTER BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="register-button"
+                    >
+                        Create Account
+                    </button>
+
+
+                    <!-- ERROR MESSAGE -->
+
+                    <div
+                        id="message"
+                        class="message"
+                    ></div>
+
+                </form>
+
+
+                <!-- LOGIN LINK -->
+
+                <div class="login-link">
+
+                    Already have an account?
+
+                    <a href="{{ url_for('login') }}">
+                        Login
+                    </a>
+
+                </div>
+
+
+                <!-- BACK HOME -->
+
+                <div class="back-home">
+
+                    <a href="{{ url_for('home') }}">
+                        ← Back to Home
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- SHARED NCD NEPAL THEME SCRIPT -->
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+
+    <script>
+
+        /* ==========================================
+           SHOW / HIDE PASSWORD
+        ========================================== */
+
+        function togglePassword(id, button) {
+
+            const input = document.getElementById(id);
+
+            if (input.type === "password") {
+
+                input.type = "text";
+                button.textContent = "Hide";
+
+            } else {
+
+                input.type = "password";
+                button.textContent = "Show";
+
+            }
+
+        }
+
+
+        /* ==========================================
+           REGISTRATION VALIDATION
+        ========================================== */
+
+        document
+            .getElementById("registerForm")
+            .addEventListener("submit", function (event) {
+
+                const password =
+                    document.getElementById("password").value;
+
+                const confirmPassword =
+                    document.getElementById("confirmPassword").value;
+
+                const message =
+                    document.getElementById("message");
+
+
+                /* PASSWORD LENGTH */
+
+                if (password.length < 8) {
+
+                    event.preventDefault();
+
+                    message.textContent =
+                        "Password must contain at least 8 characters.";
+
+                    message.className = "message error";
+
+                    return;
+
+                }
+
+
+                /* PASSWORD MATCH */
+
+                if (password !== confirmPassword) {
+
+                    event.preventDefault();
+
+                    message.textContent =
+                        "Passwords do not match.";
+
+                    message.className = "message error";
+
+                    return;
+
+                }
+
+                /*
+                   If validation passes, the form is submitted
+                   to Flask using the POST method.
+                */
+
+            });
+
+    </script>
+
+</body>
+</html>

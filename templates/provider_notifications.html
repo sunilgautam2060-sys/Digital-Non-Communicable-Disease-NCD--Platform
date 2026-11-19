@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Notifications | NCD Nepal</title>
+
+    <style>
+        /* =====================================================
+           ROOT / THEME VARIABLES
+        ===================================================== */
+
+        :root {
+            --bg: #f4f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+
+            --text: #172033;
+            --text-soft: #667085;
+            --text-light: #98a2b3;
+
+            --border: #e4e7ec;
+
+            --primary: #176b5d;
+            --primary-dark: #0f5146;
+            --primary-soft: #e6f4f1;
+
+            --danger: #d92d20;
+            --danger-soft: #fef3f2;
+
+            --warning: #b54708;
+            --warning-soft: #fffaeb;
+
+            --success: #027a48;
+            --success-soft: #ecfdf3;
+
+            --info: #175cd3;
+            --info-soft: #eff8ff;
+
+            --sidebar: #ffffff;
+            --sidebar-text: #344054;
+            --sidebar-hover: #f2f8f7;
+
+            --shadow:
+                0 4px 20px rgba(16, 24, 40, 0.06);
+
+            --radius: 16px;
+        }
+
+
+        /* =====================================================
+           DARK THEME
+        ===================================================== */
+
+        html[data-theme="dark"] {
+            --bg: #101828;
+            --surface: #182230;
+            --surface-soft: #1d2939;
+
+            --text: #f2f4f7;
+            --text-soft: #98a2b3;
+            --text-light: #667085;
+
+            --border: #344054;
+
+            --primary: #45b39d;
+            --primary-dark: #75d4c0;
+            --primary-soft: rgba(69, 179, 157, 0.14);
+
+            --danger: #f97066;
+            --danger-soft: rgba(249, 112, 102, 0.12);
+
+            --warning: #fdb022;
+            --warning-soft: rgba(253, 176, 34, 0.12);
+
+            --success: #32d583;
+            --success-soft: rgba(50, 213, 131, 0.12);
+
+            --info: #53b1fd;
+            --info-soft: rgba(83, 177, 253, 0.12);
+
+            --sidebar: #121c2b;
+            --sidebar-text: #d0d5dd;
+            --sidebar-hover: #1d2939;
+
+            --shadow:
+                0 8px 30px rgba(0, 0, 0, 0.25);
+        }
+
+
+        /* =====================================================
+           SYSTEM THEME
+        ===================================================== */
+
+        @media (prefers-color-scheme: dark) {
+            html[data-theme="system"] {
+                --bg: #101828;
+                --surface: #182230;
+                --surface-soft: #1d2939;
+
+                --text: #f2f4f7;
+                --text-soft: #98a2b3;
+                --text-light: #667085;
+
+                --border: #344054;
+
+                --primary: #45b39d;
+                --primary-dark: #75d4c0;
+                --primary-soft: rgba(69, 179, 157, 0.14);
+
+                --danger: #f97066;
+                --danger-soft: rgba(249, 112, 102, 0.12);
+
+                --warning: #fdb022;
+                --warning-soft: rgba(253, 176, 34, 0.12);
+
+                --success: #32d583;
+                --success-soft: rgba(50, 213, 131, 0.12);
+
+                --info: #53b1fd;
+                --info-soft: rgba(83, 177, 253, 0.12);
+
+                --sidebar: #121c2b;
+                --sidebar-text: #d0d5dd;
+                --sidebar-hover: #1d2939;
+
+                --shadow:
+                    0 8px 30px rgba(0, 0, 0, 0.25);
+            }
+        }
+
+
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+
+            min-height: 100vh;
+
+            transition:
+                background 0.25s ease,
+                color 0.25s ease;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* =====================================================
+           APP LAYOUT
+        ===================================================== */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+
+            background: var(--sidebar);
+
+            border-right: 1px solid var(--border);
+
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            z-index: 1000;
+
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease,
+                transform 0.3s ease;
+        }
+
+        .brand {
+            padding: 26px 22px 20px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            background: var(--primary);
+
+            color: #ffffff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .brand-subtitle {
+            margin-top: 5px;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: 1.5px;
+
+            color: var(--text-soft);
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .nav {
+            padding: 20px 14px;
+
+            flex: 1;
+
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            padding: 0 10px 10px;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.2px;
+
+            color: var(--text-light);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            width: 100%;
+
+            padding: 11px 12px;
+
+            margin-bottom: 5px;
+
+            border-radius: 10px;
+
+            color: var(--sidebar-text);
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 24px;
+            min-width: 24px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+
+            min-width: 22px;
+            height: 22px;
+
+            padding: 0 6px;
+
+            border-radius: 999px;
+
+            background: var(--danger);
+
+            color: #ffffff;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* =====================================================
+           SIDEBAR FOOTER
+        ===================================================== */
+
+        .sidebar-footer {
+            padding: 16px 18px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .provider-mini {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 10px;
+        }
+
+        .provider-avatar {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--primary-soft);
+
+            color: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .provider-mini-info {
+            min-width: 0;
+        }
+
+        .provider-mini-name {
+            font-size: 12px;
+            font-weight: 700;
+
+            color: var(--text);
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .provider-mini-role {
+            font-size: 10px;
+
+            color: var(--text-soft);
+
+            margin-top: 2px;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 260px;
+
+            width: calc(100% - 260px);
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .topbar {
+            height: 74px;
+
+            background: var(--surface);
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            border: 0;
+
+            background: transparent;
+
+            color: var(--text);
+
+            font-size: 22px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 800;
+
+            color: var(--text);
+        }
+
+        .page-subtitle {
+            margin-top: 3px;
+
+            font-size: 12px;
+
+            color: var(--text-soft);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .theme-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-control label {
+            font-size: 11px;
+            font-weight: 700;
+
+            color: var(--text-soft);
+        }
+
+        .theme-select {
+            border: 1px solid var(--border);
+
+            background: var(--surface);
+
+            color: var(--text);
+
+            padding: 8px 10px;
+
+            border-radius: 9px;
+
+            font-size: 12px;
+
+            outline: none;
+        }
+
+        .theme-select:focus {
+            border-color: var(--primary);
+        }
+
+        .top-avatar {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 50%;
+
+            background: var(--primary-soft);
+
+            color: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           SUMMARY CARDS
+        ===================================================== */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            padding: 20px;
+
+            box-shadow: var(--shadow);
+
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 19px;
+
+            flex-shrink: 0;
+        }
+
+        .summary-icon.total {
+            background: var(--info-soft);
+            color: var(--info);
+        }
+
+        .summary-icon.unread {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .summary-icon.today {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .summary-label {
+            font-size: 12px;
+
+            color: var(--text-soft);
+
+            margin-bottom: 4px;
+        }
+
+        .summary-value {
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: var(--text);
+        }
+
+
+        /* =====================================================
+           TOOLBAR
+        ===================================================== */
+
+        .notification-card {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+        .toolbar {
+            padding: 18px 20px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid var(--border);
+
+            background: var(--surface);
+
+            color: var(--text-soft);
+
+            padding: 8px 13px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+
+            border-color: var(--primary);
+
+            color: #ffffff;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 230px;
+
+            padding: 9px 12px 9px 35px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            background: var(--surface);
+
+            color: var(--text);
+
+            outline: none;
+
+            font-size: 12px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+
+            left: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--text-light);
+
+            font-size: 13px;
+        }
+
+        .mark-all-btn {
+            border: 0;
+
+            background: var(--primary-soft);
+
+            color: var(--primary);
+
+            padding: 9px 13px;
+
+            border-radius: 9px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+        .mark-all-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+
+        /* =====================================================
+           NOTIFICATION LIST
+        ===================================================== */
+
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-item {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            padding: 20px;
+
+            border-bottom: 1px solid var(--border);
+
+            position: relative;
+
+            transition:
+                background 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .notification-item:last-child {
+            border-bottom: 0;
+        }
+
+        .notification-item:hover {
+            background: var(--surface-soft);
+        }
+
+        .notification-item.unread {
+            background: var(--primary-soft);
+        }
+
+        .notification-item.unread:hover {
+            background: var(--primary-soft);
+        }
+
+        .notification-icon {
+            width: 44px;
+            height: 44px;
+
+            min-width: 44px;
+
+            border-radius: 12px;
+
+            background: var(--info-soft);
+
+            color: var(--info);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+        .notification-item[data-type="appointment"] .notification-icon {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .notification-item[data-type="patient"] .notification-icon {
+            background: var(--info-soft);
+            color: var(--info);
+        }
+
+        .notification-item[data-type="system"] .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 5px;
+        }
+
+        .notification-title {
+            font-size: 14px;
+
+            font-weight: 800;
+
+            color: var(--text);
+        }
+
+        .unread-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--primary);
+
+            flex-shrink: 0;
+        }
+
+        .notification-message {
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            color: var(--text-soft);
+
+            max-width: 850px;
+        }
+
+        .notification-time {
+            margin-top: 8px;
+
+            font-size: 10px;
+
+            color: var(--text-light);
+        }
+
+        .notification-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            margin-left: auto;
+
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            border: 1px solid var(--border);
+
+            background: var(--surface);
+
+            color: var(--text-soft);
+
+            width: 34px;
+            height: 34px;
+
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+
+            transition:
+                color 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .action-btn.delete:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-soft);
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty-state {
+            padding: 65px 25px;
+
+            text-align: center;
+
+            display: none;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            background: var(--primary-soft);
+
+            color: var(--primary);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+        }
+
+        .empty-state h3 {
+            font-size: 15px;
+            margin-bottom: 7px;
+        }
+
+        .empty-state p {
+            font-size: 12px;
+            color: var(--text-soft);
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            text-align: center;
+
+            padding: 25px;
+
+            font-size: 10px;
+
+            color: var(--text-light);
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .search-box input {
+                width: 190px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .theme-control label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar-right {
+                gap: 8px;
+            }
+
+            .page-subtitle {
+                display: none;
+            }
+
+            .theme-select {
+                max-width: 90px;
+            }
+
+            .toolbar {
+                align-items: stretch;
+            }
+
+            .toolbar-actions {
+                width: 100%;
+            }
+
+            .search-box {
+                flex: 1;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .notification-item {
+                padding: 16px;
+                gap: 11px;
+            }
+
+            .notification-icon {
+                width: 38px;
+                height: 38px;
+                min-width: 38px;
+            }
+
+            .notification-actions {
+                position: absolute;
+
+                right: 15px;
+                top: 15px;
+            }
+
+            .notification-header {
+                padding-right: 80px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-top">
+
+                <div class="brand-logo">
+                    N+
+                </div>
+
+                <div>
+                    <div class="brand-name">
+                        NCD Nepal
+                    </div>
+
+                    <div class="brand-subtitle">
+                        HEALTH & WELLNESS
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="nav">
+
+            <div class="nav-section-title">
+                Main Menu
+            </div>
+
+
+            <a href="{{ url_for('service_provider') }}"
+               class="nav-link">
+
+                <span class="nav-icon">⌂</span>
+
+                <span>Dashboard</span>
+
+            </a>
+
+
+            <a href="{{ url_for('provider_appointments') }}"
+               class="nav-link">
+
+                <span class="nav-icon">◷</span>
+
+                <span>Appointments</span>
+
+            </a>
+
+
+            <a href="{{ url_for('patients') }}"
+               class="nav-link">
+
+                <span class="nav-icon">♙</span>
+
+                <span>Patients</span>
+
+            </a>
+
+
+            <a href="{{ url_for('consultation') }}"
+               class="nav-link">
+
+                <span class="nav-icon">▣</span>
+
+                <span>Consultation</span>
+
+            </a>
+
+
+            <a href="{{ url_for('follow_up') }}"
+               class="nav-link">
+
+                <span class="nav-icon">↻</span>
+
+                <span>Follow-up</span>
+
+            </a>
+
+
+            <a href="{{ url_for('availability') }}"
+               class="nav-link">
+
+                <span class="nav-icon">◉</span>
+
+                <span>Availability</span>
+
+            </a>
+
+
+            <a href="{{ url_for('provider_notifications') }}"
+               class="nav-link active">
+
+                <span class="nav-icon">🔔</span>
+
+                <span>Notifications</span>
+
+                {% if unread_count > 0 %}
+                    <span class="nav-badge">
+                        {{ unread_count }}
+                    </span>
+                {% endif %}
+
+            </a>
+
+
+            <div class="nav-section-title"
+                 style="margin-top: 24px;">
+
+                Account
+
+            </div>
+
+
+            <a href="{{ url_for('provider_profile') }}"
+               class="nav-link">
+
+                <span class="nav-icon">◎</span>
+
+                <span>Profile</span>
+
+            </a>
+
+
+            <a href="{{ url_for('provider_settings') }}"
+               class="nav-link">
+
+                <span class="nav-icon">⚙</span>
+
+                <span>Settings</span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- PROVIDER FOOTER -->
+
+        <div class="sidebar-footer">
+
+            <div class="provider-mini">
+
+                <div class="provider-avatar">
+
+                    {% if provider_name %}
+                        {{ provider_name[:1]|upper }}
+                    {% else %}
+                        P
+                    {% endif %}
+
+                </div>
+
+                <div class="provider-mini-info">
+
+                    <div class="provider-mini-name">
+                        {{ provider_name or "Service Provider" }}
+                    </div>
+
+                    <div class="provider-mini-role">
+                        Service Provider
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="mobile-menu"
+                    onclick="toggleSidebar()"
+                    aria-label="Open menu">
+                    ☰
+                </button>
+
+
+                <div>
+
+                    <div class="page-title">
+                        Notifications
+                    </div>
+
+                    <div class="page-subtitle">
+                        Stay updated with appointments, patients and system activity.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <!-- APPEARANCE -->
+
+                <div class="theme-control">
+
+                    <label for="themeSelect">
+                        Appearance
+                    </label>
+
+                    <select
+                        id="themeSelect"
+                        class="theme-select"
+                        onchange="changeTheme(this.value)">
+
+                        <option value="light">
+                            Light
+                        </option>
+
+                        <option value="dark">
+                            Dark
+                        </option>
+
+                        <option value="system">
+                            System
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="top-avatar">
+
+                    {% if provider_name %}
+                        {{ provider_name[:1]|upper }}
+                    {% else %}
+                        P
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             CONTENT
+        ================================================== -->
+
+        <section class="content">
+
+
+            <!-- SUMMARY -->
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <div class="summary-icon total">
+                        🔔
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+                            Total Notifications
+                        </div>
+
+                        <div class="summary-value"
+                             id="totalNotifications">
+                            {{ notifications|length }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon unread">
+                        ●
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+                            Unread Notifications
+                        </div>
+
+                        <div class="summary-value"
+                             id="unreadNotifications">
+                            {{ unread_count }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon today">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <div class="summary-label">
+                            Notification Status
+                        </div>
+
+                        <div class="summary-value"
+                             id="notificationStatus"
+                             style="font-size: 17px;">
+                            Active
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- NOTIFICATION CARD -->
+
+            <div class="notification-card">
+
+
+                <!-- TOOLBAR -->
+
+                <div class="toolbar">
+
+
+                    <!-- FILTERS -->
+
+                    <div class="filters">
+
+                        <button
+                            class="filter-btn active"
+                            data-filter="all"
+                            onclick="filterNotifications('all', this)">
+                            All
+                        </button>
+
+                        <button
+                            class="filter-btn"
+                            data-filter="unread"
+                            onclick="filterNotifications('unread', this)">
+                            Unread
+                        </button>
+
+                        <button
+                            class="filter-btn"
+                            data-filter="appointment"
+                            onclick="filterNotifications('appointment', this)">
+                            Appointments
+                        </button>
+
+                        <button
+                            class="filter-btn"
+                            data-filter="patient"
+                            onclick="filterNotifications('patient', this)">
+                            Patients
+                        </button>
+
+                        <button
+                            class="filter-btn"
+                            data-filter="system"
+                            onclick="filterNotifications('system', this)">
+                            System
+                        </button>
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="toolbar-actions">
+
+                        <div class="search-box">
+
+                            <span class="search-icon">
+                                🔎
+                            </span>
+
+                            <input
+                                type="text"
+                                id="notificationSearch"
+                                placeholder="Search notifications..."
+                                oninput="searchNotifications()">
+
+                        </div>
+
+
+                        <button
+                            class="mark-all-btn"
+                            onclick="markAllAsRead()">
+                            Mark all as read
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTIFICATION LIST -->
+
+                <div class="notification-list"
+                     id="notificationList">
+
+
+                    {% for notification in notifications %}
+
+                    <div
+                        class="notification-item {% if notification.unread %}unread{% endif %}"
+                        data-id="{{ notification.id }}"
+                        data-type="{{ notification.type }}"
+                        data-unread="{{ 'true' if notification.unread else 'false' }}">
+
+
+                        <!-- ICON -->
+
+                        <div class="notification-icon">
+
+                            {{ notification.icon }}
+
+                        </div>
+
+
+                        <!-- CONTENT -->
+
+                        <div class="notification-content">
+
+                            <div class="notification-header">
+
+                                <div class="notification-title">
+                                    {{ notification.title }}
+                                </div>
+
+                                {% if notification.unread %}
+
+                                    <span
+                                        class="unread-dot"
+                                        title="Unread notification">
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="notification-message">
+
+                                {{ notification.message }}
+
+                            </div>
+
+
+                            <div class="notification-time">
+
+                                {{ notification.time }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+
+                        <div class="notification-actions">
+
+
+                            {% if notification.unread %}
+
+                            <button
+                                class="action-btn"
+                                title="Mark as read"
+                                onclick="markAsRead(this)">
+                                ✓
+                            </button>
+
+                            {% endif %}
+
+
+                            {% if notification.link %}
+
+                            <a
+                                href="{{ notification.link }}"
+                                class="action-btn"
+                                title="Open">
+                                →
+                            </a>
+
+                            {% endif %}
+
+
+                            <button
+                                class="action-btn delete"
+                                title="Delete"
+                                onclick="deleteNotification(this)">
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    {% else %}
+
+                    <div
+                        class="empty-state"
+                        id="serverEmptyState"
+                        style="display:block;">
+
+                        <div class="empty-icon">
+                            ✓
+                        </div>
+
+                        <h3>
+                            You're all caught up
+                        </h3>
+
+                        <p>
+                            There are no notifications to display right now.
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+
+                    <!-- CLIENT EMPTY STATE -->
+
+                    <div
+                        class="empty-state"
+                        id="clientEmptyState">
+
+                        <div class="empty-icon">
+                            🔎
+                        </div>
+
+                        <h3>
+                            No matching notifications
+                        </h3>
+
+                        <p>
+                            Try changing your filter or search term.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <div class="footer">
+
+                NCD Nepal © 2026 ·
+                AWARENESS • ACCESS • CONTINUITY
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       SIDEBAR
+    ========================================================= */
+
+    function toggleSidebar() {
+
+        const sidebar = document.getElementById("sidebar");
+
+        sidebar.classList.toggle("show");
+
+    }
+
+
+    /* =========================================================
+       APPEARANCE
+    ========================================================= */
+
+    function applyTheme(theme) {
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            theme
+        );
+
+        localStorage.setItem(
+            "ncd_provider_theme",
+            theme
+        );
+
+        const selector =
+            document.getElementById("themeSelect");
+
+        if (selector) {
+            selector.value = theme;
+        }
+    }
+
+
+    function changeTheme(theme) {
+
+        applyTheme(theme);
+
+    }
+
+
+    function loadTheme() {
+
+        const savedTheme =
+            localStorage.getItem(
+                "ncd_provider_theme"
+            ) || "system";
+
+        applyTheme(savedTheme);
+
+    }
+
+
+    /* =========================================================
+       FILTER
+    ========================================================= */
+
+    let currentFilter = "all";
+
+
+    function filterNotifications(filter, button) {
+
+        currentFilter = filter;
+
+        const buttons =
+            document.querySelectorAll(".filter-btn");
+
+        buttons.forEach(function (btn) {
+
+            btn.classList.remove("active");
+
+        });
+
+        button.classList.add("active");
+
+        applyNotificationFilters();
+
+    }
+
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    function searchNotifications() {
+
+        applyNotificationFilters();
+
+    }
+
+
+    /* =========================================================
+       APPLY FILTER + SEARCH
+    ========================================================= */
+
+    function applyNotificationFilters() {
+
+        const searchInput =
+            document.getElementById(
+                "notificationSearch"
+            );
+
+        const searchTerm =
+            searchInput
+                ? searchInput.value.toLowerCase().trim()
+                : "";
+
+        const items =
+            document.querySelectorAll(
+                ".notification-item"
+            );
+
+        let visibleCount = 0;
+
+
+        items.forEach(function (item) {
+
+            const type =
+                item.dataset.type || "";
+
+            const unread =
+                item.dataset.unread === "true";
+
+            const text =
+                item.innerText.toLowerCase();
+
+
+            let filterMatch = true;
+
+
+            if (currentFilter === "unread") {
+
+                filterMatch = unread;
+
+            } else if (
+                currentFilter !== "all"
+            ) {
+
+                filterMatch =
+                    type === currentFilter;
+
+            }
+
+
+            let searchMatch = true;
+
+
+            if (searchTerm !== "") {
+
+                searchMatch =
+                    text.includes(searchTerm);
+
+            }
+
+
+            if (
+                filterMatch &&
+                searchMatch
+            ) {
+
+                item.style.display = "flex";
+
+                visibleCount++;
+
+            } else {
+
+                item.style.display = "none";
+
+            }
+
+        });
+
+
+        updateEmptyState(visibleCount);
+
+    }
+
+
+    /* =========================================================
+       EMPTY STATE
+    ========================================================= */
+
+    function updateEmptyState(visibleCount) {
+
+        const clientEmpty =
+            document.getElementById(
+                "clientEmptyState"
+            );
+
+        const items =
+            document.querySelectorAll(
+                ".notification-item"
+            );
+
+
+        if (
+            items.length > 0 &&
+            visibleCount === 0
+        ) {
+
+            clientEmpty.style.display =
+                "block";
+
+        } else {
+
+            clientEmpty.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       MARK ONE AS READ
+    ========================================================= */
+
+    function markAsRead(button) {
+
+        const item =
+            button.closest(
+                ".notification-item"
+            );
+
+        if (!item) {
+            return;
+        }
+
+
+        if (
+            item.dataset.unread !== "true"
+        ) {
+            return;
+        }
+
+
+        item.dataset.unread = "false";
+
+        item.classList.remove(
+            "unread"
+        );
+
+
+        const dot =
+            item.querySelector(
+                ".unread-dot"
+            );
+
+        if (dot) {
+            dot.remove();
+        }
+
+
+        button.remove();
+
+
+        updateUnreadCount();
+
+        applyNotificationFilters();
+
+    }
+
+
+    /* =========================================================
+       MARK ALL AS READ
+    ========================================================= */
+
+    function markAllAsRead() {
+
+        const items =
+            document.querySelectorAll(
+                ".notification-item"
+            );
+
+
+        items.forEach(function (item) {
+
+            item.dataset.unread =
+                "false";
+
+            item.classList.remove(
+                "unread"
+            );
+
+
+            const dot =
+                item.querySelector(
+                    ".unread-dot"
+                );
+
+            if (dot) {
+                dot.remove();
+            }
+
+
+            const readButton =
+                item.querySelector(
+                    ".action-btn[title='Mark as read']"
+                );
+
+            if (readButton) {
+
+                readButton.remove();
+
+            }
+
+        });
+
+
+        updateUnreadCount();
+
+        applyNotificationFilters();
+
+    }
+
+
+    /* =========================================================
+       UPDATE UNREAD COUNT
+    ========================================================= */
+
+    function updateUnreadCount() {
+
+        const unreadItems =
+            document.querySelectorAll(
+                ".notification-item[data-unread='true']"
+            );
+
+        const count =
+            unreadItems.length;
+
+
+        const unreadElement =
+            document.getElementById(
+                "unreadNotifications"
+            );
+
+        if (unreadElement) {
+
+            unreadElement.textContent =
+                count;
+
+        }
+
+
+        const badge =
+            document.querySelector(
+                ".nav-badge"
+            );
+
+
+        if (count === 0) {
+
+            if (badge) {
+                badge.remove();
+            }
+
+        } else {
+
+            if (badge) {
+
+                badge.textContent =
+                    count;
+
+            } else {
+
+                const notificationLink =
+                    document.querySelector(
+                        ".nav-link.active"
+                    );
+
+                if (notificationLink) {
+
+                    const newBadge =
+                        document.createElement(
+                            "span"
+                        );
+
+                    newBadge.className =
+                        "nav-badge";
+
+                    newBadge.textContent =
+                        count;
+
+                    notificationLink.appendChild(
+                        newBadge
+                    );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       DELETE NOTIFICATION
+    ========================================================= */
+
+    function deleteNotification(button) {
+
+        const item =
+            button.closest(
+                ".notification-item"
+            );
+
+        if (!item) {
+            return;
+        }
+
+
+        item.remove();
+
+
+        updateTotalCount();
+
+        updateUnreadCount();
+
+        applyNotificationFilters();
+
+    }
+
+
+    /* =========================================================
+       UPDATE TOTAL COUNT
+    ========================================================= */
+
+    function updateTotalCount() {
+
+        const total =
+            document.querySelectorAll(
+                ".notification-item"
+            ).length;
+
+        const totalElement =
+            document.getElementById(
+                "totalNotifications"
+            );
+
+        if (totalElement) {
+
+            totalElement.textContent =
+                total;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       INITIALIZATION
+    ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            loadTheme();
+
+            updateUnreadCount();
+
+            updateTotalCount();
+
+            applyNotificationFilters();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>
