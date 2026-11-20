@@ -1,10 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from datetime import datetime, date
 from functools import wraps
+from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+import os
 
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "ncd-nepal-secret-key"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+
+# Database configuration
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Initialize extensions
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 # =========================================================
