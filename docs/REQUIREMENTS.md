@@ -1,6 +1,6 @@
 # NCD Platform — Requirements
 
-## 1. Project Purpose
+### 1. Project Purpose
 
 The NCD Platform is a digital health platform for non-communicable disease (NCD) awareness, prevention, monitoring, and continuity of care. It enables patients to manage their health and connect with healthcare service providers, while giving providers tools to manage appointments, patient records, consultation notes, and follow-ups.
 
