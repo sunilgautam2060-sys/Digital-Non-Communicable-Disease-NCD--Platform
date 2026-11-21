@@ -1453,6 +1453,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 
@@ -1757,7 +1758,7 @@
                     <div class="stat-top">
 
                         <span class="stat-label">
-                            Today's Appointments
+                            Total Appointments
                         </span>
 
                         <div class="stat-icon">
@@ -1768,13 +1769,13 @@
 
 
                     <div class="stat-number"
-                         data-target="8">
+                         data-target="{{ total_appointments }}">
                         0
                     </div>
 
 
                     <div class="stat-change">
-                        ↑ 2 from yesterday
+                        All appointment requests
                     </div>
 
                 </div>
@@ -1786,7 +1787,7 @@
                     <div class="stat-top">
 
                         <span class="stat-label">
-                            Active Patients
+                            Total Patients
                         </span>
 
                         <div class="stat-icon">
@@ -1797,13 +1798,13 @@
 
 
                     <div class="stat-number"
-                         data-target="42">
+                         data-target="{{ total_patients }}">
                         0
                     </div>
 
 
                     <div class="stat-change">
-                        ↑ 5 this month
+                        Patients with appointments
                     </div>
 
                 </div>
@@ -1826,7 +1827,7 @@
 
 
                     <div class="stat-number"
-                         data-target="5">
+                         data-target="{{ pending_appointments }}">
                         0
                     </div>
 
@@ -1855,13 +1856,13 @@
 
 
                     <div class="stat-number"
-                         data-target="7">
+                         data-target="{{ followups_due }}">
                         0
                     </div>
 
 
                     <div class="stat-change">
-                        Due this week
+                        Due today
                     </div>
 
                 </div>
@@ -1905,158 +1906,20 @@
 
 
                     <div class="appointment-list">
-
-
+                        {% for appointment in today_appointments %}
                         <div class="appointment">
-
-                            <div class="appointment-time">
-                                09:00 AM
-                            </div>
-
-                            <div class="patient-avatar">
-                                RS
-                            </div>
-
+                            <div class="appointment-time">{{ appointment.appointment_time }}</div>
+                            <div class="patient-avatar">{{ appointment.patient_name[:2]|upper }}</div>
                             <div>
-
-                                <div class="appointment-name">
-                                    Ram Sharma
-                                </div>
-
-                                <div class="appointment-type">
-                                    General Consultation
-                                </div>
-
+                                <div class="appointment-name">{{ appointment.patient_name }}</div>
+                                <div class="appointment-type">{{ appointment.service }}</div>
                             </div>
-
-                            <span class="status confirmed">
-                                CONFIRMED
-                            </span>
-
+                            <span class="status {{ appointment.status|lower }}">{{ appointment.status|upper }}</span>
                         </div>
-
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                10:30 AM
-                            </div>
-
-                            <div class="patient-avatar">
-                                SK
-                            </div>
-
-                            <div>
-
-                                <div class="appointment-name">
-                                    Sita Karki
-                                </div>
-
-                                <div class="appointment-type">
-                                    Blood Pressure Follow-up
-                                </div>
-
-                            </div>
-
-                            <span class="status confirmed">
-                                CONFIRMED
-                            </span>
-
-                        </div>
-
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                12:00 PM
-                            </div>
-
-                            <div class="patient-avatar">
-                                BM
-                            </div>
-
-                            <div>
-
-                                <div class="appointment-name">
-                                    Bikash Maharjan
-                                </div>
-
-                                <div class="appointment-type">
-                                    Diabetes Consultation
-                                </div>
-
-                            </div>
-
-                            <span class="status pending">
-                                PENDING
-                            </span>
-
-                        </div>
-
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                02:30 PM
-                            </div>
-
-                            <div class="patient-avatar">
-                                AK
-                            </div>
-
-                            <div>
-
-                                <div class="appointment-name">
-                                    Anita KC
-                                </div>
-
-                                <div class="appointment-type">
-                                    Thyroid Monitoring
-                                </div>
-
-                            </div>
-
-                            <span class="status confirmed">
-                                CONFIRMED
-                            </span>
-
-                        </div>
-
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                04:00 PM
-                            </div>
-
-                            <div class="patient-avatar">
-                                PS
-                            </div>
-
-                            <div>
-
-                                <div class="appointment-name">
-                                    Prakash Shah
-                                </div>
-
-                                <div class="appointment-type">
-                                    Follow-up Consultation
-                                </div>
-
-                            </div>
-
-                            <span class="status completed">
-                                COMPLETED
-                            </span>
-
-                        </div>
-
+                        {% else %}
+                        <p class="empty-state">No appointments are scheduled for today.</p>
+                        {% endfor %}
                     </div>
-
                 </section>
 
 
@@ -2191,301 +2054,51 @@
 
 
                 <!-- RECENT PATIENTS -->
-
                 <section class="panel">
-
                     <div class="panel-header">
-
                         <div>
-
-                            <div class="panel-title">
-                                Recent Patients
-                            </div>
-
-                            <div class="panel-subtitle">
-                                Recently active patient accounts
-                            </div>
-
+                            <div class="panel-title">Recent Patients</div>
+                            <div class="panel-subtitle">Patients with your appointments</div>
                         </div>
-
-
-                        <a href="{{ url_for('patients') }}"
-                           class="view-all">
-                            VIEW ALL →
-                        </a>
-
+                        <a href="{{ url_for('patients') }}" class="view-all">VIEW ALL →</a>
                     </div>
-
-
                     <div>
-
-
+                        {% for patient in patients[:4] %}
                         <div class="patient-row">
-
-                            <div class="patient-avatar">
-                                RS
-                            </div>
-
+                            <div class="patient-avatar">{{ patient.fullname[:2]|upper }}</div>
                             <div>
-
-                                <div class="patient-name">
-                                    Ram Sharma
-                                </div>
-
-                                <div class="patient-activity">
-                                    Last activity: Today
-                                </div>
-
+                                <div class="patient-name">{{ patient.fullname }}</div>
+                                <div class="patient-activity">{{ patient.email }}</div>
                             </div>
-
-                            <div>
-
-                                <span class="condition">
-                                    Diabetes
-                                </span>
-
-                                <a href="{{ url_for('patients') }}"
-                                   class="patient-view">
-                                    VIEW
-                                </a>
-
-                            </div>
-
+                            <a href="{{ url_for('patient_details', patient_id=patient.patient_id) }}" class="patient-view">VIEW</a>
                         </div>
-
-
-
-                        <div class="patient-row">
-
-                            <div class="patient-avatar">
-                                SK
-                            </div>
-
-                            <div>
-
-                                <div class="patient-name">
-                                    Sita Karki
-                                </div>
-
-                                <div class="patient-activity">
-                                    Last activity: Yesterday
-                                </div>
-
-                            </div>
-
-                            <div>
-
-                                <span class="condition">
-                                    BP
-                                </span>
-
-                                <a href="{{ url_for('patients') }}"
-                                   class="patient-view">
-                                    VIEW
-                                </a>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="patient-row">
-
-                            <div class="patient-avatar">
-                                BM
-                            </div>
-
-                            <div>
-
-                                <div class="patient-name">
-                                    Bikash Maharjan
-                                </div>
-
-                                <div class="patient-activity">
-                                    Last activity: Nov 08
-                                </div>
-
-                            </div>
-
-                            <div>
-
-                                <span class="condition">
-                                    Diabetes
-                                </span>
-
-                                <a href="{{ url_for('patients') }}"
-                                   class="patient-view">
-                                    VIEW
-                                </a>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="patient-row">
-
-                            <div class="patient-avatar">
-                                AK
-                            </div>
-
-                            <div>
-
-                                <div class="patient-name">
-                                    Anita KC
-                                </div>
-
-                                <div class="patient-activity">
-                                    Last activity: Nov 07
-                                </div>
-
-                            </div>
-
-                            <div>
-
-                                <span class="condition">
-                                    Thyroid
-                                </span>
-
-                                <a href="{{ url_for('patients') }}"
-                                   class="patient-view">
-                                    VIEW
-                                </a>
-
-                            </div>
-
-                        </div>
-
+                        {% else %}
+                        <p class="empty-state">No patients yet. Patients appear here after they book an appointment with you.</p>
+                        {% endfor %}
                     </div>
-
                 </section>
-
-
-
                 <!-- RECENT ACTIVITY -->
-
                 <section class="panel">
-
                     <div class="panel-header">
-
                         <div>
-
-                            <div class="panel-title">
-                                Recent Activity
-                            </div>
-
-                            <div class="panel-subtitle">
-                                Latest workspace activity
-                            </div>
-
+                            <div class="panel-title">Recent Appointments</div>
+                            <div class="panel-subtitle">Latest appointments in your schedule</div>
                         </div>
-
                     </div>
-
-
                     <div class="activity-list">
-
-
+                        {% for appointment in appointments[:4] %}
                         <div class="activity">
-
-                            <div class="activity-icon">
-                                ✓
-                            </div>
-
+                            <div class="activity-icon">{% if appointment.status == 'Pending' %}+{% else %}✓{% endif %}</div>
                             <div>
-
-                                <div class="activity-text">
-                                    <strong>Sita Karki</strong>
-                                    completed her scheduled follow-up.
-                                </div>
-
-                                <div class="activity-time">
-                                    25 minutes ago
-                                </div>
-
+                                <div class="activity-text"><strong>{{ appointment.patient_name }}</strong> — {{ appointment.status|lower }} appointment for {{ appointment.appointment_date_display }}.</div>
+                                <div class="activity-time">{{ appointment.appointment_time }} · {{ appointment.service }}</div>
                             </div>
-
                         </div>
-
-
-
-                        <div class="activity">
-
-                            <div class="activity-icon">
-                                +
-                            </div>
-
-                            <div>
-
-                                <div class="activity-text">
-                                    New consultation request received from
-                                    <strong>Ram Sharma</strong>.
-                                </div>
-
-                                <div class="activity-time">
-                                    1 hour ago
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="activity">
-
-                            <div class="activity-icon">
-                                ↻
-                            </div>
-
-                            <div>
-
-                                <div class="activity-text">
-                                    Follow-up reminder scheduled for
-                                    <strong>Anita KC</strong>.
-                                </div>
-
-                                <div class="activity-time">
-                                    3 hours ago
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="activity">
-
-                            <div class="activity-icon">
-                                !
-                            </div>
-
-                            <div>
-
-                                <div class="activity-text">
-                                    Appointment request requires your
-                                    confirmation.
-                                </div>
-
-                                <div class="activity-time">
-                                    5 hours ago
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                        {% else %}
+                        <p class="empty-state">No appointment activity yet.</p>
+                        {% endfor %}
                     </div>
-
                 </section>
-
-            </div>
-
-
-
             <!-- =========================
                  AVAILABILITY
             ========================== -->
@@ -2843,6 +2456,7 @@
 </script>
 
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 
 </html>

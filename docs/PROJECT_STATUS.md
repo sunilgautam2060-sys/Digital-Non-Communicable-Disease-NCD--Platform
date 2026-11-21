@@ -7,7 +7,7 @@ The NCD Platform is a digital health platform for non-communicable disease aware
 - **Patients** — register, log in, book appointments, view health records, receive notifications, manage settings.
 - **Service Providers** (doctors/health workers) — register, log in, manage appointments, view patient lists/details, add consultation notes and follow-ups, manage availability and settings.
 
-The frontend consists of HTML templates served by a Flask application (`app.py`). Data is currently stored in memory (Python lists/dictionaries) inside `app.py`, not in a database.
+The frontend consists of HTML templates served by a Flask application (`app.py`). Patient and provider accounts and the appointment workflow use PostgreSQL through SQLAlchemy. Several other features still use in-memory or client-side storage.
 
 ## 2. Development Environment
 
@@ -17,7 +17,7 @@ The frontend consists of HTML templates served by a Flask application (`app.py`)
 - **Templates:** 23 HTML files in `templates/`
 - **Static assets:** `static/css/style.css` (1,539 lines), `static/js/script.js` (153 lines)
 - **Entry point:** `index.html` via Flask route `@app.route("/")`
-- **Data storage:** In-memory only (no database; data resets on server restart)
+- **Data storage:** Patient/provider accounts and appointments persist in PostgreSQL; other feature areas remain in-memory or client-side
 - **Authentication:** Flask session-based (cookies), separate patient and provider sessions
 - **Python version:** 3.13.5 (system Python)
 - **Virtual environment:** `.venv` at `E:\Desktop\ncd-frontend\ncd\.venv` (Python 3.13.5)
@@ -54,22 +54,47 @@ The frontend consists of HTML templates served by a Flask application (`app.py`)
   - `.env.example` created with SECRET_KEY and DATABASE_URL placeholders
   - python-dotenv installed and added to requirements.txt
   - Verified `.env` is correctly ignored by Git
-- **Database integration configured and verified:**
-  - `.env` created with real credentials (PostgreSQL user `postgres`, database `ncd_platform`)
-  - `app.py` updated: loads env vars via `load_dotenv()`, configures `SQLALCHEMY_DATABASE_URI`, initializes `db = SQLAlchemy(app)` and `migrate = Migrate(app, db)`
-  - Secret key moved from hardcoded to `SECRET_KEY` environment variable
-  - **Database connection verified successful** — SQLAlchemy engine connects to PostgreSQL 18
-  - Flask app runs correctly with new configuration (home page returns 200)
+- **SQLAlchemy models created and migration applied:**
+  - `models.py` created with Patient, Provider, Appointment, HealthRecord, ConsultationNote, FollowUp, ProviderSettings
+  - `flask db init` → `flask db migrate` → `flask db upgrade` executed successfully
+  - **7 new tables created**: `patient`, `provider`, `appointment`, `health_record`, `consultation_note`, `follow_up`, `provider_settings`
+  - Migration version `80e02a7b45bd` recorded in `alembic_version`
+  - Existing Django tables preserved (no drops, no cascade)
+  - App imports verified; database connection verified
+- **Patient/provider authentication connected to SQLAlchemy:**
+  - Registration and login use the Patient and Provider models
+  - Passwords are stored as Werkzeug hashes and checked with `check_password_hash`
+  - Duplicate registration and invalid-login messages are displayed in the existing templates
+  - Provider form first/last name fields are combined for the model's `fullname`
+  - Provider identity helper reads the provider associated with the current session
+  - Verification passed with Flask's test client and a temporary in-memory SQLite database; PostgreSQL was not used for test accounts
+- **Appointment workflow connected to SQLAlchemy:**
+  - Patient booking, listing, rescheduling, and cancellation use the `appointment` table
+  - Providers can view assigned appointments and confirm, reject, cancel, or complete permitted statuses
+  - Patient/provider ownership is checked on the server
+  - Provider choices are loaded from registered provider accounts; demo appointment rows were removed
+  - Patient and provider notifications, provider appointment counts, and provider patient lists use database appointments
+  - Migration `b7c4d2e91a63` added nullable `service` and `location` columns and was applied to PostgreSQL without dropping existing tables
+  - Full route flow and access checks passed on isolated in-memory SQLite; PostgreSQL was used only to apply and inspect the schema migration
+- **Direct app launch fixed:** moved the shared SQLAlchemy object to `extensions.py`, so `app.py` and `models.py` no longer import each other. `python app.py` was verified to start the Flask server using an isolated SQLite URL; no PostgreSQL data was changed during this launch check.
+- **Provider patient pages unblocked:** added the missing `/patients` route, corrected the patient details template path, and aligned template endpoint names with Flask routes
+- **Patient profile and health records pages unblocked:** added `profile.html` and `records.html`; records are scoped to the logged-in patient and loaded from `health_record`
+- **Patient weight now persists:** monitoring reads the latest weight entries from `health_record`; the authenticated `/monitoring/weight` endpoint validates and saves new values
+- **Provider dashboard demo content removed:** summary counts and recent appointment/patient/activity panels now use the logged-in provider's database appointments and show empty states when none exist
+- **Provider appointment action fixed:** `last_action_by` now stores the role value `provider`, which fits its `String(20)` column instead of storing a potentially longer email address
+- **Shared appearance applied across templates:** added shared theme CSS/JavaScript and fixed broken dashboard/monitoring `script.js` paths; both patient and provider saved theme settings are read
+- **Password change flow repaired:** added the missing page, aligned the settings URL with Flask, and made the endpoint return JSON for the settings modal while retaining form support
+- **Provider patient detail not-found path repaired:** inaccessible or missing patient IDs redirect to the provider patient list instead of rendering with a null patient
+- **Verification passed on isolated in-memory SQLite:** current app/model import; patient profile, records, monitoring, provider dashboard; weight save; provider appointment confirmation using a long email; password update; and all 27 GET routes without server errors. No PostgreSQL test data was created.
 
 ## 4. Important Findings
 
-- **33 Flask routes** across patient and provider features.
-- **Missing templates:** `profile.html`, `records.html`, `change-password.html` do not exist (routes `/profile`, `/records`, `/change-password` will fail).
-- **Route name mismatches:** 5 `url_for()` calls in templates reference Flask function names that do not exist (e.g., `add_patient_note` vs `add_consultation_note`).
-- **Appointment booking is JavaScript-only:** hardcoded demo data, never calls the Flask `/appointments` POST route.
-- **Health monitoring, health records, and availability are client-side only** — no backend endpoints receive this data.
-- **Settings password change uses `fetch("/settings/change-password")`** but Flask route is `/change-password` — endpoint mismatch.
-- **Passwords stored in plain text** in `app.py`.
+- **36 Flask route rules** across patient and provider features.
+- **Patient template errors fixed:** patient `profile.html`, `records.html`, and `change-password.html` now exist and their routes were exercised on isolated SQLite.
+- **Appointment fees are still display estimates** from the frontend’s existing service pricing; no payment or fee records are stored.
+- **Health monitoring persistence is partial:** weight records are database-backed; other measurements and availability still use client-side storage.
+- Authentication and appointment workflows were exercised using isolated SQLite; browser behavior against PostgreSQL with real user accounts still needs a manual smoke check.
+- **Appointment workflow and several domain features remain in memory/client-side** and are not yet persistent across restarts.
 - No external JS frameworks; Google Fonts used in `availability.html` only.
 
 ## 5. Architecture Decision
@@ -84,17 +109,17 @@ Planned stack:
 - **Frontend:** Retain existing Flask-based HTML/CSS/JavaScript templates
 - **Integration:** Backend endpoints must integrate with existing frontend forms and routes
 
-This replaces the previous in-memory `app.config` storage with a PostgreSQL database accessed via SQLAlchemy.
+Patient and provider accounts and appointments are stored in PostgreSQL via SQLAlchemy. Remaining in-memory and client-side storage is used by unfinished features such as health monitoring, records, availability, consultation notes, and follow-ups.
 
 ## 6. Current Development Stage
 
-Requirements drafted (`docs/REQUIREMENTS.md`). Architecture: Flask + PostgreSQL + SQLAlchemy + Werkzeug. **Virtual environment created, dependencies installed, database connection configured and verified.** Flask app loads config from `.env`, initializes SQLAlchemy and Flask-Migrate. Ready to create SQLAlchemy models and run first migration.
+Requirements drafted (`docs/REQUIREMENTS.md`). Architecture: Flask + PostgreSQL + SQLAlchemy + Werkzeug. Patient/provider authentication and the core appointment workflow are database-backed. Weight records are now database-backed; several other non-MVP features remain unfinished. Targeted route smoke checks passed using an isolated in-memory SQLite database. The PostgreSQL-backed application still needs a manual browser smoke check with the user's existing accounts.
 
 ## 7. Immediate Next Task
 
-**Database configuration complete.** `.env` created with real credentials (ignored by Git), `.env.example` restored to placeholders. `app.py` updated: loads environment via `load_dotenv()`, configures `SQLALCHEMY_DATABASE_URI`, initializes `db = SQLAlchemy(app)` and `migrate = Migrate(app, db)`. Secret key moved to `SECRET_KEY` environment variable. **Database connection verified successful** — SQLAlchemy engine connects to PostgreSQL 18 `ncd_platform` database. Flask app runs correctly (home page returns 200).
+**Database setup, models, authentication, and the core appointment workflow are implemented.** Appointment migration `b7c4d2e91a63` is applied to PostgreSQL. End-to-end route checks used temporary in-memory SQLite to avoid inserting test accounts into PostgreSQL.
 
-Next step: **Create `models.py`** with Patient, Provider, Appointment models (and stubs for HealthRecord, ConsultationNote, FollowUp, ProviderSettings). Then run `flask db init` → `flask db migrate -m "Initial migration"` → `flask db upgrade`. Do not modify frontend files or route logic yet.
+Next step: **Run a manual browser smoke check using the local PostgreSQL-backed app with the user's existing patient and provider accounts.** Confirm dashboard empty states, patient profile/records, weight entry, provider appointment confirm/reject, and theme persistence across pages. Do not create duplicate real accounts or demo appointments.
 
 ## 8. Development Rules
 
@@ -236,12 +261,12 @@ class Appointment(db.Model):
    - Load config from environment using `load_dotenv()`
    - Add `SQLALCHEMY_DATABASE_URI`, `SQLALCHEMY_TRACK_MODIFICATIONS=False`
    - Initialize `db = SQLAlchemy(app)`, `migrate = Migrate(app, db)`
-   - Import `generate_password_hash`, `check_password_hash` from Werkzeug
-6. ⏳ **Create `models.py`** with Patient, Provider, Appointment (and stubs for future models)
-7. Run `flask db init` → `flask db migrate -m "Initial migration"` → `flask db upgrade`
-8. Verify tables created in PostgreSQL
+   - **Require `SECRET_KEY` and `DATABASE_URL`** (no silent defaults)
+6. ✅ **Create `models.py`** with Patient, Provider, Appointment, HealthRecord, ConsultationNote, FollowUp, ProviderSettings
+7. ✅ Run `flask db init` → `flask db migrate -m "Initial migration"` → `flask db upgrade`
+8. ✅ **Verify tables created** — 7 new tables confirmed in PostgreSQL
 
-**Status: STEPS 1-5 COMPLETE — Database configured and connection verified. Ready for Step 6 (create models.py).**
+**Status: Database setup, seven models, patient/provider authentication, database-backed appointment workflow, patient profile/records pages, and weight recording are implemented. Appointment migration `b7c4d2e91a63` is applied and schema columns verified in PostgreSQL. Targeted route flows and all 27 GET routes passed using isolated SQLite. Next task: manual browser smoke check against the PostgreSQL-backed app, then continue connecting the remaining client-side-only features.**
 
 **File location:** `E:\Desktop\ncd-frontend\ncd\docs\PROJECT_STATUS.md`  
 **Related file:** `docs/FRONTEND_AUDIT.md` (full frontend investigation report)

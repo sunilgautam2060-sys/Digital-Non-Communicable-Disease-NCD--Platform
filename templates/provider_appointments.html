@@ -843,6 +843,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 <body>
@@ -1227,6 +1228,22 @@
                             data-status="{{ current_status|e }}"
                             data-type="{{ consultation_type|e }}"
                         >
+
+                            <td hidden data-field="patient_name">{{ appointment.get('patient_name', '') }}</td>
+                            <td hidden data-field="patient_email">{{ appointment.get('patient_email', '') }}</td>
+                            <td hidden data-field="patient_phone">{{ appointment.get('patient_phone', '') }}</td>
+                            <td hidden data-field="patient_gender">{{ appointment.get('patient_gender', '') }}</td>
+                            <td hidden data-field="patient_dob">{{ appointment.get('patient_dob', '') }}</td>
+                            <td hidden data-field="patient_address">{{ appointment.get('patient_address', '') }}</td>
+                            <td hidden data-field="appointment_id">{{ appointment.get('appointment_id', appointment.get('id', '')) }}</td>
+                            <td hidden data-field="condition">{{ condition }}</td>
+                            <td hidden data-field="service">{{ appointment.get('service', condition) }}</td>
+                            <td hidden data-field="appointment_date">{{ appointment.get('appointment_date', '') }}</td>
+                            <td hidden data-field="appointment_time">{{ appointment.get('appointment_time', '') }}</td>
+                            <td hidden data-field="consultation_type">{{ consultation_type }}</td>
+                            <td hidden data-field="status">{{ current_status }}</td>
+                            <td hidden data-field="provider_name">{{ appointment.get('provider_name', provider_name) }}</td>
+                            <td hidden data-field="reason">{{ appointment.get('reason', '') }}</td>
 
                             <!-- PATIENT -->
 
@@ -2000,5 +2017,6 @@ filterAppointments();
 
 </script>
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 </html>

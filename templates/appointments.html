@@ -1175,6 +1175,7 @@
             color: #f87171;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 <body>
@@ -1312,163 +1313,55 @@
         </div>
 
 
-        <!-- =================================================
-             UPCOMING APPOINTMENT
-        ================================================== -->
-
+        <!-- UPCOMING APPOINTMENT -->
         <section class="card">
-
             <div class="section-header">
-
                 <div>
                     <h2>Upcoming Appointment</h2>
-
-                    <p>
-                        Your next scheduled healthcare consultation.
-                    </p>
+                    <p>Your next pending or confirmed healthcare consultation.</p>
                 </div>
-
             </div>
-
-
-            <div id="upcomingAppointment">
-
-                <div class="appointment-main">
-
-                    <div>
-
-                        <div class="doctor-box">
-
-                            <div class="doctor-avatar">
-                                AS
-                            </div>
-
-                            <div class="doctor-info">
-
-                                <h3>
-                                    Dr. Anisha Sharma
-                                </h3>
-
-                                <p>
-                                    General Physician
-                                </p>
-
-                                <p>
-                                    Diabetes &amp; Hypertension Consultation
-                                </p>
-
-                                <span class="status confirmed">
-                                    Confirmed
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="appointment-actions">
-
-                            <button
-                                class="secondary-btn"
-                                onclick="viewAppointment(0)">
-                                View Details
-                            </button>
-
-                            <button
-                                class="secondary-btn"
-                                onclick="openRescheduleModal(0)">
-                                Reschedule
-                            </button>
-
-                            <button
-                                class="danger-btn"
-                                onclick="cancelAppointment(0)">
-                                Cancel
-                            </button>
-
-                        </div>
-
+            {% if upcoming_appointment %}
+            <div id="upcomingAppointment" class="appointment-main">
+                <div class="doctor-cell">
+                    <div class="doctor-avatar">{{ upcoming_appointment.provider_name[:1]|upper }}</div>
+                    <div class="doctor-info">
+                        <h3>{{ upcoming_appointment.provider_name }}</h3>
+                        <p>{{ upcoming_appointment.provider_specialization or upcoming_appointment.provider_type }}</p>
+                        <p>{{ upcoming_appointment.service }}</p>
+                        <span class="status {{ upcoming_appointment.status|lower }}">{{ upcoming_appointment.status }}</span>
                     </div>
-
-
-                    <div class="appointment-details">
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                Date
-                            </div>
-
-                            <div class="detail-value">
-                                November 15, 2026
-                            </div>
-                        </div>
-
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                Time
-                            </div>
-
-                            <div class="detail-value">
-                                10:30 AM
-                            </div>
-                        </div>
-
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                Type
-                            </div>
-
-                            <div class="detail-value">
-                                Online
-                            </div>
-                        </div>
-
-
-                        <div class="detail-item">
-                            <div class="detail-label">
-                                Consultation Fee
-                            </div>
-
-                            <div class="detail-value fee-value">
-                                NPR 1,000
-                            </div>
-                        </div>
-
-                    </div>
-
                 </div>
-
+                <div class="appointment-details">
+                    <div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">{{ upcoming_appointment.appointment_date_display }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Time</div><div class="detail-value">{{ upcoming_appointment.appointment_time }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Type</div><div class="detail-value">{{ upcoming_appointment.consultation_type }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">{{ upcoming_appointment.location or "To be confirmed" }}</div></div>
+                </div>
+                <div class="appointment-actions">
+                    <button class="secondary-btn" onclick="viewAppointmentById({{ upcoming_appointment.id }})">View Details</button>
+                    <button class="secondary-btn" onclick="openRescheduleById({{ upcoming_appointment.id }})">Reschedule</button>
+                    <button class="danger-btn" onclick="cancelAppointmentById({{ upcoming_appointment.id }})">Cancel</button>
+                </div>
             </div>
-
+            {% else %}
+            <div id="upcomingAppointment" class="empty-state">
+                <p>You have no pending or confirmed upcoming appointments.</p>
+            </div>
+            {% endif %}
         </section>
 
 
-        <!-- =================================================
-             REMINDER
-        ================================================== -->
-
+        <!-- APPOINTMENT REMINDER -->
+        {% if upcoming_appointment %}
         <div class="reminder">
-
-            <div class="reminder-icon">
-                🔔
-            </div>
-
+            <div class="reminder-icon">🔔</div>
             <div class="reminder-text">
-
-                <h3>
-                    Appointment Reminder
-                </h3>
-
-                <p>
-                    Your upcoming consultation is scheduled for
-                    November 15, 2026 at 10:30 AM.
-                </p>
-
+                <h3>Appointment Reminder</h3>
+                <p>Your next appointment is scheduled for {{ upcoming_appointment.appointment_date_display }} at {{ upcoming_appointment.appointment_time }}.</p>
             </div>
-
         </div>
+        {% endif %}
 
 
         <!-- =================================================
@@ -1583,313 +1476,6 @@
 
 
                     <tbody id="appointmentTableBody">
-
-                        <!-- Row 1 -->
-
-                        <tr
-                            data-status="Upcoming"
-                            data-search="anisha sharma general physician diabetes hypertension november 15 2026">
-
-                            <td>
-
-                                <div class="doctor-cell">
-
-                                    <div class="small-avatar">
-                                        AS
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Dr. Anisha Sharma
-                                        </strong>
-
-                                        <span>
-                                            General Physician
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td>
-                                Diabetes Consultation
-                            </td>
-
-                            <td>
-                                Nov 15, 2026<br>
-                                10:30 AM
-                            </td>
-
-                            <td>
-                                Online
-                            </td>
-
-                            <td class="fee">
-                                NPR 1,000
-                            </td>
-
-                            <td>
-                                <span class="status confirmed">
-                                    Confirmed
-                                </span>
-                            </td>
-
-                            <td>
-
-                                <div class="action-buttons">
-
-                                    <button
-                                        class="table-btn"
-                                        onclick="viewAppointment(0)">
-                                        View
-                                    </button>
-
-                                    <button
-                                        class="table-btn"
-                                        onclick="openRescheduleModal(0)">
-                                        Reschedule
-                                    </button>
-
-                                    <button
-                                        class="table-btn cancel"
-                                        onclick="cancelAppointment(0)">
-                                        Cancel
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- Row 2 -->
-
-                        <tr
-                            data-status="Completed"
-                            data-search="suman thapa blood pressure hypertension november 3 2026">
-
-                            <td>
-
-                                <div class="doctor-cell">
-
-                                    <div class="small-avatar">
-                                        ST
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Dr. Suman Thapa
-                                        </strong>
-
-                                        <span>
-                                            Internal Medicine
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td>
-                                Blood Pressure Consultation
-                            </td>
-
-                            <td>
-                                Nov 03, 2026<br>
-                                2:00 PM
-                            </td>
-
-                            <td>
-                                In-person
-                            </td>
-
-                            <td class="fee">
-                                NPR 1,200
-                            </td>
-
-                            <td>
-                                <span class="status completed">
-                                    Completed
-                                </span>
-                            </td>
-
-                            <td>
-
-                                <div class="action-buttons">
-
-                                    <button
-                                        class="table-btn"
-                                        onclick="viewAppointment(1)">
-                                        View
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- Row 3 -->
-
-                        <tr
-                            data-status="Pending"
-                            data-search="riya karki thyroid endocrinology november 20 2026">
-
-                            <td>
-
-                                <div class="doctor-cell">
-
-                                    <div class="small-avatar">
-                                        RK
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            Dr. Riya Karki
-                                        </strong>
-
-                                        <span>
-                                            Endocrinology
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td>
-                                Thyroid Consultation
-                            </td>
-
-                            <td>
-                                Nov 20, 2026<br>
-                                11:00 AM
-                            </td>
-
-                            <td>
-                                Online
-                            </td>
-
-                            <td class="fee">
-                                NPR 1,200
-                            </td>
-
-                            <td>
-                                <span class="status pending">
-                                    Pending
-                                </span>
-                            </td>
-
-                            <td>
-
-                                <div class="action-buttons">
-
-                                    <button
-                                        class="table-btn"
-                                        onclick="viewAppointment(2)">
-                                        View
-                                    </button>
-
-                                    <button
-                                        class="table-btn"
-                                        onclick="openRescheduleModal(2)">
-                                        Reschedule
-                                    </button>
-
-                                    <button
-                                        class="table-btn cancel"
-                                        onclick="cancelAppointment(2)">
-                                        Cancel
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- Row 4 -->
-
-                        <tr
-                            data-status="Cancelled"
-                            data-search="nutrition lifestyle cancelled october 20 2026">
-
-                            <td>
-
-                                <div class="doctor-cell">
-
-                                    <div class="doctor-cell">
-
-                                        <div class="small-avatar">
-                                            NM
-                                        </div>
-
-                                        <div>
-
-                                            <strong>
-                                                Nutrition Specialist
-                                            </strong>
-
-                                            <span>
-                                                Nutrition &amp; Lifestyle
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-                            <td>
-                                Nutrition &amp; Lifestyle
-                            </td>
-
-                            <td>
-                                Oct 20, 2026<br>
-                                4:00 PM
-                            </td>
-
-                            <td>
-                                Online
-                            </td>
-
-                            <td class="fee">
-                                NPR 800
-                            </td>
-
-                            <td>
-                                <span class="status cancelled">
-                                    Cancelled
-                                </span>
-                            </td>
-
-                            <td>
-
-                                <div class="action-buttons">
-
-                                    <button
-                                        class="table-btn"
-                                        onclick="viewAppointment(3)">
-                                        View
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
 
                     </tbody>
 
@@ -2341,111 +1927,15 @@
     from your organization's verified backend/database/API.
     */
 
-    const doctors = {
-
-        "General Consultation": [
-            {
-                name: "Dr. Anisha Sharma",
-                specialty: "General Physician",
-                fee: 1000,
-                initials: "AS"
-            }
-        ],
-
-        "Diabetes Consultation": [
-            {
-                name: "Dr. Anisha Sharma",
-                specialty: "General Physician",
-                fee: 1000,
-                initials: "AS"
-            }
-        ],
-
-        "Blood Pressure Consultation": [
-            {
-                name: "Dr. Suman Thapa",
-                specialty: "Internal Medicine",
-                fee: 1200,
-                initials: "ST"
-            }
-        ],
-
-        "Thyroid Consultation": [
-            {
-                name: "Dr. Riya Karki",
-                specialty: "Endocrinology",
-                fee: 1200,
-                initials: "RK"
-            }
-        ],
-
-        "Nutrition & Lifestyle": [
-            {
-                name: "Nutrition Specialist",
-                specialty: "Nutrition & Lifestyle",
-                fee: 800,
-                initials: "NS"
-            }
-        ]
+    const bookableProviders = {{ bookable_providers|tojson }};
+    const appointments = {{ appointments|tojson }};
+    const serviceFees = {
+        "General Consultation": 1000,
+        "Diabetes Consultation": 1000,
+        "Blood Pressure Consultation": 1200,
+        "Thyroid Consultation": 1200,
+        "Nutrition & Lifestyle": 800
     };
-
-
-    const appointments = [
-
-        {
-            doctor: "Dr. Anisha Sharma",
-            specialty: "General Physician",
-            service: "Diabetes Consultation",
-            date: "November 15, 2026",
-            time: "10:30 AM",
-            type: "Online",
-            fee: 1000,
-            status: "Confirmed",
-            reason: "Regular diabetes follow-up",
-            location: "Online consultation"
-        },
-
-        {
-            doctor: "Dr. Suman Thapa",
-            specialty: "Internal Medicine",
-            service: "Blood Pressure Consultation",
-            date: "November 03, 2026",
-            time: "2:00 PM",
-            type: "In-person",
-            fee: 1200,
-            status: "Completed",
-            reason: "Blood pressure follow-up",
-            location: "Clinic"
-        },
-
-        {
-            doctor: "Dr. Riya Karki",
-            specialty: "Endocrinology",
-            service: "Thyroid Consultation",
-            date: "November 20, 2026",
-            time: "11:00 AM",
-            type: "Online",
-            fee: 1200,
-            status: "Pending",
-            reason: "Thyroid monitoring",
-            location: "Online consultation"
-        },
-
-        {
-            doctor: "Nutrition Specialist",
-            specialty: "Nutrition & Lifestyle",
-            service: "Nutrition & Lifestyle",
-            date: "October 20, 2026",
-            time: "4:00 PM",
-            type: "Online",
-            fee: 800,
-            status: "Cancelled",
-            reason: "Lifestyle consultation",
-            location: "Online consultation"
-        }
-
-    ];
-
 
     let rescheduleIndex = null;
 
@@ -2536,39 +2026,30 @@
     ========================================================== */
 
     function updateDoctorList() {
+        const service = document.getElementById("service").value;
+        const doctorSelect = document.getElementById("doctor");
+        doctorSelect.disabled = false;
+        doctorSelect.innerHTML = '<option value="">Select doctor/provider</option>';
 
-        const service =
-            document.getElementById("service").value;
-
-        const doctorSelect =
-            document.getElementById("doctor");
-
-        doctorSelect.innerHTML =
-            '<option value="">Select doctor/provider</option>';
-
-        if (!service || !doctors[service]) {
-
+        if (!service) {
             updateFee();
-
             return;
         }
 
-        doctors[service].forEach(function (doctor, index) {
+        if (!bookableProviders.length) {
+            doctorSelect.innerHTML = '<option value="">No registered providers available</option>';
+            doctorSelect.disabled = true;
+            updateFee();
+            return;
+        }
 
-            const option =
-                document.createElement("option");
-
-            option.value = index;
-
-            option.textContent =
-                doctor.name +
-                " — " +
-                doctor.specialty;
-
+        doctorSelect.disabled = false;
+        bookableProviders.forEach(function (provider) {
+            const option = document.createElement("option");
+            option.value = provider.id;
+            option.textContent = provider.name + " — " + provider.specialty;
             doctorSelect.appendChild(option);
-
         });
-
         updateFee();
     }
 
@@ -2578,29 +2059,10 @@
     ========================================================== */
 
     function updateFee() {
-
-        const service =
-            document.getElementById("service").value;
-
-        const doctorIndex =
-            document.getElementById("doctor").value;
-
-        let fee = 0;
-
-        if (
-            service &&
-            doctors[service] &&
-            doctorIndex !== ""
-        ) {
-
-            fee =
-                doctors[service][doctorIndex].fee;
-
-        }
-
+        const service = document.getElementById("service").value;
+        const fee = serviceFees[service] || 0;
         document.getElementById("consultationFee").textContent =
             "NPR " + fee.toLocaleString();
-
         document.getElementById("totalFee").textContent =
             "NPR " + fee.toLocaleString();
     }
@@ -2610,109 +2072,53 @@
        BOOK APPOINTMENT
     ========================================================== */
 
-    function bookAppointment(event) {
-
+    async function bookAppointment(event) {
         event.preventDefault();
 
-        const service =
-            document.getElementById("service").value;
+        const service = document.getElementById("service").value;
+        const providerId = document.getElementById("doctor").value;
+        const date = document.getElementById("appointmentDate").value;
+        const time = document.getElementById("appointmentTime").value;
+        const type = document.getElementById("appointmentType").value;
+        const location = document.getElementById("location").value;
+        const reason = document.getElementById("reason").value;
 
-        const doctorIndex =
-            document.getElementById("doctor").value;
-
-        const date =
-            document.getElementById("appointmentDate").value;
-
-        const time =
-            document.getElementById("appointmentTime").value;
-
-        const type =
-            document.getElementById("appointmentType").value;
-
-        const location =
-            document.getElementById("location").value;
-
-        const reason =
-            document.getElementById("reason").value;
-
-        if (
-            !service ||
-            doctorIndex === "" ||
-            !date ||
-            !time ||
-            !type ||
-            !reason
-        ) {
-
-            showMessage(
-                "bookingMessage",
-                "Please complete all required fields.",
-                "error"
-            );
-
+        if (!service || !providerId || !date || !time || !type || !reason) {
+            showMessage("bookingMessage", "Please complete all required fields and select a registered provider.", "error");
             return;
         }
 
+        try {
+            const response = await fetch("{{ url_for('appointments') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    provider_id: providerId,
+                    appointment_date: date,
+                    appointment_time: time,
+                    service: service,
+                    consultation_type: type,
+                    location: location,
+                    reason: reason
+                })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                showMessage("bookingMessage", result.error || "The appointment could not be booked.", "error");
+                return;
+            }
 
-        const doctor =
-            doctors[service][doctorIndex];
-
-
-        const newAppointment = {
-
-            doctor: doctor.name,
-
-            specialty: doctor.specialty,
-
-            service: service,
-
-            date: formatDate(date),
-
-            time: time,
-
-            type: type,
-
-            fee: doctor.fee,
-
-            status: "Pending",
-
-            reason: reason,
-
-            location:
-                location ||
-                (
-                    type === "Online"
-                        ? "Online consultation"
-                        : "Clinic location to be provided"
-                )
-
-        };
-
-
-        appointments.unshift(newAppointment);
-
-
-        showMessage(
-            "bookingMessage",
-            "Appointment booked successfully. Your appointment is currently pending confirmation.",
-            "success"
-        );
-
-
-        showToast(
-            "Appointment booked successfully."
-        );
-
-
-        setTimeout(function () {
-
-            closeModal("bookingModal");
-
-            document.getElementById("bookingForm").reset();
-
+            appointments.unshift(result.appointment);
             updateAppointmentTable();
-
-        }, 1200);
+            showToast("Appointment request submitted and pending provider confirmation.");
+            setTimeout(function () {
+                closeModal("bookingModal");
+                document.getElementById("bookingForm").reset();
+                window.location.reload();
+            }, 700);
+        } catch (error) {
+            showMessage("bookingMessage", "Could not connect to the server. Please try again.", "error");
+        }
     }
 
 
@@ -2760,7 +2166,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.doctor}
+                        ${escapeHtml(appointment.doctor)}
                     </div>
                 </div>
 
@@ -2771,7 +2177,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.specialty}
+                        ${escapeHtml(appointment.specialty)}
                     </div>
                 </div>
 
@@ -2782,7 +2188,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.service}
+                        ${escapeHtml(appointment.service)}
                     </div>
                 </div>
 
@@ -2793,7 +2199,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.date}
+                        ${escapeHtml(formatDate(appointment.date))}
                     </div>
                 </div>
 
@@ -2804,7 +2210,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.time}
+                        ${escapeHtml(appointment.time)}
                     </div>
                 </div>
 
@@ -2815,7 +2221,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.type}
+                        ${escapeHtml(appointment.type)}
                     </div>
                 </div>
 
@@ -2837,7 +2243,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.status}
+                        ${escapeHtml(appointment.status)}
                     </div>
                 </div>
 
@@ -2848,7 +2254,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.location}
+                        ${escapeHtml(appointment.location)}
                     </div>
                 </div>
 
@@ -2859,7 +2265,7 @@
                     </div>
 
                     <div class="detail-value">
-                        ${appointment.reason}
+                        ${escapeHtml(appointment.reason)}
                     </div>
                 </div>
 
@@ -2913,59 +2319,36 @@
     }
 
 
-    function confirmReschedule() {
+    async function confirmReschedule() {
+        if (rescheduleIndex === null) return;
 
-        if (rescheduleIndex === null) {
-            return;
-        }
-
-        const newDate =
-            document.getElementById("newDate").value;
-
-        const newTime =
-            document.getElementById("newTime").value;
-
+        const newDate = document.getElementById("newDate").value;
+        const newTime = document.getElementById("newTime").value;
         if (!newDate || !newTime) {
-
-            showMessage(
-                "rescheduleMessage",
-                "Please select a new date and time.",
-                "error"
-            );
-
+            showMessage("rescheduleMessage", "Please select a new date and time.", "error");
             return;
         }
 
-
-        appointments[rescheduleIndex].date =
-            formatDate(newDate);
-
-        appointments[rescheduleIndex].time =
-            newTime;
-
-        appointments[rescheduleIndex].status =
-            "Pending";
-
-
-        showMessage(
-            "rescheduleMessage",
-            "Appointment rescheduled successfully. It is now pending confirmation.",
-            "success"
-        );
-
-
-        showToast(
-            "Appointment rescheduled successfully."
-        );
-
-
-        setTimeout(function () {
-
-            closeModal("rescheduleModal");
-
-            updateAppointmentTable();
-
-        }, 1000);
+        const appointment = appointments[rescheduleIndex];
+        try {
+            const response = await fetch("/appointments/" + appointment.id + "/reschedule", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    appointment_date: newDate,
+                    appointment_time: newTime
+                })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                showMessage("rescheduleMessage", result.error || "The appointment could not be rescheduled.", "error");
+                return;
+            }
+            showToast("Appointment rescheduled and returned to pending confirmation.");
+            setTimeout(function () { window.location.reload(); }, 500);
+        } catch (error) {
+            showMessage("rescheduleMessage", "Could not connect to the server. Please try again.", "error");
+        }
     }
 
 
@@ -2973,60 +2356,54 @@
        CANCEL APPOINTMENT
     ========================================================== */
 
-    function cancelAppointment(index) {
-
-        const appointment =
-            appointments[index];
-
-        if (!appointment) {
+    async function cancelAppointment(index) {
+        const appointment = appointments[index];
+        if (!appointment) return;
+        if (appointment.status === "Cancelled" || appointment.status === "Completed") {
+            showToast("This appointment can no longer be cancelled.");
             return;
         }
+        if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
 
-        if (
-            appointment.status === "Cancelled"
-        ) {
-
-            showToast(
-                "This appointment is already cancelled."
-            );
-
-            return;
+        try {
+            const response = await fetch("/appointments/" + appointment.id + "/cancel", {
+                method: "POST"
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                showToast(result.error || "The appointment could not be cancelled.");
+                return;
+            }
+            showToast("Appointment cancelled successfully.");
+            setTimeout(function () { window.location.reload(); }, 500);
+        } catch (error) {
+            showToast("Could not connect to the server. Please try again.");
         }
+    }
 
 
-        if (
-            appointment.status === "Completed"
-        ) {
-
-            showToast(
-                "Completed appointments cannot be cancelled."
-            );
-
-            return;
-        }
+    function appointmentIndexById(id) {
+        return appointments.findIndex(function (appointment) {
+            return Number(appointment.id) === Number(id);
+        });
+    }
 
 
-        const confirmed =
-            window.confirm(
-                "Are you sure you want to cancel this appointment?"
-            );
+    function viewAppointmentById(id) {
+        const index = appointmentIndexById(id);
+        if (index >= 0) viewAppointment(index);
+    }
 
 
-        if (!confirmed) {
-            return;
-        }
+    function openRescheduleById(id) {
+        const index = appointmentIndexById(id);
+        if (index >= 0) openRescheduleModal(index);
+    }
 
 
-        appointments[index].status =
-            "Cancelled";
-
-
-        showToast(
-            "Appointment cancelled successfully."
-        );
-
-
-        updateAppointmentTable();
+    function cancelAppointmentById(id) {
+        const index = appointmentIndexById(id);
+        if (index >= 0) cancelAppointment(index);
     }
 
 
@@ -3129,17 +2506,17 @@
                     <div class="doctor-cell">
 
                         <div class="small-avatar">
-                            ${getInitials(appointment.doctor)}
+                            ${escapeHtml(getInitials(appointment.doctor))}
                         </div>
 
                         <div>
 
                             <strong>
-                                ${appointment.doctor}
+                                ${escapeHtml(appointment.doctor)}
                             </strong>
 
                             <span>
-                                ${appointment.specialty}
+                                ${escapeHtml(appointment.specialty)}
                             </span>
 
                         </div>
@@ -3150,18 +2527,18 @@
 
 
                 <td>
-                    ${appointment.service}
+                    ${escapeHtml(appointment.service)}
                 </td>
 
 
                 <td>
-                    ${appointment.date}<br>
-                    ${appointment.time}
+                    ${escapeHtml(formatDate(appointment.date))}<br>
+                    ${escapeHtml(appointment.time)}
                 </td>
 
 
                 <td>
-                    ${appointment.type}
+                    ${escapeHtml(appointment.type)}
                 </td>
 
 
@@ -3173,7 +2550,7 @@
                 <td>
 
                     <span class="status ${statusClass}">
-                        ${appointment.status}
+                        ${escapeHtml(appointment.status)}
                     </span>
 
                 </td>
@@ -3220,6 +2597,19 @@
         });
 
         return initials.substring(0, 2);
+    }
+
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (character) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[character];
+        });
     }
 
 
@@ -3440,5 +2830,6 @@
 
 </script>
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 </html>

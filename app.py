@@ -1,24 +1,45 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from functools import wraps
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from extensions import db
 import os
 
 
 load_dotenv()
 
+secret_key = os.environ.get("SECRET_KEY")
+database_url = os.environ.get("DATABASE_URL")
+
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable is required but not set")
+if not database_url:
+    raise RuntimeError("DATABASE_URL environment variable is required but not set")
+
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+app.secret_key = secret_key
 
 # Database configuration
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize extensions
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
+
+# Import models AFTER db is initialized so SQLAlchemy and
+# Flask-Migrate can register them with the app.
+import models  # noqa: E402,F401
+
+# Keep the model classes available to the existing route code while
+# importing the module only after `db` has been initialized.
+Patient = models.Patient
+Provider = models.Provider
+Appointment = models.Appointment
+HealthRecord = models.HealthRecord
+FollowUp = models.FollowUp
 
 
 # =========================================================
@@ -27,9 +48,6 @@ migrate = Migrate(app, db)
 
 app.config["registered_user"] = None
 app.config["registered_provider"] = None
-
-app.config["appointments"] = []
-app.config["appointment_counter"] = 1
 
 # Patient-management storage
 app.config["patients"] = {}
@@ -122,8 +140,36 @@ def calculate_age(date_of_birth):
 
 def get_registered_provider():
     """
-    Return the currently registered provider.
+    Return the provider associated with the current session.
     """
+    provider = None
+    provider_id = session.get("provider_id")
+
+    if provider_id is not None:
+        provider = db.session.get(Provider, provider_id)
+
+    if provider is None:
+        provider_email = normalize_text(
+            session.get("provider_email", "")
+        ).lower()
+
+        if provider_email:
+            provider = Provider.query.filter_by(
+                email=provider_email
+            ).first()
+
+    if provider is not None:
+        return {
+            "fullname": provider.fullname,
+            "email": provider.email,
+            "phone": provider.phone,
+            "provider_type": provider.provider_type,
+            "specialization": provider.specialization,
+            "organization": provider.organization,
+            "location": provider.location,
+        }
+
+    # Preserve compatibility with older in-memory demo data.
     return app.config.get("registered_provider") or {}
 
 
@@ -360,48 +406,119 @@ def get_or_create_patient(appointment):
 # PROVIDER APPOINTMENTS
 # =========================================================
 
+def appointment_to_dict(appointment):
+    """Convert an appointment row to the dictionary shape used by templates."""
+    patient = appointment.patient
+    provider = appointment.provider
+    service_fees = {
+        "General Consultation": 1000,
+        "Diabetes Consultation": 1000,
+        "Blood Pressure Consultation": 1200,
+        "Thyroid Consultation": 1200,
+        "Nutrition & Lifestyle": 800,
+    }
+    created_at = appointment.created_at
+    updated_at = appointment.updated_at
+    action_at = appointment.last_action_at
+
+    return {
+        "id": appointment.id,
+        "appointment_id": appointment.id,
+        "patient_id": str(patient.id),
+        "patient_name": patient.fullname,
+        "patient_email": patient.email,
+        "patient_phone": patient.phone,
+        "patient_dob": patient.date_of_birth.isoformat() if patient.date_of_birth else "",
+        "patient_gender": patient.gender or "",
+        "patient_address": patient.address or "",
+        "account_type": patient.account_type or "",
+        "provider_id": provider.id,
+        "provider_name": provider.fullname,
+        "provider_email": provider.email,
+        "provider_phone": provider.phone,
+        "provider_type": provider.provider_type,
+        "provider_specialization": provider.specialization or "",
+        "doctor": provider.fullname,
+        "specialty": provider.specialization or provider.provider_type,
+        "appointment_date": appointment.appointment_date.isoformat(),
+        "appointment_date_display": appointment.appointment_date.strftime("%B %d, %Y"),
+        "appointment_time": appointment.appointment_time.strftime("%I:%M %p").lstrip("0"),
+        "date": appointment.appointment_date.isoformat(),
+        "time": appointment.appointment_time.strftime("%I:%M %p").lstrip("0"),
+        "service": appointment.service or "General Consultation",
+        "condition": appointment.service or "General Consultation",
+        "consultation_type": appointment.consultation_type or "",
+        "type": appointment.consultation_type or "",
+        "fee": service_fees.get(appointment.service, 0),
+        "condition_reason": appointment.condition_reason or "",
+        "reason": appointment.condition_reason or "",
+        "location": appointment.location or "",
+        "status": appointment.status,
+        "created_at": created_at.isoformat(sep=" ", timespec="seconds") if created_at else "",
+        "updated_at": updated_at.isoformat(sep=" ", timespec="seconds") if updated_at else "",
+        "notification": appointment.notification_message or "",
+        "action_by": appointment.last_action_by or "",
+        "action_at": action_at.isoformat(sep=" ", timespec="seconds") if action_at else "",
+    }
+
+
+def get_bookable_providers():
+    return [
+        {
+            "id": provider.id,
+            "name": provider.fullname,
+            "specialty": provider.specialization or provider.provider_type,
+            "email": provider.email,
+        }
+        for provider in Provider.query.order_by(Provider.fullname).all()
+    ]
+
+
+def get_patient_appointments(patient_id):
+    """Return a patient's appointments, newest first."""
+    if not patient_id:
+        return []
+
+    rows = Appointment.query.filter_by(
+        patient_id=patient_id
+    ).order_by(
+        Appointment.appointment_date.desc(),
+        Appointment.appointment_time.desc(),
+        Appointment.created_at.desc(),
+    ).all()
+    return [appointment_to_dict(row) for row in rows]
+
+
+def get_upcoming_patient_appointment(patient_id):
+    if not patient_id:
+        return None
+    row = Appointment.query.filter(
+        Appointment.patient_id == patient_id,
+        Appointment.status.in_(["Pending", "Confirmed"]),
+        Appointment.appointment_date >= date.today(),
+    ).order_by(
+        Appointment.appointment_date.asc(),
+        Appointment.appointment_time.asc(),
+    ).first()
+    return appointment_to_dict(row) if row else None
+
+
 def get_provider_appointments():
     """
     Return appointments belonging to the logged-in provider.
-
-    Provider email is the primary identifier.
-    Provider name is retained as a fallback for older records.
     """
+    provider_id = session.get("provider_id")
+    if not provider_id:
+        return []
 
-    result = []
-
-    for appointment in app.config["appointments"]:
-
-        if appointment_belongs_to_provider(appointment):
-
-            # Make sure old appointments also receive
-            # the current provider identity.
-            if not appointment.get("provider_email"):
-                appointment["provider_email"] = (
-                    session.get("provider_email", "")
-                )
-
-            if not appointment.get("provider_name"):
-                appointment["provider_name"] = (
-                    session.get("provider_fullname", "")
-                )
-
-            # Make sure the appointment has a patient record.
-            get_or_create_patient(appointment)
-
-            result.append(appointment)
-
-    # Latest appointments first.
-    result.sort(
-        key=lambda item: (
-            item.get("appointment_date", ""),
-            item.get("appointment_time", ""),
-            item.get("created_at", "")
-        ),
-        reverse=True
-    )
-
-    return result
+    rows = Appointment.query.filter_by(
+        provider_id=provider_id
+    ).order_by(
+        Appointment.appointment_date.desc(),
+        Appointment.appointment_time.desc(),
+        Appointment.created_at.desc(),
+    ).all()
+    return [appointment_to_dict(row) for row in rows]
 
 
 # =========================================================
@@ -412,36 +529,26 @@ def get_provider_patients():
     """
     Build a unique patient list from this provider's appointments.
     """
-
     provider_appointments = get_provider_appointments()
-
     patient_map = {}
-
     for appointment in provider_appointments:
-
-        patient = get_or_create_patient(appointment)
-
-        if not patient:
-            continue
-
-        email = patient["email"]
-
-        if email not in patient_map:
-
-            patient_map[email] = dict(patient)
-
-            patient_map[email]["appointments"] = []
-
-        patient_map[email]["appointments"].append(
-            appointment
-        )
+        email = appointment["patient_email"]
+        patient = patient_map.setdefault(email, {
+            "patient_id": appointment["patient_id"],
+            "fullname": appointment["patient_name"],
+            "email": email,
+            "phone": appointment["patient_phone"],
+            "date_of_birth": appointment["patient_dob"],
+            "gender": appointment["patient_gender"],
+            "address": appointment["patient_address"],
+            "account_type": appointment["account_type"],
+            "appointments": [],
+        })
+        patient["appointments"].append(appointment)
 
     patients = list(patient_map.values())
-
     for patient in patients:
-
         history = patient["appointments"]
-
         history.sort(
             key=lambda item: (
                 item.get("appointment_date", ""),
@@ -558,9 +665,7 @@ def get_provider_patients():
 
         patient["followup_required"] = any(
             item.get("status") == "Pending"
-
             for item in app.config["followups"]
-
             if item.get("patient_id")
             == patient["patient_id"]
 
@@ -588,8 +693,7 @@ def get_provider_patient(patient_id):
     """
 
     for patient in get_provider_patients():
-
-        if patient["patient_id"] == patient_id:
+        if str(patient["patient_id"]) == str(patient_id):
             return patient
 
     return None
@@ -659,15 +763,10 @@ def build_patient_notifications(patient_email):
 
     patient_email = normalize_text(patient_email)
 
-    patient_appointments = [
-        item
-
-        for item in app.config["appointments"]
-
-        if normalize_text(
-            item.get("patient_email", "")
-        ) == patient_email
-    ]
+    patient = Patient.query.filter_by(email=patient_email).first()
+    patient_appointments = get_patient_appointments(
+        patient.id if patient else None
+    )
 
     notifications = []
 
@@ -944,16 +1043,77 @@ def register():
                 error="Passwords do not match."
             )
 
-        app.config["registered_user"] = {
-            "fullname": fullname,
-            "email": email,
-            "phone": phone,
-            "date_of_birth": date_of_birth,
-            "gender": gender,
-            "address": address,
-            "account_type": account_type,
-            "password": password
-        }
+        if len(password) < 8:
+
+            return render_template(
+                "register.html",
+                error=(
+                    "Password must contain at least 8 characters."
+                )
+            )
+
+        # Reject duplicate emails before writing.
+        existing_patient = (
+            Patient.query.filter_by(
+                email=email
+            ).first()
+        )
+
+        if existing_patient:
+
+            return render_template(
+                "register.html",
+                error=(
+                    "An account with this email "
+                    "already exists."
+                )
+            )
+
+        # Convert the form date string to a real date.
+        dob_value = None
+
+        if date_of_birth:
+
+            try:
+
+                dob_value = datetime.strptime(
+                    date_of_birth,
+                    "%Y-%m-%d"
+                ).date()
+
+            except ValueError:
+
+                dob_value = None
+
+        try:
+
+            patient = Patient(
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                date_of_birth=dob_value,
+                gender=gender or None,
+                address=address or None,
+                account_type=account_type or None,
+                password_hash=generate_password_hash(
+                    password
+                ),
+            )
+
+            db.session.add(patient)
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+            return render_template(
+                "register.html",
+                error=(
+                    "Registration failed. "
+                    "Please try again."
+                )
+            )
 
         return redirect(
             url_for("login")
@@ -983,66 +1143,46 @@ def login():
             ""
         )
 
-        registered_user = app.config.get(
-            "registered_user"
-        )
+        patient = Patient.query.filter_by(
+            email=email
+        ).first()
 
-        if not registered_user:
+        if not patient or not check_password_hash(
+            patient.password_hash,
+            password
+        ):
 
             return render_template(
                 "login.html",
-                error=(
-                    "No registered account found. "
-                    "Please create an account first."
-                )
+                error="Invalid email or password."
             )
 
-        if (
-            email
-            == registered_user["email"].lower()
-            and password
-            == registered_user["password"]
-        ):
+        session.clear()
 
-            session.clear()
+        session["logged_in"] = True
 
-            session["logged_in"] = True
+        session["email"] = patient.email
 
-            session["email"] = (
-                registered_user["email"]
-            )
+        session["fullname"] = patient.fullname
 
-            session["fullname"] = (
-                registered_user["fullname"]
-            )
+        session["phone"] = patient.phone
 
-            session["phone"] = (
-                registered_user["phone"]
-            )
+        session["date_of_birth"] = (
+            patient.date_of_birth.isoformat()
+            if patient.date_of_birth
+            else ""
+        )
 
-            session["date_of_birth"] = (
-                registered_user["date_of_birth"]
-            )
+        session["gender"] = patient.gender or ""
 
-            session["gender"] = (
-                registered_user["gender"]
-            )
+        session["address"] = patient.address or ""
 
-            session["address"] = (
-                registered_user["address"]
-            )
+        session["account_type"] = patient.account_type or ""
 
-            session["account_type"] = (
-                registered_user["account_type"]
-            )
+        session["patient_id"] = patient.id
 
-            return redirect(
-                url_for("dashboard")
-            )
-
-        return render_template(
-            "login.html",
-            error="Invalid email or password."
+        return redirect(
+            url_for("dashboard")
         )
 
     return render_template(
@@ -1074,10 +1214,48 @@ def dashboard():
 @app.route("/monitoring")
 @patient_required
 def monitoring():
+    records = HealthRecord.query.filter_by(
+        patient_id=session.get("patient_id"),
+        record_type="Weight",
+    ).order_by(
+        HealthRecord.date_recorded.desc(),
+        HealthRecord.created_at.desc(),
+    ).all()
+    current_weight = records[0] if records else None
+    previous_weight = records[1] if len(records) > 1 else None
 
     return render_template(
-        "monitoring.html"
+        "monitoring.html",
+        current_weight=current_weight,
+        previous_weight=previous_weight,
     )
+
+
+@app.route("/monitoring/weight", methods=["POST"])
+@patient_required
+def save_weight():
+    payload = request.get_json(silent=True) or {}
+    try:
+        weight = float(payload.get("value", ""))
+    except (TypeError, ValueError):
+        return jsonify(error="Enter a valid weight."), 400
+    if not 1 <= weight <= 1000:
+        return jsonify(error="Weight must be between 1 and 1000 kg."), 400
+
+    record = HealthRecord(
+        patient_id=session.get("patient_id"),
+        record_type="Weight",
+        value=f"{weight:.1f}",
+        date_recorded=date.today(),
+    )
+    db.session.add(record)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not save patient weight")
+        return jsonify(error="Weight could not be saved. Please try again."), 500
+    return jsonify(message="Weight saved."), 201
 
 
 # =========================================================
@@ -1154,24 +1332,16 @@ def profile():
 @app.route("/records")
 @patient_required
 def records():
-
-    patient_email = normalize_text(
-        session.get("email", "")
-    )
-
-    patient_appointments = [
-        item
-
-        for item in app.config["appointments"]
-
-        if normalize_text(
-            item.get("patient_email", "")
-        ) == patient_email
-    ]
+    health_records = HealthRecord.query.filter_by(
+        patient_id=session.get("patient_id")
+    ).order_by(
+        HealthRecord.date_recorded.desc(),
+        HealthRecord.created_at.desc(),
+    ).all()
 
     return render_template(
         "records.html",
-        appointments=patient_appointments
+        records=health_records,
     )
 
 
@@ -1182,197 +1352,156 @@ def records():
 @app.route("/appointments", methods=["GET", "POST"])
 @patient_required
 def appointments():
-
     if request.method == "POST":
+        payload = request.get_json(silent=True) or request.form
+        wants_json = request.is_json
 
-        provider_name = request.form.get(
-            "provider_name",
-            ""
-        ).strip()
-
-        provider_email = request.form.get(
-            "provider_email",
-            ""
-        ).strip()
-
-        appointment_date = request.form.get(
-            "appointment_date",
-            ""
-        ).strip()
-
-        appointment_time = request.form.get(
-            "appointment_time",
-            ""
-        ).strip()
-
-        consultation_type = request.form.get(
-            "consultation_type",
-            ""
-        ).strip()
-
-        condition = request.form.get(
-            "condition",
-            ""
-        ).strip()
-
-        reason = request.form.get(
-            "reason",
-            ""
-        ).strip()
-
-        if not appointment_date:
+        def booking_error(message, status=400):
+            if wants_json:
+                return jsonify(success=False, error=message), status
             return render_template(
                 "appointments.html",
-                error="Please select an appointment date."
+                appointments=get_patient_appointments(session.get("patient_id")),
+                upcoming_appointment=get_upcoming_patient_appointment(session.get("patient_id")),
+                bookable_providers=get_bookable_providers(),
+                error=message,
+            ), status
+
+        patient = db.session.get(Patient, session.get("patient_id"))
+        try:
+            provider_id = int(payload.get("provider_id", ""))
+        except (TypeError, ValueError):
+            provider_id = None
+        provider = db.session.get(Provider, provider_id) if provider_id else None
+
+        date_text = str(payload.get("appointment_date", "")).strip()
+        time_text = str(payload.get("appointment_time", "")).strip()
+        service = str(payload.get("service", "")).strip()
+        consultation_type = str(payload.get("consultation_type", "")).strip()
+        location = str(payload.get("location", "")).strip()
+        reason = str(payload.get("reason", "")).strip()
+
+        if not patient:
+            return booking_error("Your patient account could not be found. Please log in again.", 401)
+        if not provider:
+            return booking_error("Please select a registered service provider.")
+        if not all([date_text, time_text, service, consultation_type, reason]):
+            return booking_error("Please complete all required appointment fields.")
+
+        try:
+            appointment_date = datetime.strptime(date_text, "%Y-%m-%d").date()
+            try:
+                appointment_time = datetime.strptime(time_text, "%I:%M %p").time()
+            except ValueError:
+                appointment_time = datetime.strptime(time_text, "%H:%M").time()
+        except ValueError:
+            return booking_error("Please enter a valid appointment date and time.")
+
+        if appointment_date < date.today():
+            return booking_error("Appointment date cannot be in the past.")
+
+        try:
+            appointment = Appointment(
+                patient_id=patient.id,
+                provider_id=provider.id,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
+                service=service,
+                consultation_type=consultation_type,
+                location=location or None,
+                condition_reason=reason,
+                status="Pending",
+                notification_message="Your appointment request is pending provider confirmation.",
+                last_action_by="patient",
+                last_action_at=datetime.utcnow(),
             )
+            db.session.add(appointment)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            return booking_error("The appointment could not be saved. Please try again.", 500)
 
-        if not appointment_time:
-            return render_template(
-                "appointments.html",
-                error="Please select an appointment time."
-            )
+        if wants_json:
+            return jsonify(
+                success=True,
+                message="Appointment request submitted.",
+                appointment=appointment_to_dict(appointment),
+            ), 201
+        return redirect(url_for("appointments"))
 
-        if not provider_name:
-            return render_template(
-                "appointments.html",
-                error="Please select a service provider."
-            )
-
-        resolved_provider = resolve_provider_identity(
-            provider_name,
-            provider_email
-        )
-
-        now = datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-
-        appointment_id = (
-            app.config["appointment_counter"]
-        )
-
-        app.config["appointment_counter"] += 1
-
-        appointment = {
-
-            "id": appointment_id,
-
-            "patient_id": "",
-
-            "patient_name": session.get(
-                "fullname",
-                ""
-            ),
-
-            "patient_email": session.get(
-                "email",
-                ""
-            ),
-
-            "patient_phone": session.get(
-                "phone",
-                ""
-            ),
-
-            "patient_dob": session.get(
-                "date_of_birth",
-                ""
-            ),
-
-            "patient_gender": session.get(
-                "gender",
-                ""
-            ),
-
-            "patient_address": session.get(
-                "address",
-                ""
-            ),
-
-            "account_type": session.get(
-                "account_type",
-                ""
-            ),
-
-            "provider_name": resolved_provider.get(
-                "name",
-                provider_name
-            ),
-
-            "provider_email": resolved_provider.get(
-                "email",
-                provider_email
-            ),
-
-            "appointment_date": appointment_date,
-
-            "appointment_time": appointment_time,
-
-            "consultation_type": (
-                consultation_type
-            ),
-
-            "condition": condition,
-
-            "reason": reason,
-
-            "status": "Pending",
-
-            "created_at": now,
-
-            "updated_at": now,
-
-            "notification": (
-                "Your appointment request has been "
-                "submitted and is pending provider confirmation."
-            ),
-
-            "action_by": "",
-
-            "action_at": ""
-        }
-
-        get_or_create_patient(
-            appointment
-        )
-
-        app.config["appointments"].append(
-            appointment
-        )
-
-        return redirect(
-            url_for("appointments")
-        )
-
-    patient_email = normalize_text(
-        session.get("email", "")
-    )
-
-    patient_appointments = [
-
-        item
-
-        for item in app.config["appointments"]
-
-        if normalize_text(
-            item.get("patient_email", "")
-        ) == patient_email
-
-    ]
-
-    patient_appointments.sort(
-        key=lambda item: (
-            item.get("appointment_date", ""),
-            item.get("appointment_time", ""),
-            item.get("created_at", "")
-        ),
-        reverse=True
-    )
-
+    patient_appointments = get_patient_appointments(session.get("patient_id"))
+    upcoming_appointment = get_upcoming_patient_appointment(session.get("patient_id"))
+    bookable_providers = get_bookable_providers()
     return render_template(
         "appointments.html",
-        appointments=patient_appointments
+        appointments=patient_appointments,
+        upcoming_appointment=upcoming_appointment,
+        bookable_providers=bookable_providers,
     )
+
+
+@app.route("/appointments/<int:appointment_id>/cancel", methods=["POST"])
+@patient_required
+def cancel_appointment(appointment_id):
+    appointment = Appointment.query.filter_by(
+        id=appointment_id,
+        patient_id=session.get("patient_id"),
+    ).first()
+    if not appointment:
+        return jsonify(success=False, error="Appointment not found."), 404
+    if appointment.status in {"Cancelled", "Completed"}:
+        return jsonify(success=False, error="This appointment can no longer be cancelled."), 400
+
+    appointment.status = "Cancelled"
+    appointment.last_action_by = "patient"
+    appointment.last_action_at = datetime.utcnow()
+    appointment.notification_message = "The patient cancelled this appointment."
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify(success=False, error="The appointment could not be cancelled."), 500
+    return jsonify(success=True)
+
+
+@app.route("/appointments/<int:appointment_id>/reschedule", methods=["POST"])
+@patient_required
+def reschedule_appointment(appointment_id):
+    appointment = Appointment.query.filter_by(
+        id=appointment_id,
+        patient_id=session.get("patient_id"),
+    ).first()
+    if not appointment:
+        return jsonify(success=False, error="Appointment not found."), 404
+    if appointment.status in {"Cancelled", "Completed"}:
+        return jsonify(success=False, error="This appointment can no longer be rescheduled."), 400
+
+    payload = request.get_json(silent=True) or request.form
+    date_text = str(payload.get("appointment_date", "")).strip()
+    time_text = str(payload.get("appointment_time", "")).strip()
+    try:
+        new_date = datetime.strptime(date_text, "%Y-%m-%d").date()
+        try:
+            new_time = datetime.strptime(time_text, "%I:%M %p").time()
+        except ValueError:
+            new_time = datetime.strptime(time_text, "%H:%M").time()
+    except ValueError:
+        return jsonify(success=False, error="Please enter a valid new date and time."), 400
+    if new_date < date.today():
+        return jsonify(success=False, error="Appointment date cannot be in the past."), 400
+
+    appointment.appointment_date = new_date
+    appointment.appointment_time = new_time
+    appointment.status = "Pending"
+    appointment.last_action_by = "patient"
+    appointment.last_action_at = datetime.utcnow()
+    appointment.notification_message = "The patient requested a new appointment time."
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify(success=False, error="The appointment could not be rescheduled."), 500
+    return jsonify(success=True)
 
 
 # =========================================================
@@ -1423,36 +1552,50 @@ def settings():
             ""
         ).strip()
 
-        registered_user = app.config.get(
-            "registered_user"
-        )
+        patient_id = session.get("patient_id")
 
-        if registered_user:
+        patient = Patient.query.get(
+            patient_id
+        ) if patient_id else None
 
-            if fullname:
-                registered_user["fullname"] = fullname
+        if not patient:
 
-            if phone:
-                registered_user["phone"] = phone
+            return render_template(
+                "settings.html",
+                settings_error=(
+                    "Patient account was not found."
+                )
+            ), 404
 
-            if address:
-                registered_user["address"] = address
+        if fullname:
+            patient.fullname = fullname
 
-            app.config["registered_user"] = (
-                registered_user
-            )
+        if phone:
+            patient.phone = phone
 
-            session["fullname"] = (
-                registered_user["fullname"]
-            )
+        if address:
+            patient.address = address
 
-            session["phone"] = (
-                registered_user["phone"]
-            )
+        try:
 
-            session["address"] = (
-                registered_user["address"]
-            )
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+            return render_template(
+                "settings.html",
+                settings_error=(
+                    "Settings could not be saved."
+                )
+            ), 500
+
+        session["fullname"] = patient.fullname
+
+        session["phone"] = patient.phone
+
+        session["address"] = patient.address or ""
 
         return render_template(
             "settings.html",
@@ -1470,98 +1613,52 @@ def settings():
 # CHANGE PASSWORD
 # =========================================================
 
-@app.route(
-    "/change-password",
-    methods=["GET", "POST"]
-)
+@app.route("/change-password", methods=["GET", "POST"])
+@app.route("/settings/change-password", methods=["POST"])
 @patient_required
 def change_password():
+    if request.method == "GET":
+        return render_template("change-password.html")
 
-    if request.method == "POST":
+    is_json = request.is_json
+    payload = request.get_json(silent=True) or {} if is_json else request.form
 
-        current_password = request.form.get(
-            "current_password",
-            ""
-        )
-
-        new_password = request.form.get(
-            "new_password",
-            ""
-        )
-
-        confirm_password = request.form.get(
-            "confirm_password",
-            ""
-        )
-
-        user = app.config.get(
-            "registered_user"
-        )
-
-        if not user:
-
-            return render_template(
-                "change-password.html",
-                error="User account was not found."
-            ), 404
-
-        if (
-            current_password
-            != user.get("password", "")
-        ):
-
-            return render_template(
-                "change-password.html",
-                error="Current password is incorrect."
-            ), 400
-
-        if not new_password:
-
-            return render_template(
-                "change-password.html",
-                error="Please enter a new password."
-            ), 400
-
-        if len(new_password) < 8:
-
-            return render_template(
-                "change-password.html",
-                error=(
-                    "New password must contain at least 8 characters."
-                )
-            ), 400
-
-        if new_password != confirm_password:
-
-            return render_template(
-                "change-password.html",
-                error=(
-                    "New password and confirmation do not match."
-                )
-            ), 400
-
-        if new_password == current_password:
-
-            return render_template(
-                "change-password.html",
-                error=(
-                    "New password must be different "
-                    "from your current password."
-                )
-            ), 400
-
-        user["password"] = new_password
-
-        app.config["registered_user"] = user
-
+    def respond(message, status=200, success=False):
+        if is_json:
+            return jsonify(message=message), status
         return render_template(
             "change-password.html",
-            success="Password updated successfully."
-        )
+            error=None if success else message,
+            success=message if success else None,
+        ), status
 
-    return render_template(
-        "change-password.html"
-    )
+    current_password = payload.get("current_password", "")
+    new_password = payload.get("new_password", "")
+    confirm_password = payload.get("confirm_password", "")
+    patient_id = session.get("patient_id")
+    patient = db.session.get(Patient, patient_id) if patient_id else None
+
+    if not patient:
+        return respond("User account was not found.", 404)
+    if not check_password_hash(patient.password_hash, current_password):
+        return respond("Current password is incorrect.", 400)
+    if not new_password:
+        return respond("Please enter a new password.", 400)
+    if len(new_password) < 8:
+        return respond("New password must contain at least 8 characters.", 400)
+    if confirm_password and new_password != confirm_password:
+        return respond("New password and confirmation do not match.", 400)
+    if new_password == current_password:
+        return respond("New password must be different from your current password.", 400)
+
+    try:
+        patient.password_hash = generate_password_hash(new_password)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not update patient password")
+        return respond("Password could not be updated.", 500)
+    return respond("Password updated successfully.", success=True)
 
 
 # =========================================================
@@ -1576,10 +1673,21 @@ def provider_register():
 
     if request.method == "POST":
 
-        fullname = request.form.get(
-            "fullname",
+        # The provider form sends first_name and last_name as
+        # separate fields. Combine them for the model's fullname.
+        first_name = request.form.get(
+            "first_name",
             ""
         ).strip()
+
+        last_name = request.form.get(
+            "last_name",
+            ""
+        ).strip()
+
+        fullname = " ".join(
+            part for part in [first_name, last_name] if part
+        )
 
         email = request.form.get(
             "email",
@@ -1646,25 +1754,59 @@ def provider_register():
                 error="Passwords do not match."
             )
 
-        app.config["registered_provider"] = {
+        if len(password) < 8:
 
-            "fullname": fullname,
+            return render_template(
+                "provider_register.html",
+                error=(
+                    "Password must contain at least 8 characters."
+                )
+            )
 
-            "email": email,
+        # Reject duplicate provider emails before writing.
+        existing_provider = Provider.query.filter_by(
+            email=email
+        ).first()
 
-            "phone": phone,
+        if existing_provider:
 
-            "provider_type": provider_type,
+            return render_template(
+                "provider_register.html",
+                error=(
+                    "A provider account with this "
+                    "email already exists."
+                )
+            )
 
-            "specialization": specialization,
+        try:
 
-            "organization": organization,
+            provider = Provider(
+                fullname=fullname,
+                email=email,
+                phone=phone,
+                provider_type=provider_type,
+                specialization=specialization or None,
+                organization=organization or None,
+                location=location or None,
+                password_hash=generate_password_hash(
+                    password
+                ),
+            )
 
-            "location": location,
+            db.session.add(provider)
+            db.session.commit()
 
-            "password": password
+        except Exception:
 
-        }
+            db.session.rollback()
+
+            return render_template(
+                "provider_register.html",
+                error=(
+                    "Registration failed. "
+                    "Please try again."
+                )
+            )
 
         return redirect(
             url_for("provider_login")
@@ -1697,94 +1839,58 @@ def provider_login():
             ""
         )
 
-        provider = app.config.get(
-            "registered_provider"
-        )
+        provider = Provider.query.filter_by(
+            email=email
+        ).first()
 
-        if not provider:
+        if not provider or not check_password_hash(
+            provider.password_hash,
+            password
+        ):
 
             return render_template(
                 "provider_login.html",
-                error=(
-                    "No provider account found. "
-                    "Please register first."
-                )
+                error="Invalid email or password."
             )
 
-        if (
-            email
-            == provider.get(
-                "email",
-                ""
-            ).lower()
+        session.clear()
 
-            and password
-            == provider.get(
-                "password",
-                ""
-            )
-        ):
+        session["provider_logged_in"] = True
 
-            session.clear()
+        session["provider_id"] = provider.id
 
-            session["provider_logged_in"] = True
+        session["provider_fullname"] = (
+            provider.fullname
+        )
 
-            session["provider_fullname"] = (
-                provider.get(
-                    "fullname",
-                    ""
-                )
-            )
+        session["provider_email"] = (
+            provider.email
+        )
 
-            session["provider_email"] = (
-                provider.get(
-                    "email",
-                    ""
-                )
-            )
+        session["provider_phone"] = (
+            provider.phone
+        )
 
-            session["provider_phone"] = (
-                provider.get(
-                    "phone",
-                    ""
-                )
-            )
+        session["provider_type"] = (
+            provider.provider_type
+        )
 
-            session["provider_type"] = (
-                provider.get(
-                    "provider_type",
-                    ""
-                )
-            )
+        session["provider_specialization"] = (
+            provider.specialization or ""
+        )
 
-            session["provider_specialization"] = (
-                provider.get(
-                    "specialization",
-                    ""
-                )
-            )
+        session["provider_organization"] = (
+            provider.organization or ""
+        )
 
-            session["provider_organization"] = (
-                provider.get(
-                    "organization",
-                    ""
-                )
-            )
+        session["provider_location"] = (
+            provider.location or ""
+        )
 
-            session["provider_location"] = (
-                provider.get(
-                    "location",
-                    ""
-                )
-            )
+        session["provider_id"] = provider.id
 
-            return redirect(
-                url_for("service_provider")
-            )
-
-        return render_template(
-            "provider_login.html",
-            error="Invalid email or password."
+        return redirect(
+            url_for("service_provider")
         )
 
     return render_template(
@@ -1834,6 +1940,16 @@ def service_provider():
     )
 
     patients = get_provider_patients()
+    today_appointments = [
+        item for item in appointments
+        if item.get("appointment_date") == date.today().isoformat()
+    ]
+    followups_due = FollowUp.query.filter_by(
+        provider_id=session.get("provider_id"),
+        status="Pending",
+    ).filter(
+        FollowUp.follow_up_date <= date.today()
+    ).count()
 
     return render_template(
         "service_provider.html",
@@ -1862,6 +1978,10 @@ def service_provider():
         total_patients=len(
             patients
         ),
+
+        today_appointments=today_appointments,
+
+        followups_due=followups_due,
 
         appointments=appointments,
 
@@ -1922,6 +2042,7 @@ def provider_appointments():
         "provider_appointments.html",
 
         appointments=appointments,
+        appointment_list=appointments,
 
         pending_count=pending_count,
 
@@ -1947,153 +2068,59 @@ def provider_appointments():
     methods=["POST"]
 )
 @provider_required
-def appointment_action(
-    appointment_id,
-    action
-):
-
-    allowed_actions = {
-        "confirm": "Confirmed",
-        "reject": "Rejected",
-        "cancel": "Cancelled",
-        "complete": "Completed"
+def appointment_action(appointment_id, action):
+    transitions = {
+        "confirm": ("Pending", "Confirmed"),
+        "reject": ("Pending", "Rejected"),
+        "cancel": ("Confirmed", "Cancelled"),
+        "complete": ("Confirmed", "Completed"),
     }
+    transition = transitions.get(action)
+    if not transition:
+        return redirect(url_for("provider_appointments"))
 
-    if action not in allowed_actions:
+    provider_id = session.get("provider_id")
+    appointment = Appointment.query.filter_by(
+        id=appointment_id,
+        provider_id=provider_id,
+    ).first()
+    if not appointment or appointment.status != transition[0]:
+        return redirect(url_for("provider_appointments"))
 
-        return redirect(
-            url_for(
-                "provider_appointments"
-            )
-        )
-
-    appointment = None
-
-    for item in app.config["appointments"]:
-
-        if (
-            item.get("id")
-            == appointment_id
-
-            and appointment_belongs_to_provider(
-                item
-            )
-        ):
-
-            appointment = item
-            break
-
-    if not appointment:
-
-        return redirect(
-            url_for(
-                "provider_appointments"
-            )
-        )
-
-    new_status = allowed_actions[
-        action
-    ]
-
-    now = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-
-    appointment["status"] = (
-        new_status
-    )
-
-    appointment["updated_at"] = (
-        now
-    )
-
-    appointment["action_by"] = (
-        session.get(
-            "provider_email",
-            ""
-        )
-    )
-
-    appointment["action_at"] = (
-        now
-    )
-
-    patient_name = appointment.get(
-        "patient_name",
-        "Patient"
-    )
-
-    provider_name = appointment.get(
-        "provider_name",
-        session.get(
-            "provider_fullname",
-            "Service Provider"
-        )
-    )
-
+    new_status = transition[1]
+    appointment.status = new_status
+    # This column stores the acting role (String(20)), not the provider email.
+    appointment.last_action_by = "provider"
+    appointment.last_action_at = datetime.utcnow()
+    provider_name = appointment.provider.fullname
     if new_status == "Confirmed":
-
-        appointment["notification"] = (
-            f"Your appointment with "
-            f"{provider_name} has been confirmed."
-        )
-
+        appointment.notification_message = f"Your appointment with {provider_name} has been confirmed."
     elif new_status == "Rejected":
-
-        appointment["notification"] = (
-            f"Your appointment request with "
-            f"{provider_name} has been rejected."
-        )
-
+        appointment.notification_message = f"Your appointment request with {provider_name} has been rejected."
     elif new_status == "Cancelled":
-
-        appointment["notification"] = (
-            f"Your appointment with "
-            f"{provider_name} has been cancelled."
-        )
-
-    elif new_status == "Completed":
-
-        appointment["notification"] = (
-            f"Your appointment with "
-            f"{provider_name} has been completed."
-        )
-
+        appointment.notification_message = f"Your appointment with {provider_name} has been cancelled."
     else:
+        appointment.notification_message = f"Your appointment with {provider_name} has been completed."
 
-        appointment["notification"] = (
-            f"Appointment status updated to "
-            f"{new_status}."
-        )
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
-    return redirect(
-        url_for(
-            "provider_appointments"
-        )
-    )
+    return redirect(url_for("provider_appointments"))
 
 
-# =========================================================
-# PATIENTS
+# PATIENT DETAILS
 # =========================================================
 
 @app.route("/patients")
 @provider_required
 def patients():
-
-    provider_patients = (
-        get_provider_patients()
-    )
-
     return render_template(
         "patients.html",
-        patients=provider_patients
+        patients=get_provider_patients(),
     )
 
-
-# =========================================================
-# PATIENT DETAILS
-# =========================================================
 
 @app.route(
     "/patients/<patient_id>"
@@ -2108,17 +2135,7 @@ def patient_details(
     )
 
     if not patient:
-
-        return (
-            render_template(
-                "patient_details.html",
-                patient=None,
-                notes=[],
-                followups=[],
-                error="Patient not found."
-            ),
-            404
-        )
+        return redirect(url_for("patients"))
 
     notes = get_provider_patient_notes(
         patient_id
@@ -2129,7 +2146,7 @@ def patient_details(
     )
 
     return render_template(
-        "patient_details.html",
+        "patients_details.html",
         patient=patient,
         notes=notes,
         followups=followups
@@ -2638,7 +2655,8 @@ def provider_notifications():
 
     return render_template(
         "provider_notifications.html",
-        notifications=notifications
+        notifications=notifications,
+        unread_count=len(notifications),
     )
 
 
@@ -2917,9 +2935,11 @@ def provider_settings():
                 ""
             )
 
-            provider = app.config.get(
-                "registered_provider"
-            )
+            provider_id = session.get("provider_id")
+
+            provider = Provider.query.get(
+                provider_id
+            ) if provider_id else None
 
             if not provider:
 
@@ -3024,12 +3044,9 @@ def provider_settings():
                     )
                 ), 400
 
-            if (
+            if not check_password_hash(
+                provider.password_hash,
                 current_password
-                != provider.get(
-                    "password",
-                    ""
-                )
             ):
 
                 return render_template(
@@ -3046,13 +3063,31 @@ def provider_settings():
                     )
                 ), 400
 
-            provider["password"] = (
-                new_password
-            )
+            try:
 
-            app.config[
-                "registered_provider"
-            ] = provider
+                provider.password_hash = (
+                    generate_password_hash(new_password)
+                )
+
+                db.session.commit()
+
+            except Exception:
+
+                db.session.rollback()
+
+                return render_template(
+                    "provider_settings.html",
+
+                    provider_settings=(
+                        app.config[
+                            "provider_settings"
+                        ]
+                    ),
+
+                    settings_error=(
+                        "Password could not be updated."
+                    )
+                ), 500
 
             session[
                 "provider_logged_in"

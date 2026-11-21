@@ -72,13 +72,16 @@ function applyNCDTheme() {
     const appearance = settings.appearance || "light";
 
     const html = document.documentElement;
+    const body = document.body;
 
     // Remove previous theme
     html.classList.remove("dark-mode");
+    if (body) body.classList.remove("dark-mode");
 
     // DARK MODE
     if (appearance === "dark") {
         html.classList.add("dark-mode");
+        if (body) body.classList.add("dark-mode");
     }
 
     // SYSTEM DEFAULT
@@ -90,6 +93,7 @@ function applyNCDTheme() {
 
         if (systemDarkMode) {
             html.classList.add("dark-mode");
+            if (body) body.classList.add("dark-mode");
         }
     }
 

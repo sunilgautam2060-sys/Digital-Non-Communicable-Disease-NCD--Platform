@@ -851,6 +851,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 <body>
@@ -1135,7 +1136,7 @@
                                     <form
                                         method="POST"
                                         action="{{ url_for(
-                                            'complete_patient_followup',
+                                            'complete_followup',
                                             patient_id=followup.get('patient_id'),
                                             followup_id=followup.get('id')
                                         ) }}"
@@ -1589,5 +1590,6 @@
     initializeFollowups();
 </script>
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Records | NCD Nepal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { margin: 0; padding: 32px 18px; background: #f4f7fb; color: #172033; font-family: Arial, sans-serif; }
+        main { max-width: 900px; margin: 0 auto; }
+        nav { display: flex; gap: 16px; margin: 20px 0; } a { color: #087f72; }
+        .record { background: white; border-radius: 12px; padding: 18px 22px; margin: 12px 0; box-shadow: 0 5px 20px #15223810; }
+        .record h2 { margin: 0 0 8px; font-size: 1.1rem; } .muted { color: #64748b; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+<main>
+    <h1>Health Records</h1>
+    <nav><a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('monitoring') }}">Health monitoring</a></nav>
+    {% for record in records %}
+    <article class="record">
+        <h2>{{ record.record_type }}: {{ record.value }}{% if record.record_type|lower == 'weight' %} kg{% endif %}</h2>
+        <div class="muted">Recorded {{ record.date_recorded.strftime('%b %d, %Y') }}</div>
+        {% if record.notes %}<p>{{ record.notes }}</p>{% endif %}
+    </article>
+    {% else %}
+    <p class="record">You have no health records yet. Records you add through health monitoring will appear here.</p>
+    {% endfor %}
+</main>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</body>
+</html>

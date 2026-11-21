@@ -2012,6 +2012,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 
@@ -2489,12 +2490,16 @@
 
                 <div class="summary-value">
 
-                    48.1 kg
+                    {{ (current_weight.value ~ ' kg') if current_weight else '—' }}
 
                 </div>
 
                 <div class="summary-status">
-                    +0.4 kg from previous
+                    {% if current_weight and previous_weight %}
+                    {{ '%+.1f'|format((current_weight.value|float) - (previous_weight.value|float)) }} kg from previous
+                    {% else %}
+                    No previous entry
+                    {% endif %}
                 </div>
 
             </div>
@@ -2915,7 +2920,7 @@
                                 </div>
 
                                 <div class="weight-value">
-                                    48.1
+                                    {{ current_weight.value if current_weight else '—' }}
                                     <span class="weight-unit">
                                         kg
                                     </span>
@@ -2924,9 +2929,11 @@
                             </div>
 
 
+                            {% if current_weight and previous_weight %}
                             <div class="weight-change">
-                                +0.4 kg
+                                {{ '%+.1f'|format((current_weight.value|float) - (previous_weight.value|float)) }} kg
                             </div>
+                            {% endif %}
 
                         </div>
 
@@ -2939,9 +2946,7 @@
                                     Previous
                                 </span>
 
-                                <strong>
-                                    47.7 kg
-                                </strong>
+                                <strong>{{ (previous_weight.value ~ ' kg') if previous_weight else '—' }}</strong>
 
                             </div>
 
@@ -2952,9 +2957,7 @@
                                     Recorded
                                 </span>
 
-                                <strong>
-                                    Nov 01
-                                </strong>
+                                <strong>{{ current_weight.date_recorded.strftime('%b %d') if current_weight else '—' }}</strong>
 
                             </div>
 
@@ -3357,7 +3360,7 @@
      JAVASCRIPT
 ========================================================= -->
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 
 <script>
@@ -3960,7 +3963,7 @@
        SAVE WEIGHT
     ===================================================== */
 
-    function saveWeight() {
+    async function saveWeight() {
 
         const input =
             document.getElementById(
@@ -3979,15 +3982,22 @@
         }
 
 
-        localStorage.setItem(
-            "ncdCurrentWeight",
-            weight
-        );
-
-
-        closeWeightModal();
-
-        input.value = "";
+        const button = document.querySelector('#weightModal .save-button');
+        button.disabled = true;
+        try {
+            const response = await fetch("{{ url_for('save_weight') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value: weight })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Could not save weight.");
+            window.location.reload();
+        } catch (error) {
+            alert(error.message || "Could not save weight. Please try again.");
+        } finally {
+            button.disabled = false;
+        }
 
     }
 
@@ -4168,6 +4178,7 @@
 </script>
 
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 
 </html>

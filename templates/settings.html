@@ -884,6 +884,7 @@
 
     </style>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 
@@ -1584,7 +1585,7 @@
         <form
             id="passwordForm"
             method="POST"
-            action="/settings/change-password">
+            action="{{ url_for('change_password') }}">
 
 
             <div class="form-group">
@@ -2528,7 +2529,7 @@ document
         try {
 
             const response = await fetch(
-                "/settings/change-password",
+                "{{ url_for('change_password') }}",
                 {
                     method: "POST",
 
@@ -2662,6 +2663,7 @@ loadSettings();
 </script>
 
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 
 </html>

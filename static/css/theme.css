@@ -1,0 +1,22 @@
+html.dark-mode body,
+body.dark-mode {
+    background-color: #111827 !important;
+    color: #e5e7eb !important;
+}
+
+html.dark-mode :is(.card, .panel, .content-card, .settings-card, .profile-card,
+    .record, .appointment-card, .notification-card, .modal-content, .stat-card,
+    .health-card, .service-card, .info-card, .availability-card) {
+    background-color: #1f2937;
+    color: #e5e7eb;
+    border-color: #374151;
+}
+
+html.dark-mode :is(input, textarea, select) {
+    background-color: #111827;
+    color: #f3f4f6;
+    border-color: #4b5563;
+}
+
+html.dark-mode :is(th, td) { border-color: #374151; }
+html.dark-mode :is(p, small, .muted, .subtitle, .description) { color: #cbd5e1; }

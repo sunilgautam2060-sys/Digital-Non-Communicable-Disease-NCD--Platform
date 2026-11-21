@@ -451,6 +451,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
 
 <body>
@@ -588,6 +589,11 @@
 
                     </div>
 
+                    {% if error %}
+                    <div role="alert" style="color: #b42318; margin: 12px 0;">
+                        {{ error }}
+                    </div>
+                    {% endif %}
 
                     <form action="/provider-login" method="POST">
 
@@ -760,6 +766,7 @@
 
     </script>
 
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </body>
 
 </html>

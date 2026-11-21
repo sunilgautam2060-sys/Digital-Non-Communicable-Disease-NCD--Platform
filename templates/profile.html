@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Profile | NCD Nepal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { margin: 0; padding: 32px 18px; background: #f4f7fb; color: #172033; font-family: Arial, sans-serif; }
+        main { max-width: 760px; margin: 0 auto; }
+        .profile-card { background: white; border-radius: 14px; padding: 28px; box-shadow: 0 8px 28px #15223812; }
+        dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+        dt { color: #64748b; font-size: .9rem; } dd { margin: 5px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+        nav { display: flex; gap: 16px; margin: 20px 0; } a { color: #087f72; }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+<main>
+    <h1>My Profile</h1>
+    <nav><a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('records') }}">Health records</a></nav>
+    <section class="profile-card">
+        <h2>{{ fullname or 'Patient' }}</h2>
+        <dl>
+            <div><dt>Email</dt><dd>{{ email or 'Not provided' }}</dd></div>
+            <div><dt>Phone</dt><dd>{{ phone or 'Not provided' }}</dd></div>
+            <div><dt>Date of birth</dt><dd>{{ date_of_birth or 'Not provided' }}</dd></div>
+            <div><dt>Gender</dt><dd>{{ gender or 'Not provided' }}</dd></div>
+            <div><dt>Address</dt><dd>{{ address or 'Not provided' }}</dd></div>
+            <div><dt>Account type</dt><dd>{{ account_type or 'Patient' }}</dd></div>
+        </dl>
+    </section>
+</main>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</body>
+</html>
