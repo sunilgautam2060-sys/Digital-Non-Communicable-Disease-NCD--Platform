@@ -131,9 +131,9 @@ Requirements review: all essential MVP items and the listed important follow-up 
 
 ## 7. Immediate Next Task
 
-**Database setup, models, authentication, and the core appointment workflow are implemented.** Appointment migration `b7c4d2e91a63` is applied to PostgreSQL. End-to-end route checks used temporary in-memory SQLite to avoid inserting test accounts into PostgreSQL.
+**MVP complete.** Manual checks passed with isolated synthetic data; the temporary test database was removed.
 
-The patient confirmed that an appointment form refreshed before submission loses its unsaved draft by design. Manual acceptance against isolated SQLite passed: a submitted appointment remained visible after refresh, and the synthetic health record disappeared after deletion. A direct database check confirmed both outcomes. The local test server was stopped and `instance/manual_qa.sqlite` was removed. **MVP status: complete. Next task: choose an optional future improvement if development is continuing.**
+**Optional future features:** password reset, broader CSRF protection, dynamic prevention/community content, patient-list search/filter, and health-record or appointment export. No MVP work remains.
 
 ## 8. Development Rules
 
@@ -280,7 +280,7 @@ class Appointment(db.Model):
 7. ✅ Run `flask db init` → `flask db migrate -m "Initial migration"` → `flask db upgrade`
 8. ✅ **Verify tables created** — 7 new tables confirmed in PostgreSQL
 
-**Status: Essential MVP and important follow-up features in `docs/REQUIREMENTS.md` are implemented. Patient/provider authentication, appointments, health monitoring and records, medication tracking, notifications, provider availability and settings, consultation notes, and follow-ups use the database. Migrations `b7c4d2e91a63`, `c39a70f2d841`, `1d6e8c3f4a20`, `2f8c1a6d4e90`, and `7a4c9e2d6b31` are applied and verified in PostgreSQL. Manual acceptance in isolated SQLite confirmed appointment reload after submit and deletion of a synthetic health record; no real records were used. The unsubmitted form draft clears on refresh by design. The manual QA server and database have been cleaned up. MVP complete; optional improvements remain outside the MVP.**
+**Status: MVP complete. Core patient/provider workflows and important follow-up features are implemented and verified. Manual checks confirmed submitted appointment reload and synthetic health-record deletion using isolated SQLite. The temporary QA database is removed. Optional future work: password reset, broader CSRF protection, dynamic prevention/community content, patient-list search/filter, and health-record or appointment export.**
 
 **File location:** `E:\Desktop\ncd-frontend\ncd\docs\PROJECT_STATUS.md`  
 **Related file:** `docs/FRONTEND_AUDIT.md` (full frontend investigation report)
