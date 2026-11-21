@@ -467,6 +467,22 @@
         }
 
 
+        .setting-status {
+            flex-shrink: 0;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            color: #6b7280;
+            font-size: 11px;
+            padding: 5px 9px;
+        }
+
+
+        html.dark-mode .setting-status {
+            border-color: #4b5563;
+            color: #cbd5e1;
+        }
+
+
         /* ==================================================
            TOGGLE
         ================================================== */
@@ -1077,7 +1093,7 @@
 
                     <div class="setting-description"
                          data-i18n="healthRemindersDescription">
-                        Receive reminders for health monitoring and daily health activities.
+                        Saved preference only; automated health reminders are not available yet.
                     </div>
 
                 </div>
@@ -1109,7 +1125,7 @@
 
                     <div class="setting-description"
                          data-i18n="appointmentAlertsDescription">
-                        Receive reminders about upcoming healthcare appointments.
+                        Show or hide appointment updates on the in-app Notifications page.
                     </div>
 
                 </div>
@@ -1141,7 +1157,7 @@
 
                     <div class="setting-description"
                          data-i18n="healthInformationDescription">
-                        Receive useful information about NCD prevention and healthy living.
+                        Saved preference only; health-information notifications are not available yet.
                     </div>
 
                 </div>
@@ -1159,6 +1175,8 @@
                 </label>
 
             </div>
+
+            <p id="notificationSaveStatus" class="setting-description" role="status" aria-live="polite"></p>
 
         </div>
 
@@ -1422,21 +1440,13 @@
 
                     <div class="setting-description"
                          data-i18n="profileVisibilityDescription">
-                        Allow your basic profile information to be visible to authorized services.
+                        Not available yet. Provider access follows account roles and care assignment.
                     </div>
 
                 </div>
 
 
-                <label class="switch">
-
-                    <input
-                        type="checkbox"
-                        id="profileVisibility">
-
-                    <span class="slider"></span>
-
-                </label>
+                <span class="setting-status" data-i18n="notAvailableYet">Not available yet</span>
 
             </div>
 
@@ -1453,22 +1463,13 @@
 
                     <div class="setting-description"
                          data-i18n="rememberLoginDescription">
-                        Keep your login preference for easier access.
+                        Not available yet. Login uses the browser's standard session behavior.
                     </div>
 
                 </div>
 
 
-                <label class="switch">
-
-                    <input
-                        type="checkbox"
-                        id="rememberLogin"
-                        checked>
-
-                    <span class="slider"></span>
-
-                </label>
+                <span class="setting-status" data-i18n="notAvailableYet">Not available yet</span>
 
             </div>
 
@@ -1485,21 +1486,13 @@
 
                     <div class="setting-description"
                          data-i18n="healthDataSharingDescription">
-                        Allow health information to be shared with authorized healthcare services.
+                        Not available yet. Health-data access follows account roles and care assignment.
                     </div>
 
                 </div>
 
 
-                <label class="switch">
-
-                    <input
-                        type="checkbox"
-                        id="healthDataSharing">
-
-                    <span class="slider"></span>
-
-                </label>
+                <span class="setting-status" data-i18n="notAvailableYet">Not available yet</span>
 
             </div>
 
@@ -1727,6 +1720,8 @@
 
 <script>
 
+window.patientNotificationPreferences = {{ notification_preferences | tojson }};
+
 /* ==========================================================
    SIDEBAR
 ========================================================== */
@@ -1775,19 +1770,19 @@ const translations = {
             "Health Reminders",
 
         healthRemindersDescription:
-            "Receive reminders for health monitoring and daily health activities.",
+            "Saved preference only; automated health reminders are not available yet.",
 
         appointmentAlerts:
             "Appointment Alerts",
 
         appointmentAlertsDescription:
-            "Receive reminders about upcoming healthcare appointments.",
+            "Show or hide appointment updates on the in-app Notifications page.",
 
         healthInformation:
             "Health Information",
 
         healthInformationDescription:
-            "Receive useful information about NCD prevention and healthy living.",
+            "Saved preference only; health-information notifications are not available yet.",
 
         preferences:
             "Preferences",
@@ -1853,19 +1848,22 @@ const translations = {
             "Profile Visibility",
 
         profileVisibilityDescription:
-            "Allow your basic profile information to be visible to authorized services.",
+            "Not available yet. Provider access follows account roles and care assignment.",
 
         rememberLogin:
             "Remember Login",
 
         rememberLoginDescription:
-            "Keep your login preference for easier access.",
+            "Not available yet. Login uses the browser's standard session behavior.",
 
         healthDataSharing:
             "Health Data Sharing",
 
         healthDataSharingDescription:
-            "Allow health information to be shared with authorized healthcare services.",
+            "Not available yet. Health-data access follows account roles and care assignment.",
+
+        notAvailableYet:
+            "Not available yet",
 
         saveSettings:
             "Save Settings",
@@ -1929,19 +1927,19 @@ const translations = {
             "स्वास्थ्य सम्झना",
 
         healthRemindersDescription:
-            "स्वास्थ्य निगरानी र दैनिक स्वास्थ्य गतिविधिहरूका लागि सम्झना प्राप्त गर्नुहोस्।",
+            "यो प्राथमिकता मात्र सुरक्षित हुन्छ; स्वचालित स्वास्थ्य सम्झना सुविधा अहिले उपलब्ध छैन।",
 
         appointmentAlerts:
             "अपोइन्टमेन्ट सूचना",
 
         appointmentAlertsDescription:
-            "आगामी स्वास्थ्य अपोइन्टमेन्टहरूका बारेमा सम्झना प्राप्त गर्नुहोस्।",
+            "एपभित्रको सूचना पृष्ठमा अपोइन्टमेन्ट अपडेट देखाउने वा लुकाउने।",
 
         healthInformation:
             "स्वास्थ्य जानकारी",
 
         healthInformationDescription:
-            "NCD रोकथाम र स्वस्थ जीवनशैलीसम्बन्धी उपयोगी जानकारी प्राप्त गर्नुहोस्।",
+            "यो प्राथमिकता मात्र सुरक्षित हुन्छ; स्वास्थ्य जानकारी सूचना सुविधा अहिले उपलब्ध छैन।",
 
         preferences:
             "प्राथमिकताहरू",
@@ -2007,19 +2005,22 @@ const translations = {
             "प्रोफाइल दृश्यता",
 
         profileVisibilityDescription:
-            "आधिकारिक सेवाहरूलाई तपाईंको आधारभूत प्रोफाइल जानकारी हेर्न अनुमति दिनुहोस्।",
+            "अहिले उपलब्ध छैन। प्रदायकको पहुँच खाता भूमिका र हेरचाह सम्बन्धमा आधारित हुन्छ।",
 
         rememberLogin:
             "लगइन सम्झनुहोस्",
 
         rememberLoginDescription:
-            "सजिलो पहुँचका लागि आफ्नो लगइन प्राथमिकता सुरक्षित राख्नुहोस्।",
+            "अहिले उपलब्ध छैन। लगइन ब्राउजरको सामान्य सत्र व्यवहारअनुसार चल्छ।",
 
         healthDataSharing:
             "स्वास्थ्य डेटा साझेदारी",
 
         healthDataSharingDescription:
-            "आधिकारिक स्वास्थ्य सेवाहरूसँग स्वास्थ्य जानकारी साझेदारी गर्न अनुमति दिनुहोस्।",
+            "अहिले उपलब्ध छैन। स्वास्थ्य डेटाको पहुँच खाता भूमिका र हेरचाह सम्बन्धमा आधारित हुन्छ।",
+
+        notAvailableYet:
+            "अहिले उपलब्ध छैन",
 
         saveSettings:
             "सेटिङहरू सुरक्षित गर्नुहोस्",
@@ -2146,29 +2147,25 @@ function loadSettings() {
         localStorage.getItem("ncdNepalSettings") || "{}"
     );
 
+    [
+        "profileVisibility",
+        "rememberLogin",
+        "healthDataSharing",
+        "healthReminders",
+        "appointmentAlerts",
+        "healthInformation",
+    ].forEach(function(key) {
+        delete saved[key];
+    });
+    localStorage.setItem("ncdNepalSettings", JSON.stringify(saved));
 
-    if (saved.healthReminders !== undefined) {
-
-        document.getElementById("healthReminders").checked =
-            saved.healthReminders;
-
-    }
-
-
-    if (saved.appointmentAlerts !== undefined) {
-
-        document.getElementById("appointmentAlerts").checked =
-            saved.appointmentAlerts;
-
-    }
-
-
-    if (saved.healthInformation !== undefined) {
-
-        document.getElementById("healthInformation").checked =
-            saved.healthInformation;
-
-    }
+    const notificationPreferences = window.patientNotificationPreferences || {};
+    document.getElementById("healthReminders").checked =
+        notificationPreferences.healthReminders !== false;
+    document.getElementById("appointmentAlerts").checked =
+        notificationPreferences.appointmentAlerts !== false;
+    document.getElementById("healthInformation").checked =
+        notificationPreferences.healthInformation !== false;
 
 
     if (saved.language) {
@@ -2195,30 +2192,6 @@ function loadSettings() {
     }
 
 
-    if (saved.profileVisibility !== undefined) {
-
-        document.getElementById("profileVisibility").checked =
-            saved.profileVisibility;
-
-    }
-
-
-    if (saved.rememberLogin !== undefined) {
-
-        document.getElementById("rememberLogin").checked =
-            saved.rememberLogin;
-
-    }
-
-
-    if (saved.healthDataSharing !== undefined) {
-
-        document.getElementById("healthDataSharing").checked =
-            saved.healthDataSharing;
-
-    }
-
-
     const language =
         document.getElementById("language").value;
 
@@ -2233,24 +2206,76 @@ function loadSettings() {
 }
 
 
+let notificationPreferenceSaveQueue = Promise.resolve();
+let lastSavedNotificationPreferences = {
+    healthReminders: window.patientNotificationPreferences?.healthReminders !== false,
+    appointmentAlerts: window.patientNotificationPreferences?.appointmentAlerts !== false,
+    healthInformation: window.patientNotificationPreferences?.healthInformation !== false,
+};
+let notificationPreferenceSaveSequence = 0;
+
+function readNotificationPreferences() {
+    return {
+        healthReminders: document.getElementById("healthReminders").checked,
+        appointmentAlerts: document.getElementById("appointmentAlerts").checked,
+        healthInformation: document.getElementById("healthInformation").checked,
+    };
+}
+
+function applyNotificationPreferences(preferences) {
+    document.getElementById("healthReminders").checked = preferences.healthReminders;
+    document.getElementById("appointmentAlerts").checked = preferences.appointmentAlerts;
+    document.getElementById("healthInformation").checked = preferences.healthInformation;
+}
+
+function saveNotificationPreferencesOnChange() {
+    const preferences = readNotificationPreferences();
+    const sequence = ++notificationPreferenceSaveSequence;
+    const status = document.getElementById("notificationSaveStatus");
+    status.textContent = "Saving notification preferences…";
+
+    const saveRequest = notificationPreferenceSaveQueue
+        .catch(() => {})
+        .then(async () => {
+            const response = await fetch("{{ url_for('save_notification_preferences') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(preferences),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Could not save notification preferences.");
+            lastSavedNotificationPreferences = preferences;
+            window.patientNotificationPreferences = preferences;
+        });
+
+    notificationPreferenceSaveQueue = saveRequest;
+    saveRequest.then(() => {
+        if (sequence === notificationPreferenceSaveSequence) {
+            status.textContent = "Notification preferences saved.";
+        }
+    }).catch(error => {
+        if (sequence === notificationPreferenceSaveSequence) {
+            applyNotificationPreferences(lastSavedNotificationPreferences);
+            status.textContent = error.message || "Could not save notification preferences.";
+        }
+    });
+}
+
+function enableNotificationPreferenceAutosave() {
+    ["healthReminders", "appointmentAlerts", "healthInformation"].forEach(function(id) {
+        document.getElementById(id).addEventListener("change", saveNotificationPreferencesOnChange);
+    });
+}
+
+
 
 /* ==========================================================
    SAVE SETTINGS
 ========================================================== */
 
-function saveSettings() {
+async function saveSettings() {
 
     const settings = {
-
-        healthReminders:
-            document.getElementById("healthReminders").checked,
-
-        appointmentAlerts:
-            document.getElementById("appointmentAlerts").checked,
-
-        healthInformation:
-            document.getElementById("healthInformation").checked,
-
         language:
             document.getElementById("language").value,
 
@@ -2258,36 +2283,28 @@ function saveSettings() {
             document.getElementById("appearance").value,
 
         timezone:
-            document.getElementById("timezone").value,
-
-        profileVisibility:
-            document.getElementById("profileVisibility").checked,
-
-        rememberLogin:
-            document.getElementById("rememberLogin").checked,
-
-        healthDataSharing:
-            document.getElementById("healthDataSharing").checked
+            document.getElementById("timezone").value
 
     };
 
 
-    localStorage.setItem(
-        "ncdNepalSettings",
-        JSON.stringify(settings)
-    );
+    const button = document.querySelector(".save-button");
+    if (button) button.disabled = true;
 
-
-    applyLanguage(settings.language);
-
-    applyAppearance(settings.appearance);
-
-
-    alert(
-        settings.language === "nepali"
-            ? "सेटिङहरू सफलतापूर्वक सुरक्षित गरियो।"
-            : "Settings saved successfully."
-    );
+    try {
+        localStorage.setItem("ncdNepalSettings", JSON.stringify(settings));
+        applyLanguage(settings.language);
+        applyAppearance(settings.appearance);
+        alert(
+            settings.language === "nepali"
+                ? "सेटिङहरू सफलतापूर्वक सुरक्षित गरियो।"
+                : "Settings saved successfully."
+        );
+    } catch (error) {
+        alert(error.message || "Settings could not be saved.");
+    } finally {
+        if (button) button.disabled = false;
+    }
 
 }
 
@@ -2659,6 +2676,7 @@ function hidePasswordMessages() {
 ========================================================== */
 
 loadSettings();
+enableNotificationPreferenceAutosave();
 
 </script>
 

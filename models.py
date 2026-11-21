@@ -15,9 +15,11 @@ class Patient(db.Model):
     account_type = db.Column(db.String(30))
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    notification_preferences = db.Column(db.JSON, nullable=True)
 
     appointments = db.relationship("Appointment", back_populates="patient", lazy="dynamic")
     health_records = db.relationship("HealthRecord", back_populates="patient", lazy="dynamic")
+    medications = db.relationship("Medication", back_populates="patient", lazy="dynamic")
 
     def __repr__(self):
         return f"<Patient {self.id}: {self.fullname} ({self.email})>"
@@ -89,12 +91,52 @@ class HealthRecord(db.Model):
         return f"<HealthRecord {self.id}: {self.record_type}={self.value}>"
 
 
+class Medication(db.Model):
+    __tablename__ = "medication"
+
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey("patient.id"), nullable=False, index=True)
+    name = db.Column(db.String(120), nullable=False)
+    dose = db.Column(db.String(80), nullable=False)
+    instructions = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    patient = db.relationship("Patient", back_populates="medications")
+    logs = db.relationship("MedicationLog", back_populates="medication", lazy="dynamic")
+
+    def __repr__(self):
+        return f"<Medication {self.id}: Patient {self.patient_id}>"
+
+
+class MedicationLog(db.Model):
+    __tablename__ = "medication_log"
+    __table_args__ = (
+        db.UniqueConstraint("medication_id", "intake_date", name="uq_medication_log_medication_date"),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    medication_id = db.Column(db.Integer, db.ForeignKey("medication.id"), nullable=False, index=True)
+    intake_date = db.Column(db.Date, nullable=False)
+    taken_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    medication = db.relationship("Medication", back_populates="logs")
+
+    def __repr__(self):
+        return f"<MedicationLog {self.id}: Medication {self.medication_id} on {self.intake_date}>"
+
+
 class ConsultationNote(db.Model):
     __tablename__ = "consultation_note"
 
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey("patient.id"), nullable=False)
     provider_id = db.Column(db.Integer, db.ForeignKey("provider.id"), nullable=False)
+    appointment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("appointment.id", name="fk_consultation_note_appointment"),
+        nullable=True,
+    )
     note_text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -111,8 +153,13 @@ class FollowUp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey("patient.id"), nullable=False)
     provider_id = db.Column(db.Integer, db.ForeignKey("provider.id"), nullable=False)
+    appointment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("appointment.id", name="fk_follow_up_appointment"),
+        nullable=True,
+    )
     follow_up_date = db.Column(db.Date, nullable=False)
-    follow_up_time = db.Column(db.Time, nullable=False)
+    follow_up_time = db.Column(db.Time, nullable=True)
     follow_up_type = db.Column(db.String(50))
     notes = db.Column(db.Text)
     status = db.Column(db.String(20), default="Pending", nullable=False)
@@ -136,6 +183,7 @@ class ProviderSettings(db.Model):
     system_notifications = db.Column(db.Boolean, default=True, nullable=False)
     profile_visible = db.Column(db.Boolean, default=True, nullable=False)
     organization_visible = db.Column(db.Boolean, default=True, nullable=False)
+    availability_config = db.Column(db.JSON, nullable=True)
 
     provider = db.relationship("Provider", back_populates="settings")
 

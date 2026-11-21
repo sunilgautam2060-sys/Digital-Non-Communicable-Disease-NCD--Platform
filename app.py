@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, flash, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from functools import wraps
@@ -39,7 +39,11 @@ Patient = models.Patient
 Provider = models.Provider
 Appointment = models.Appointment
 HealthRecord = models.HealthRecord
+ConsultationNote = models.ConsultationNote
 FollowUp = models.FollowUp
+ProviderSettings = models.ProviderSettings
+Medication = models.Medication
+MedicationLog = models.MedicationLog
 
 
 # =========================================================
@@ -52,12 +56,6 @@ app.config["registered_provider"] = None
 # Patient-management storage
 app.config["patients"] = {}
 app.config["patient_counter"] = 1
-
-app.config["consultation_notes"] = []
-app.config["followups"] = []
-
-app.config["note_counter"] = 1
-app.config["followup_counter"] = 1
 
 # Provider settings storage
 app.config["provider_settings"] = {
@@ -530,6 +528,13 @@ def get_provider_patients():
     Build a unique patient list from this provider's appointments.
     """
     provider_appointments = get_provider_appointments()
+    pending_followup_patient_ids = {
+        row.patient_id
+        for row in FollowUp.query.filter_by(
+            provider_id=session.get("provider_id"),
+            status="Pending",
+        ).all()
+    }
     patient_map = {}
     for appointment in provider_appointments:
         email = appointment["patient_email"]
@@ -663,19 +668,7 @@ def get_provider_patients():
             for item in history
         )
 
-        patient["followup_required"] = any(
-            item.get("status") == "Pending"
-            for item in app.config["followups"]
-            if item.get("patient_id")
-            == patient["patient_id"]
-
-            and normalize_text(
-                item.get("provider_email", "")
-            )
-            == normalize_text(
-                session.get("provider_email", "")
-            )
-        )
+        patient["followup_required"] = int(patient["patient_id"]) in pending_followup_patient_ids
 
     patients.sort(
         key=lambda item: (
@@ -704,23 +697,25 @@ def get_provider_patient(patient_id):
 # =========================================================
 
 def get_provider_patient_notes(patient_id):
-
-    provider_email = normalize_text(
-        session.get("provider_email", "")
-    )
-
+    try:
+        patient_id = int(patient_id)
+    except (TypeError, ValueError):
+        return []
+    rows = ConsultationNote.query.filter_by(
+        patient_id=patient_id,
+        provider_id=session.get("provider_id"),
+    ).order_by(ConsultationNote.created_at.desc()).all()
     return [
-        note
-
-        for note in app.config["consultation_notes"]
-
-        if normalize_text(
-            note.get("patient_id", "")
-        ) == normalize_text(patient_id)
-
-        and normalize_text(
-            note.get("provider_email", "")
-        ) == provider_email
+        {
+            "id": note.id,
+            "patient_id": str(note.patient_id),
+            "provider_id": note.provider_id,
+            "appointment_id": note.appointment_id,
+            "note": note.note_text,
+            "created_at": note.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": note.updated_at.strftime("%Y-%m-%d %H:%M:%S") if note.updated_at else "",
+        }
+        for note in rows
     ]
 
 
@@ -729,24 +724,34 @@ def get_provider_patient_notes(patient_id):
 # =========================================================
 
 def get_provider_patient_followups(patient_id):
+    try:
+        patient_id = int(patient_id)
+    except (TypeError, ValueError):
+        return []
+    rows = FollowUp.query.filter_by(
+        patient_id=patient_id,
+        provider_id=session.get("provider_id"),
+    ).order_by(FollowUp.follow_up_date.desc(), FollowUp.created_at.desc()).all()
+    return [followup_to_dict(item) for item in rows]
 
-    provider_email = normalize_text(
-        session.get("provider_email", "")
-    )
 
-    return [
-        item
-
-        for item in app.config["followups"]
-
-        if normalize_text(
-            item.get("patient_id", "")
-        ) == normalize_text(patient_id)
-
-        and normalize_text(
-            item.get("provider_email", "")
-        ) == provider_email
-    ]
+def followup_to_dict(item):
+    patient = db.session.get(Patient, item.patient_id)
+    return {
+        "id": item.id,
+        "patient_id": str(item.patient_id),
+        "patient_name": patient.fullname if patient else "Patient",
+        "patient_email": patient.email if patient else "",
+        "provider_id": item.provider_id,
+        "appointment_id": item.appointment_id,
+        "followup_date": item.follow_up_date.isoformat(),
+        "followup_time": item.follow_up_time.strftime("%I:%M %p").lstrip("0") if item.follow_up_time else "",
+        "followup_type": item.follow_up_type or "",
+        "instructions": item.notes or "",
+        "status": item.status,
+        "created_at": item.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "completed_at": item.completed_at.strftime("%Y-%m-%d %H:%M:%S") if item.completed_at else "",
+    }
 
 
 # =========================================================
@@ -1216,18 +1221,37 @@ def dashboard():
 def monitoring():
     records = HealthRecord.query.filter_by(
         patient_id=session.get("patient_id"),
-        record_type="Weight",
     ).order_by(
         HealthRecord.date_recorded.desc(),
         HealthRecord.created_at.desc(),
     ).all()
-    current_weight = records[0] if records else None
-    previous_weight = records[1] if len(records) > 1 else None
+    records_by_type = {}
+    for record in records:
+        records_by_type.setdefault(record.record_type, []).append(record)
+    weights = records_by_type.get("Weight", [])
+    patient_id = session.get("patient_id")
+    medications = Medication.query.filter_by(
+        patient_id=patient_id,
+        is_active=True,
+    ).order_by(Medication.name.asc()).all()
+    taken_today = {
+        log.medication_id
+        for log in MedicationLog.query.join(Medication).filter(
+            Medication.patient_id == patient_id,
+            MedicationLog.intake_date == date.today(),
+        ).all()
+    }
 
     return render_template(
         "monitoring.html",
-        current_weight=current_weight,
-        previous_weight=previous_weight,
+        records=records,
+        current_weight=weights[0] if weights else None,
+        previous_weight=weights[1] if len(weights) > 1 else None,
+        latest_bp=(records_by_type.get("Blood Pressure") or [None])[0],
+        latest_glucose=(records_by_type.get("Blood Glucose") or [None])[0],
+        latest_tsh=(records_by_type.get("Thyroid TSH") or [None])[0],
+        medications=medications,
+        medication_taken_ids=taken_today,
     )
 
 
@@ -1256,6 +1280,119 @@ def save_weight():
         app.logger.exception("Could not save patient weight")
         return jsonify(error="Weight could not be saved. Please try again."), 500
     return jsonify(message="Weight saved."), 201
+
+
+@app.route("/monitoring/record", methods=["POST"])
+@patient_required
+def save_health_record():
+    payload = request.get_json(silent=True) or request.form
+    record_type = str(payload.get("type", "")).strip()
+    value = str(payload.get("value", "")).strip()
+    date_text = str(payload.get("date", "")).strip()
+    allowed_types = {"Blood Pressure", "Blood Glucose", "Thyroid TSH"}
+    if record_type not in allowed_types:
+        return jsonify(error="Choose a supported measurement type."), 400
+    try:
+        record_date = date.fromisoformat(date_text)
+    except ValueError:
+        return jsonify(error="Enter a valid measurement date."), 400
+    if record_date > date.today():
+        return jsonify(error="Measurement date cannot be in the future."), 400
+
+    if record_type == "Blood Pressure":
+        parts = value.split("/")
+        if len(parts) != 2 or any(not part.isdigit() or len(part) > 3 for part in parts):
+            return jsonify(error="Enter blood pressure as systolic/diastolic, for example 120/80."), 400
+    else:
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError):
+            return jsonify(error="Enter a valid numeric reading."), 400
+        if not 0 < numeric_value <= 100000:
+            return jsonify(error="Enter a positive reading."), 400
+
+    record = HealthRecord(
+        patient_id=session.get("patient_id"),
+        record_type=record_type,
+        value=value,
+        date_recorded=record_date,
+    )
+    db.session.add(record)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not save patient health measurement")
+        return jsonify(error="Reading could not be saved. Please try again."), 500
+    return jsonify(message="Reading saved."), 201
+
+
+@app.route("/monitoring/medications", methods=["POST"])
+@patient_required
+def add_medication():
+    payload = request.get_json(silent=True) or request.form
+    name = str(payload.get("name", "")).strip()
+    dose = str(payload.get("dose", "")).strip()
+    instructions = str(payload.get("instructions", "")).strip()
+    if not name or len(name) > 120:
+        return jsonify(error="Enter a medication name up to 120 characters."), 400
+    if not dose or len(dose) > 80:
+        return jsonify(error="Enter the dose or label up to 80 characters."), 400
+    if len(instructions) > 1000:
+        return jsonify(error="Instructions must be 1000 characters or fewer."), 400
+
+    medication = Medication(
+        patient_id=session.get("patient_id"),
+        name=name,
+        dose=dose,
+        instructions=instructions or None,
+    )
+    db.session.add(medication)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not save patient medication")
+        return jsonify(error="Medication could not be saved. Please try again."), 500
+    return jsonify(message="Medication saved."), 201
+
+
+@app.route("/monitoring/medications/<int:medication_id>/taken", methods=["POST"])
+@patient_required
+def mark_medication_taken(medication_id):
+    medication = Medication.query.filter_by(
+        id=medication_id,
+        patient_id=session.get("patient_id"),
+        is_active=True,
+    ).first()
+    if not medication:
+        return jsonify(error="Medication was not found."), 404
+
+    log = MedicationLog.query.filter_by(
+        medication_id=medication.id,
+        intake_date=date.today(),
+    ).first()
+    if log:
+        return jsonify(message="Today's dose is already recorded.")
+
+    db.session.add(MedicationLog(
+        medication_id=medication.id,
+        intake_date=date.today(),
+    ))
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        # A concurrent request may have created today's unique log first.
+        existing = MedicationLog.query.filter_by(
+            medication_id=medication.id,
+            intake_date=date.today(),
+        ).first()
+        if existing:
+            return jsonify(message="Today's dose is already recorded.")
+        app.logger.exception("Could not save medication intake")
+        return jsonify(error="Medication intake could not be saved."), 500
+    return jsonify(message="Today's dose recorded.")
 
 
 # =========================================================
@@ -1345,6 +1482,29 @@ def records():
     )
 
 
+@app.route("/records/<int:record_id>/delete", methods=["POST"])
+@patient_required
+def delete_health_record(record_id):
+    record = HealthRecord.query.filter_by(
+        id=record_id,
+        patient_id=session.get("patient_id"),
+    ).first()
+    if not record:
+        return "Health record not found.", 404
+
+    try:
+        db.session.delete(record)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not delete patient health record")
+        flash("The health record could not be deleted. Please try again.", "error")
+        return redirect(url_for("records"))
+
+    flash("Health record deleted.", "success")
+    return redirect(url_for("records"))
+
+
 # =========================================================
 # APPOINTMENTS
 # =========================================================
@@ -1399,6 +1559,14 @@ def appointments():
 
         if appointment_date < date.today():
             return booking_error("Appointment date cannot be in the past.")
+
+        availability_error = validate_appointment_slot(
+            provider.id,
+            appointment_date,
+            appointment_time,
+        )
+        if availability_error:
+            return booking_error(availability_error, 409 if "conflicts" in availability_error else 400)
 
         try:
             appointment = Appointment(
@@ -1490,6 +1658,15 @@ def reschedule_appointment(appointment_id):
     if new_date < date.today():
         return jsonify(success=False, error="Appointment date cannot be in the past."), 400
 
+    availability_error = validate_appointment_slot(
+        appointment.provider_id,
+        new_date,
+        new_time,
+        exclude_id=appointment.id,
+    )
+    if availability_error:
+        return jsonify(success=False, error=availability_error), 409 if "conflicts" in availability_error else 400
+
     appointment.appointment_date = new_date
     appointment.appointment_time = new_time
     appointment.status = "Pending"
@@ -1511,15 +1688,14 @@ def reschedule_appointment(appointment_id):
 @app.route("/notifications")
 @patient_required
 def notifications():
-
-    patient_email = session.get(
-        "email",
-        ""
-    )
-
-    notifications = build_patient_notifications(
-        patient_email
-    )
+    patient = db.session.get(Patient, session.get("patient_id"))
+    preferences = patient.notification_preferences if patient else None
+    if preferences is None or preferences.get("appointmentAlerts", True):
+        notifications = build_patient_notifications(
+            patient.email if patient else session.get("email", "")
+        )
+    else:
+        notifications = []
 
     return render_template(
         "notifications.html",
@@ -1534,6 +1710,12 @@ def notifications():
 @app.route("/settings", methods=["GET", "POST"])
 @patient_required
 def settings():
+
+    default_notification_preferences = {
+        "healthReminders": True,
+        "appointmentAlerts": True,
+        "healthInformation": True,
+    }
 
     if request.method == "POST":
 
@@ -1562,6 +1744,7 @@ def settings():
 
             return render_template(
                 "settings.html",
+                notification_preferences=default_notification_preferences,
                 settings_error=(
                     "Patient account was not found."
                 )
@@ -1586,6 +1769,10 @@ def settings():
 
             return render_template(
                 "settings.html",
+                notification_preferences=(
+                    patient.notification_preferences
+                    or default_notification_preferences
+                ),
                 settings_error=(
                     "Settings could not be saved."
                 )
@@ -1599,14 +1786,60 @@ def settings():
 
         return render_template(
             "settings.html",
+            notification_preferences=(
+                patient.notification_preferences
+                or default_notification_preferences
+            ),
             settings_success=(
                 "Settings saved successfully."
             )
         )
 
+    patient = db.session.get(Patient, session.get("patient_id"))
+    if not patient:
+        return render_template(
+            "settings.html",
+            notification_preferences=default_notification_preferences,
+            settings_error="Patient account was not found.",
+        ), 404
+
     return render_template(
-        "settings.html"
+        "settings.html",
+        notification_preferences=(
+            patient.notification_preferences or default_notification_preferences
+        ),
     )
+
+
+@app.route("/settings/notification-preferences", methods=["POST"])
+@patient_required
+def save_notification_preferences():
+    payload = request.get_json(silent=True)
+    preference_names = (
+        "healthReminders",
+        "appointmentAlerts",
+        "healthInformation",
+    )
+    if not isinstance(payload, dict) or any(
+        type(payload.get(name)) is not bool for name in preference_names
+    ):
+        return jsonify(error="Choose valid notification preferences."), 400
+
+    patient = db.session.get(Patient, session.get("patient_id"))
+    if not patient:
+        return jsonify(error="Patient account was not found."), 404
+
+    patient.notification_preferences = {
+        name: payload[name] for name in preference_names
+    }
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not save patient notification preferences")
+        return jsonify(error="Notification preferences could not be saved."), 500
+
+    return jsonify(message="Notification preferences saved.")
 
 
 # =========================================================
@@ -1959,6 +2192,11 @@ def service_provider():
             "Provider"
         ),
 
+        provider_type=session.get(
+            "provider_type",
+            "Healthcare Provider"
+        ),
+
         total_appointments=(
             total_appointments
         ),
@@ -2178,44 +2416,36 @@ def add_consultation_note(
             )
         )
 
-    note_text = request.form.get(
-        "note",
-        ""
-    ).strip()
+    note_text = request.form.get("note", "").strip()
+    if not note_text:
+        return redirect(url_for("patient_details", patient_id=patient_id))
 
-    if note_text:
+    appointment_id = request.form.get("appointment_id", "").strip()
+    appointment = None
+    if appointment_id:
+        try:
+            appointment = Appointment.query.filter_by(
+                id=int(appointment_id),
+                patient_id=int(patient_id),
+                provider_id=session.get("provider_id"),
+            ).first()
+        except (TypeError, ValueError):
+            appointment = None
+        if not appointment:
+            return redirect(url_for("patient_details", patient_id=patient_id))
 
-        note_id = (
-            app.config["note_counter"]
-        )
-
-        app.config["note_counter"] += 1
-
-        app.config[
-            "consultation_notes"
-        ].append({
-
-            "id": note_id,
-
-            "patient_id": patient_id,
-
-            "provider_email": session.get(
-                "provider_email",
-                ""
-            ),
-
-            "provider_name": session.get(
-                "provider_fullname",
-                ""
-            ),
-
-            "note": note_text,
-
-            "created_at": datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-
-        })
+    note = ConsultationNote(
+        patient_id=int(patient_id),
+        provider_id=session.get("provider_id"),
+        appointment_id=appointment.id if appointment else None,
+        note_text=note_text,
+    )
+    db.session.add(note)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not save provider consultation note")
 
     return redirect(
         url_for(
@@ -2239,58 +2469,23 @@ def edit_consultation_note(
     note_id
 ):
 
-    provider_email = normalize_text(
-        session.get(
-            "provider_email",
-            ""
-        )
-    )
-
-    note_text = request.form.get(
-        "note",
-        ""
-    ).strip()
-
-    for note in app.config[
-        "consultation_notes"
-    ]:
-
-        if (
-            note.get("id")
-            == note_id
-
-            and normalize_text(
-                note.get(
-                    "patient_id",
-                    ""
-                )
-            )
-            == normalize_text(
-                patient_id
-            )
-
-            and normalize_text(
-                note.get(
-                    "provider_email",
-                    ""
-                )
-            )
-            == provider_email
-        ):
-
-            if note_text:
-
-                note["note"] = (
-                    note_text
-                )
-
-                note["updated_at"] = (
-                    datetime.now().strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                )
-
-            break
+    try:
+        patient_id = int(patient_id)
+    except (TypeError, ValueError):
+        return redirect(url_for("patients"))
+    note = ConsultationNote.query.filter_by(
+        id=note_id,
+        patient_id=patient_id,
+        provider_id=session.get("provider_id"),
+    ).first()
+    note_text = request.form.get("note", "").strip()
+    if note and note_text:
+        note.note_text = note_text
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Could not update provider consultation note")
 
     return redirect(
         url_for(
@@ -2314,51 +2509,22 @@ def delete_consultation_note(
     note_id
 ):
 
-    provider_email = normalize_text(
-        session.get(
-            "provider_email",
-            ""
-        )
-    )
-
-    remaining_notes = []
-
-    for note in app.config[
-        "consultation_notes"
-    ]:
-
-        is_target = (
-            note.get("id")
-            == note_id
-
-            and normalize_text(
-                note.get(
-                    "patient_id",
-                    ""
-                )
-            )
-            == normalize_text(
-                patient_id
-            )
-
-            and normalize_text(
-                note.get(
-                    "provider_email",
-                    ""
-                )
-            )
-            == provider_email
-        )
-
-        if not is_target:
-
-            remaining_notes.append(
-                note
-            )
-
-    app.config[
-        "consultation_notes"
-    ] = remaining_notes
+    try:
+        patient_id = int(patient_id)
+    except (TypeError, ValueError):
+        return redirect(url_for("patients"))
+    note = ConsultationNote.query.filter_by(
+        id=note_id,
+        patient_id=patient_id,
+        provider_id=session.get("provider_id"),
+    ).first()
+    if note:
+        db.session.delete(note)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Could not delete provider consultation note")
 
     return redirect(
         url_for(
@@ -2393,82 +2559,57 @@ def add_followup(
             )
         )
 
-    followup_date = request.form.get(
-        "followup_date",
-        ""
+    try:
+        patient_id_value = int(patient_id)
+        followup_date = date.fromisoformat(request.form.get("followup_date", "").strip())
+    except (TypeError, ValueError):
+        return redirect(url_for("patient_details", patient_id=patient_id))
+
+    followup_time_text = request.form.get("followup_time", "").strip()
+    followup_time = None
+    if followup_time_text:
+        try:
+            followup_time = datetime.strptime(followup_time_text, "%H:%M").time()
+        except ValueError:
+            return redirect(url_for("patient_details", patient_id=patient_id))
+
+    appointment_id_text = request.form.get("appointment_id", "").strip()
+    appointment = None
+    if appointment_id_text:
+        try:
+            appointment = Appointment.query.filter_by(
+                id=int(appointment_id_text),
+                patient_id=patient_id_value,
+                provider_id=session.get("provider_id"),
+            ).first()
+        except (TypeError, ValueError):
+            appointment = None
+        if not appointment:
+            return redirect(url_for("patient_details", patient_id=patient_id))
+
+    instructions = request.form.get(
+        "instructions",
+        request.form.get("notes", ""),
     ).strip()
+    if len(instructions) < 2:
+        return redirect(url_for("patient_details", patient_id=patient_id))
 
-    followup_time = request.form.get(
-        "followup_time",
-        ""
-    ).strip()
-
-    followup_type = request.form.get(
-        "followup_type",
-        ""
-    ).strip()
-
-    notes = request.form.get(
-        "notes",
-        ""
-    ).strip()
-
-    if followup_date:
-
-        followup_id = (
-            app.config[
-                "followup_counter"
-            ]
-        )
-
-        app.config[
-            "followup_counter"
-        ] += 1
-
-        app.config[
-            "followups"
-        ].append({
-
-            "id": followup_id,
-
-            "patient_id": patient_id,
-
-            "patient_name": patient.get(
-                "fullname",
-                ""
-            ),
-
-            "provider_email": session.get(
-                "provider_email",
-                ""
-            ),
-
-            "provider_name": session.get(
-                "provider_fullname",
-                ""
-            ),
-
-            "followup_date": (
-                followup_date
-            ),
-
-            "followup_time": (
-                followup_time
-            ),
-
-            "followup_type": (
-                followup_type
-            ),
-
-            "notes": notes,
-
-            "status": "Pending",
-
-            "created_at": datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-
-        })
+    followup = FollowUp(
+        patient_id=patient_id_value,
+        provider_id=session.get("provider_id"),
+        appointment_id=appointment.id if appointment else None,
+        follow_up_date=followup_date,
+        follow_up_time=followup_time,
+        follow_up_type=request.form.get("followup_type", "").strip() or "General follow-up",
+        notes=instructions,
+        status="Pending",
+    )
+    db.session.add(followup)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Could not save provider follow-up")
 
     return redirect(
         url_for(
@@ -2492,51 +2633,23 @@ def complete_followup(
     followup_id
 ):
 
-    provider_email = normalize_text(
-        session.get(
-            "provider_email",
-            ""
-        )
-    )
-
-    for item in app.config[
-        "followups"
-    ]:
-
-        if (
-            item.get("id")
-            == followup_id
-
-            and normalize_text(
-                item.get(
-                    "patient_id",
-                    ""
-                )
-            )
-            == normalize_text(
-                patient_id
-            )
-
-            and normalize_text(
-                item.get(
-                    "provider_email",
-                    ""
-                )
-            )
-            == provider_email
-        ):
-
-            item["status"] = (
-                "Completed"
-            )
-
-            item["completed_at"] = (
-                datetime.now().strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
-            )
-
-            break
+    try:
+        patient_id_value = int(patient_id)
+    except (TypeError, ValueError):
+        return redirect(url_for("patients"))
+    followup = FollowUp.query.filter_by(
+        id=followup_id,
+        patient_id=patient_id_value,
+        provider_id=session.get("provider_id"),
+    ).first()
+    if followup and followup.status != "Completed":
+        followup.status = "Completed"
+        followup.completed_at = datetime.utcnow()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Could not complete provider follow-up")
 
     return redirect(
         url_for(
@@ -2571,39 +2684,10 @@ def consultation():
 @app.route("/follow-up")
 @provider_required
 def follow_up():
-
-    provider_email = normalize_text(
-        session.get(
-            "provider_email",
-            ""
-        )
-    )
-
-    followups = [
-
-        item
-
-        for item
-        in app.config[
-            "followups"
-        ]
-
-        if normalize_text(
-            item.get(
-                "provider_email",
-                ""
-            )
-        ) == provider_email
-    ]
-
-    followups.sort(
-        key=lambda item: (
-            item.get(
-                "followup_date",
-                ""
-            )
-        )
-    )
+    rows = FollowUp.query.filter_by(
+        provider_id=session.get("provider_id")
+    ).order_by(FollowUp.follow_up_date.asc(), FollowUp.created_at.asc()).all()
+    followups = [followup_to_dict(item) for item in rows]
 
     return render_template(
         "follow_up.html",
@@ -2615,7 +2699,197 @@ def follow_up():
 # AVAILABILITY PAGE
 # =========================================================
 
-@app.route("/availability")
+def validate_availability_config(payload):
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    if not isinstance(payload, dict) or not isinstance(payload.get("weekly"), dict):
+        return None, "Availability schedule is invalid."
+    if not isinstance(payload.get("settings"), dict) or not isinstance(payload.get("exceptions"), list):
+        return None, "Availability settings are invalid."
+
+    weekly = {}
+    parsed_hours = {}
+    for day in days:
+        entry = payload["weekly"].get(day)
+        if not isinstance(entry, dict) or not isinstance(entry.get("enabled"), bool):
+            return None, "Each weekday needs an availability setting."
+        start = entry.get("start")
+        end = entry.get("end")
+        try:
+            start_time = datetime.strptime(start, "%H:%M").time()
+            end_time = datetime.strptime(end, "%H:%M").time()
+        except (TypeError, ValueError):
+            return None, f"{day} must have valid start and end times."
+        if entry["enabled"] and start_time >= end_time:
+            return None, f"{day} must end after it starts."
+        weekly[day] = {"enabled": entry["enabled"], "start": start, "end": end}
+        parsed_hours[day] = (start_time, end_time)
+
+    settings = payload["settings"]
+    try:
+        duration = int(settings.get("duration"))
+        buffer_minutes = int(settings.get("buffer"))
+        break_enabled = settings.get("breakEnabled")
+        break_start = settings.get("breakStart")
+        break_end = settings.get("breakEnd")
+        break_start_time = datetime.strptime(break_start, "%H:%M").time()
+        break_end_time = datetime.strptime(break_end, "%H:%M").time()
+    except (TypeError, ValueError):
+        return None, "Appointment duration, buffer, and break times must be valid."
+    if duration not in {15, 20, 30, 45, 60} or buffer_minutes not in {0, 5, 10, 15, 20}:
+        return None, "Appointment duration or buffer is not supported."
+    if not isinstance(break_enabled, bool) or break_start_time >= break_end_time:
+        return None, "Break settings are invalid."
+    if break_enabled:
+        for day, (start_time, end_time) in parsed_hours.items():
+            if weekly[day]["enabled"] and (break_start_time < start_time or break_end_time > end_time):
+                return None, f"The break must be within {day}'s working hours."
+
+    exceptions = []
+    seen_dates = set()
+    if len(payload["exceptions"]) > 366:
+        return None, "Too many date exceptions."
+    for item in payload["exceptions"]:
+        if not isinstance(item, dict):
+            return None, "A date exception is invalid."
+        exception_id = item.get("id")
+        exception_date = item.get("date")
+        exception_type = item.get("type")
+        reason = item.get("reason", "")
+        if not isinstance(exception_id, str) or not exception_id or len(exception_id) > 100:
+            return None, "A date exception needs a valid identifier."
+        if exception_type not in {"off", "special"} or not isinstance(reason, str) or len(reason) > 500:
+            return None, "A date exception contains invalid details."
+        try:
+            date.fromisoformat(exception_date)
+        except (TypeError, ValueError):
+            return None, "A date exception needs a valid date."
+        if exception_date in seen_dates:
+            return None, "Only one exception can be set for each date."
+        seen_dates.add(exception_date)
+        start = item.get("start", "")
+        end = item.get("end", "")
+        if exception_type == "special":
+            try:
+                special_start = datetime.strptime(start, "%H:%M").time()
+                special_end = datetime.strptime(end, "%H:%M").time()
+            except (TypeError, ValueError):
+                return None, "Special working hours need valid times."
+            if special_start >= special_end:
+                return None, "Special working hours must end after they start."
+        else:
+            start = ""
+            end = ""
+        exceptions.append({
+            "id": exception_id,
+            "date": exception_date,
+            "type": exception_type,
+            "reason": reason.strip(),
+            "start": start,
+            "end": end,
+        })
+
+    return {
+        "weekly": weekly,
+        "settings": {
+            "duration": duration,
+            "buffer": buffer_minutes,
+            "breakEnabled": break_enabled,
+            "breakStart": break_start,
+            "breakEnd": break_end,
+        },
+        "exceptions": exceptions,
+    }, None
+
+
+def default_availability_config():
+    weekly = {}
+    for day_name in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+        enabled = day_name not in {"Saturday", "Sunday"}
+        weekly[day_name] = {
+            "enabled": enabled,
+            "start": "09:00",
+            "end": "17:00" if enabled else "13:00",
+        }
+    return {
+        "weekly": weekly,
+        "settings": {
+            "duration": 30,
+            "buffer": 10,
+            "breakEnabled": True,
+            "breakStart": "13:00",
+            "breakEnd": "14:00",
+        },
+        "exceptions": [],
+    }
+
+
+def validate_appointment_slot(provider_id, appointment_date, appointment_time, exclude_id=None):
+    provider_settings = ProviderSettings.query.filter_by(provider_id=provider_id).first()
+    config = (
+        provider_settings.availability_config
+        if provider_settings and provider_settings.availability_config
+        else default_availability_config()
+    )
+    settings = config.get("settings", {})
+    duration = int(settings.get("duration", 30))
+    buffer_minutes = int(settings.get("buffer", 10))
+    start_minutes = appointment_time.hour * 60 + appointment_time.minute
+    end_minutes = start_minutes + duration
+    exception = next(
+        (item for item in config.get("exceptions", []) if item.get("date") == appointment_date.isoformat()),
+        None,
+    )
+
+    if exception and exception.get("type") == "off":
+        return "This provider is unavailable on the selected date."
+    if exception and exception.get("type") == "special":
+        day_start = datetime.strptime(exception["start"], "%H:%M").hour * 60 + datetime.strptime(exception["start"], "%H:%M").minute
+        day_end = datetime.strptime(exception["end"], "%H:%M").hour * 60 + datetime.strptime(exception["end"], "%H:%M").minute
+    else:
+        day_config = config.get("weekly", {}).get(appointment_date.strftime("%A"), {})
+        if not day_config.get("enabled", False):
+            return "This provider is not available on the selected weekday."
+        try:
+            start_time = datetime.strptime(day_config.get("start", ""), "%H:%M").time()
+            end_time = datetime.strptime(day_config.get("end", ""), "%H:%M").time()
+        except (TypeError, ValueError):
+            return "The provider's availability schedule is invalid. Please contact the provider."
+        day_start = start_time.hour * 60 + start_time.minute
+        day_end = end_time.hour * 60 + end_time.minute
+
+    if start_minutes < day_start or end_minutes > day_end:
+        return "The selected time is outside the provider's available hours."
+
+    if not exception and settings.get("breakEnabled", False):
+        try:
+            break_start_time = datetime.strptime(settings.get("breakStart", ""), "%H:%M").time()
+            break_end_time = datetime.strptime(settings.get("breakEnd", ""), "%H:%M").time()
+        except (TypeError, ValueError):
+            return "The provider's break schedule is invalid. Please contact the provider."
+        break_start = break_start_time.hour * 60 + break_start_time.minute
+        break_end = break_end_time.hour * 60 + break_end_time.minute
+        if start_minutes < break_end and end_minutes > break_start:
+            return "The selected time overlaps the provider's break."
+
+    query = Appointment.query.filter(
+        Appointment.provider_id == provider_id,
+        Appointment.appointment_date == appointment_date,
+        Appointment.status.in_(["Pending", "Confirmed"]),
+    )
+    if exclude_id is not None:
+        query = query.filter(Appointment.id != exclude_id)
+    for existing in query.all():
+        existing_start = existing.appointment_time.hour * 60 + existing.appointment_time.minute
+        existing_end = existing_start + duration
+        if (
+            start_minutes < existing_end + buffer_minutes
+            and existing_start < end_minutes + buffer_minutes
+        ):
+            return "This time conflicts with another appointment. Please choose a different time."
+    return None
+
+
+@app.route("/availability", methods=["GET", "POST"])
 @provider_required
 def availability():
     """
@@ -2627,17 +2901,30 @@ def availability():
     do not fail with an UndefinedError.
     """
 
-    availability_settings = {
-        "duration": 30,
-        "buffer": 10,
-        "break_enabled": True,
-        "break_start": "13:00",
-        "break_end": "14:00"
-    }
+    provider_id = session.get("provider_id")
+    provider_settings = ProviderSettings.query.filter_by(provider_id=provider_id).first()
+
+    if request.method == "POST":
+        config, error = validate_availability_config(request.get_json(silent=True))
+        if error:
+            return jsonify(error=error), 400
+        if not provider_settings:
+            provider_settings = ProviderSettings(provider_id=provider_id)
+            db.session.add(provider_settings)
+        provider_settings.availability_config = config
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Could not save provider availability")
+            return jsonify(error="Availability could not be saved. Please try again."), 500
+        return jsonify(message="Availability saved to your provider account.")
 
     return render_template(
         "availability.html",
-        settings=availability_settings
+        settings=provider_settings.availability_config.get("settings", {}) if provider_settings and provider_settings.availability_config else {},
+        availability_config=provider_settings.availability_config if provider_settings else None,
+        has_saved_availability=bool(provider_settings and provider_settings.availability_config),
     )
 
 
@@ -2712,6 +2999,19 @@ def provider_profile():
 @provider_required
 def provider_settings():
 
+    provider_id = session.get("provider_id")
+    settings_record = ProviderSettings.query.filter_by(
+        provider_id=provider_id
+    ).first()
+    settings_data = {
+        "appointment_notifications": settings_record.appointment_notifications if settings_record else True,
+        "patient_notifications": settings_record.patient_notifications if settings_record else True,
+        "followup_notifications": settings_record.followup_notifications if settings_record else True,
+        "system_notifications": settings_record.system_notifications if settings_record else True,
+        "profile_visible": settings_record.profile_visible if settings_record else True,
+        "organization_visible": settings_record.organization_visible if settings_record else True,
+    }
+
     # =====================================================
     # POST REQUEST
     # =====================================================
@@ -2745,65 +3045,50 @@ def provider_settings():
             ).strip()
 
             if not fullname:
-
                 return render_template(
                     "provider_settings.html",
-
-                    provider_settings=(
-                        app.config[
-                            "provider_settings"
-                        ]
-                    ),
-
-                    settings_error=(
-                        "Full name is required."
-                    )
+                    provider_settings=settings_data,
+                    settings_error="Full name is required.",
                 ), 400
 
-            provider = (
-                app.config.get(
-                    "registered_provider"
-                )
-            )
+            if len(fullname) > 120 or len(phone) > 20 or len(organization) > 120:
+                return render_template(
+                    "provider_settings.html",
+                    provider_settings=settings_data,
+                    settings_error="Please check the length of your name, phone, and organization fields.",
+                ), 400
 
-            if provider:
+            provider = db.session.get(Provider, provider_id)
+            if not provider:
+                return render_template(
+                    "provider_settings.html",
+                    provider_settings=settings_data,
+                    settings_error="Provider account was not found.",
+                ), 404
 
-                provider["fullname"] = (
-                    fullname
-                )
+            provider.fullname = fullname
+            provider.phone = phone
+            provider.organization = organization or None
 
-                provider["phone"] = (
-                    phone
-                )
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Could not save provider account preferences")
+                return render_template(
+                    "provider_settings.html",
+                    provider_settings=settings_data,
+                    settings_error="Account preferences could not be saved. Please try again.",
+                ), 500
 
-                provider["organization"] = (
-                    organization
-                )
-
-                app.config[
-                    "registered_provider"
-                ] = provider
-
-                session[
-                    "provider_fullname"
-                ] = fullname
-
-                session[
-                    "provider_phone"
-                ] = phone
-
-                session[
-                    "provider_organization"
-                ] = organization
+            session["provider_fullname"] = provider.fullname
+            session["provider_phone"] = provider.phone
+            session["provider_organization"] = provider.organization or ""
 
             return render_template(
                 "provider_settings.html",
 
-                provider_settings=(
-                    app.config[
-                        "provider_settings"
-                    ]
-                ),
+                provider_settings=settings_data,
 
                 settings_success=(
                     "Account preferences saved successfully."
@@ -2815,48 +3100,38 @@ def provider_settings():
         # =================================================
 
         elif action == "save_notifications":
+            if not settings_record:
+                settings_record = ProviderSettings(provider_id=provider_id)
+                db.session.add(settings_record)
 
-            settings_data = (
-                app.config[
-                    "provider_settings"
-                ]
-            )
+            for key in (
+                "appointment_notifications",
+                "patient_notifications",
+                "followup_notifications",
+                "system_notifications",
+            ):
+                setattr(settings_record, key, request.form.get(key) == "on")
 
-            settings_data[
-                "appointment_notifications"
-            ] = (
-                request.form.get(
-                    "appointment_notifications"
-                ) == "on"
-            )
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Could not save provider notification settings")
+                return render_template(
+                    "provider_settings.html",
+                    provider_settings=settings_data,
+                    settings_error="Notification settings could not be saved. Please try again.",
+                ), 500
 
-            settings_data[
-                "patient_notifications"
-            ] = (
-                request.form.get(
-                    "patient_notifications"
-                ) == "on"
-            )
-
-            settings_data[
-                "followup_notifications"
-            ] = (
-                request.form.get(
-                    "followup_notifications"
-                ) == "on"
-            )
-
-            settings_data[
-                "system_notifications"
-            ] = (
-                request.form.get(
-                    "system_notifications"
-                ) == "on"
-            )
-
-            app.config[
-                "provider_settings"
-            ] = settings_data
+            settings_data.update({
+                key: getattr(settings_record, key)
+                for key in (
+                    "appointment_notifications",
+                    "patient_notifications",
+                    "followup_notifications",
+                    "system_notifications",
+                )
+            })
 
             return render_template(
                 "provider_settings.html",
@@ -2875,32 +3150,26 @@ def provider_settings():
         # =================================================
 
         elif action == "save_privacy":
+            if not settings_record:
+                settings_record = ProviderSettings(provider_id=provider_id)
+                db.session.add(settings_record)
 
-            settings_data = (
-                app.config[
-                    "provider_settings"
-                ]
-            )
+            settings_record.profile_visible = request.form.get("profile_visible") == "on"
+            settings_record.organization_visible = request.form.get("organization_visible") == "on"
 
-            settings_data[
-                "profile_visible"
-            ] = (
-                request.form.get(
-                    "profile_visible"
-                ) == "on"
-            )
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Could not save provider privacy settings")
+                return render_template(
+                    "provider_settings.html",
+                    provider_settings=settings_data,
+                    settings_error="Privacy settings could not be saved. Please try again.",
+                ), 500
 
-            settings_data[
-                "organization_visible"
-            ] = (
-                request.form.get(
-                    "organization_visible"
-                ) == "on"
-            )
-
-            app.config[
-                "provider_settings"
-            ] = settings_data
+            settings_data["profile_visible"] = settings_record.profile_visible
+            settings_data["organization_visible"] = settings_record.organization_visible
 
             return render_template(
                 "provider_settings.html",
@@ -3134,11 +3403,7 @@ def provider_settings():
     return render_template(
         "provider_settings.html",
 
-        provider_settings=(
-            app.config[
-                "provider_settings"
-            ]
-        )
+        provider_settings=settings_data
     )
 
 

@@ -1921,10 +1921,8 @@
        APPOINTMENT DATA
     ============================================================
 
-    These are DEMO providers for frontend development.
-
-    In the real production system, these records should come
-    from your organization's verified backend/database/API.
+    Provider and appointment data are supplied by Flask from the
+    registered database accounts and the signed-in patient's records.
     */
 
     const bookableProviders = {{ bookable_providers|tojson }};

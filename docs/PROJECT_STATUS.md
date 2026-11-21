@@ -17,7 +17,7 @@ The frontend consists of HTML templates served by a Flask application (`app.py`)
 - **Templates:** 23 HTML files in `templates/`
 - **Static assets:** `static/css/style.css` (1,539 lines), `static/js/script.js` (153 lines)
 - **Entry point:** `index.html` via Flask route `@app.route("/")`
-- **Data storage:** Patient/provider accounts and appointments persist in PostgreSQL; other feature areas remain in-memory or client-side
+- **Data storage:** Accounts, appointments, health records, medication logs, provider availability, notes/follow-ups, and patient notification preferences persist in PostgreSQL; some display preferences and informational pages remain client-side or static
 - **Authentication:** Flask session-based (cookies), separate patient and provider sessions
 - **Python version:** 3.13.5 (system Python)
 - **Virtual environment:** `.venv` at `E:\Desktop\ncd-frontend\ncd\.venv` (Python 3.13.5)
@@ -86,15 +86,29 @@ The frontend consists of HTML templates served by a Flask application (`app.py`)
 - **Password change flow repaired:** added the missing page, aligned the settings URL with Flask, and made the endpoint return JSON for the settings modal while retaining form support
 - **Provider patient detail not-found path repaired:** inaccessible or missing patient IDs redirect to the provider patient list instead of rendering with a null patient
 - **Verification passed on isolated in-memory SQLite:** current app/model import; patient profile, records, monitoring, provider dashboard; weight save; provider appointment confirmation using a long email; password update; and all 27 GET routes without server errors. No PostgreSQL test data was created.
+- **Local browser smoke check:** home, patient login, and provider login pages load from Flask; the saved dark appearance carries from home to patient login. The original light appearance was restored after the check. A read-only PostgreSQL `SELECT 1` succeeded. Authenticated PostgreSQL pages still need a manual check while signed into existing accounts.
+- **Authenticated patient browser check:** dashboard, profile, records, monitoring, and appointments loaded using the user's signed-in session. Existing record and weight displays were present; no health data was submitted or modified. Fixed the dashboard header to use the signed-in name from the Flask session instead of browser-only storage.
+- **Authenticated provider browser check:** dashboard, appointment list, patient list, patient detail modal, consultation workspace, and follow-up page loaded. Dashboard rows match provider-owned database records; demo names are absent. Fixed provider name/type to come from the Flask session. No appointment status or patient data was changed.
+- **Consultation notes and follow-ups now persist:** note create/edit/delete and follow-up create/list/complete routes use SQLAlchemy models with provider/patient ownership checks. Follow-ups accept the date-only form, and optional appointment links are stored.
+- **Migration `c39a70f2d841` applied and verified on PostgreSQL:** added nullable appointment links to consultation notes and follow-ups, and made follow-up time nullable to match the date-only form. Read-only schema inspection confirmed the revision and columns. Route flows passed with isolated SQLite; no test notes or follow-ups were written to PostgreSQL.
+- **Provider availability and booking checks now use PostgreSQL:** added nullable JSON `availability_config` to `provider_settings` in migration `1d6e8c3f4a20`. Availability loads/saves per provider; booking and rescheduling validate weekly hours, breaks, date exceptions, and conflicts with pending/confirmed appointments. The availability page loaded in the provider browser without JavaScript errors; no live schedule was submitted. Isolated SQLite checks passed for save/load, invalid schedules, off days, breaks, and appointment conflicts.
+- **Patient measurements now persist:** blood pressure, blood glucose, thyroid TSH, and weight are saved to `health_record` by the authenticated patient. Monitoring summaries and history read from PostgreSQL and show empty states instead of example values or uncalculated “Normal” labels. Isolated SQLite checks passed for saves, display, input validation, and patient ownership.
+- **Patient medication tracking now persists:** added patient-owned medication entries and one intake log per medication per day. The monitoring page now shows an empty state instead of fictional medication examples, and supports adding a medication and marking today's dose as taken. The authenticated routes validate inputs and enforce patient ownership. Isolated SQLite checks passed for saving, display, idempotent daily logging, invalid input, and cross-patient access; no medication data was written to PostgreSQL.
+- **Migration `2f8c1a6d4e90` applied and verified on PostgreSQL:** created `medication` and `medication_log`, with patient/medication foreign keys and a unique medication/date constraint. The Alembic revision and columns were inspected after upgrade.
+- **Patient notification preferences now persist automatically:** each change to the three notification switches on `/settings` is posted to an authenticated endpoint and the page shows Saving/Saved/error status; language, appearance, and timezone remain browser preferences handled by Save Settings. Appointment alerts control whether updates appear on `/notifications`; health-reminder and health-information choices are stored but those notification types are not generated yet, as the UI explains. Isolated SQLite checks verified save/reload and patient isolation; the browser toggle itself still needs a manual retest.
+- **Migration `7a4c9e2d6b31` applied and verified on PostgreSQL:** added nullable `patient.notification_preferences`; existing accounts retain defaults until a patient saves preferences.
+- **Inactive patient settings clarified:** removed the browser-only profile-visibility, health-data-sharing, and remember-login toggles because they did not change server behavior. The page now explains current role/assignment-based access and session behavior, marks these options unavailable in English and Nepali, and removes their stale localStorage values. Isolated settings-page rendering checks passed; no access policy or session behavior was changed.
+- **Integrated role smoke check passed on isolated SQLite:** patient and provider login both succeeded, followed by 10 authenticated GET pages for each role. The fixtures included an appointment, health record, medication, and follow-up so the data-backed pages rendered with representative rows. No PostgreSQL patient data was read or changed during this check.
+- **Source review of informational/data templates:** `/prevention` and `/community` intentionally serve static MVP education pages. The active `/appointments` template receives registered providers and appointments from database-backed Flask routes; corrected an old comment that called these demo providers. The separate `templates/health records.html` file is a legacy, unreferenced prototype and is not served; the active `/records` route uses `records.html` with patient-owned database records.
 
 ## 4. Important Findings
 
 - **36 Flask route rules** across patient and provider features.
 - **Patient template errors fixed:** patient `profile.html`, `records.html`, and `change-password.html` now exist and their routes were exercised on isolated SQLite.
 - **Appointment fees are still display estimates** from the frontend’s existing service pricing; no payment or fee records are stored.
-- **Health monitoring persistence is partial:** weight records are database-backed; other measurements and availability still use client-side storage.
-- Authentication and appointment workflows were exercised using isolated SQLite; browser behavior against PostgreSQL with real user accounts still needs a manual smoke check.
-- **Appointment workflow and several domain features remain in memory/client-side** and are not yet persistent across restarts.
+- Medication tracking, health measurements, provider availability, consultation notes, follow-ups, patient notification preferences, provider notification/privacy/account preferences, and patient-owned health record deletion are database-backed. Language/appearance and some display preferences remain browser-side.
+- Authentication, appointment, and health-record delete workflows were exercised in a manually used isolated SQLite browser session; no real patient/provider data was used.
+- Requirements review found the essential MVP and important follow-up items implemented. Password reset, CSRF protection, dynamic prevention/community pages, patient-list search, and exports are listed as optional future improvements.
 - No external JS frameworks; Google Fonts used in `availability.html` only.
 
 ## 5. Architecture Decision
@@ -109,17 +123,17 @@ Planned stack:
 - **Frontend:** Retain existing Flask-based HTML/CSS/JavaScript templates
 - **Integration:** Backend endpoints must integrate with existing frontend forms and routes
 
-Patient and provider accounts and appointments are stored in PostgreSQL via SQLAlchemy. Remaining in-memory and client-side storage is used by unfinished features such as health monitoring, records, availability, consultation notes, and follow-ups.
+Patient/provider accounts, appointments, measurement records, medications and daily intake logs, consultation notes, follow-ups, provider availability, patient notification preferences, and provider notification/privacy/account preferences are stored in PostgreSQL via SQLAlchemy. Language/appearance, some other display preferences, and informational features remain client-side or static.
 
 ## 6. Current Development Stage
 
-Requirements drafted (`docs/REQUIREMENTS.md`). Architecture: Flask + PostgreSQL + SQLAlchemy + Werkzeug. Patient/provider authentication and the core appointment workflow are database-backed. Weight records are now database-backed; several other non-MVP features remain unfinished. Targeted route smoke checks passed using an isolated in-memory SQLite database. The PostgreSQL-backed application still needs a manual browser smoke check with the user's existing accounts.
+Requirements review: all essential MVP items and the listed important follow-up features are implemented. Manual acceptance passed against isolated SQLite: the patient submitted a synthetic appointment and saw it after refresh, then deleted the synthetic health record. A direct database check confirmed one test booking remained and the synthetic record was gone. No real patient/provider data was used. Additive migrations are applied to PostgreSQL. Prevention/community pages remain intentionally static, and one legacy health-record template is unreferenced.
 
 ## 7. Immediate Next Task
 
 **Database setup, models, authentication, and the core appointment workflow are implemented.** Appointment migration `b7c4d2e91a63` is applied to PostgreSQL. End-to-end route checks used temporary in-memory SQLite to avoid inserting test accounts into PostgreSQL.
 
-Next step: **Run a manual browser smoke check using the local PostgreSQL-backed app with the user's existing patient and provider accounts.** Confirm dashboard empty states, patient profile/records, weight entry, provider appointment confirm/reject, and theme persistence across pages. Do not create duplicate real accounts or demo appointments.
+The patient confirmed that an appointment form refreshed before submission loses its unsaved draft by design. Manual acceptance against isolated SQLite passed: a submitted appointment remained visible after refresh, and the synthetic health record disappeared after deletion. A direct database check confirmed both outcomes. The local test server was stopped and `instance/manual_qa.sqlite` was removed. **MVP status: complete. Next task: choose an optional future improvement if development is continuing.**
 
 ## 8. Development Rules
 
@@ -266,7 +280,7 @@ class Appointment(db.Model):
 7. ✅ Run `flask db init` → `flask db migrate -m "Initial migration"` → `flask db upgrade`
 8. ✅ **Verify tables created** — 7 new tables confirmed in PostgreSQL
 
-**Status: Database setup, seven models, patient/provider authentication, database-backed appointment workflow, patient profile/records pages, and weight recording are implemented. Appointment migration `b7c4d2e91a63` is applied and schema columns verified in PostgreSQL. Targeted route flows and all 27 GET routes passed using isolated SQLite. Next task: manual browser smoke check against the PostgreSQL-backed app, then continue connecting the remaining client-side-only features.**
+**Status: Essential MVP and important follow-up features in `docs/REQUIREMENTS.md` are implemented. Patient/provider authentication, appointments, health monitoring and records, medication tracking, notifications, provider availability and settings, consultation notes, and follow-ups use the database. Migrations `b7c4d2e91a63`, `c39a70f2d841`, `1d6e8c3f4a20`, `2f8c1a6d4e90`, and `7a4c9e2d6b31` are applied and verified in PostgreSQL. Manual acceptance in isolated SQLite confirmed appointment reload after submit and deletion of a synthetic health record; no real records were used. The unsubmitted form draft clears on refresh by design. The manual QA server and database have been cleaned up. MVP complete; optional improvements remain outside the MVP.**
 
 **File location:** `E:\Desktop\ncd-frontend\ncd\docs\PROJECT_STATUS.md`  
 **Related file:** `docs/FRONTEND_AUDIT.md` (full frontend investigation report)

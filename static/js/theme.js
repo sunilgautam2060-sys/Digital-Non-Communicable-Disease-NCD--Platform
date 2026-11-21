@@ -4,7 +4,7 @@
     const readAppearance = () => {
         try {
             const settings = JSON.parse(localStorage.getItem("ncdNepalSettings") || "{}");
-            return settings.appearance || localStorage.getItem("ncd_provider_theme") || "light";
+            return settings.appearance || localStorage.getItem("ncd_provider_theme") || localStorage.getItem("ncd-theme") || "light";
         } catch (_) {
             return "light";
         }
@@ -22,7 +22,7 @@
     applyAppearance();
     document.addEventListener("DOMContentLoaded", applyAppearance, { once: true });
     window.addEventListener("storage", event => {
-        if (event.key === "ncdNepalSettings" || event.key === "ncd_provider_theme") applyAppearance();
+        if (event.key === "ncdNepalSettings" || event.key === "ncd_provider_theme" || event.key === "ncd-theme") applyAppearance();
     });
     const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
     colorScheme.addEventListener?.("change", () => {

@@ -11,6 +11,10 @@
         nav { display: flex; gap: 16px; margin: 20px 0; } a { color: #087f72; }
         .record { background: white; border-radius: 12px; padding: 18px 22px; margin: 12px 0; box-shadow: 0 5px 20px #15223810; }
         .record h2 { margin: 0 0 8px; font-size: 1.1rem; } .muted { color: #64748b; }
+        .record-actions { margin-top: 14px; }
+        .delete-button { border: 0; border-radius: 6px; padding: 8px 12px; color: #fff; background: #b42318; cursor: pointer; }
+        .notice { padding: 10px 14px; border-radius: 8px; background: #e8f5ef; }
+        .notice.error { background: #fff0ef; }
     </style>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
 </head>
@@ -18,11 +22,17 @@
 <main>
     <h1>Health Records</h1>
     <nav><a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('monitoring') }}">Health monitoring</a></nav>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <p class="notice {{ category }}" role="status">{{ message }}</p>
+    {% endfor %}
     {% for record in records %}
     <article class="record">
         <h2>{{ record.record_type }}: {{ record.value }}{% if record.record_type|lower == 'weight' %} kg{% endif %}</h2>
         <div class="muted">Recorded {{ record.date_recorded.strftime('%b %d, %Y') }}</div>
         {% if record.notes %}<p>{{ record.notes }}</p>{% endif %}
+        <form class="record-actions" method="post" action="{{ url_for('delete_health_record', record_id=record.id) }}" onsubmit="return confirm('Delete this health record? This cannot be undone.');">
+            <button class="delete-button" type="submit">Delete record</button>
+        </form>
     </article>
     {% else %}
     <p class="record">You have no health records yet. Records you add through health monitoring will appear here.</p>

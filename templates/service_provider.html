@@ -1670,18 +1670,18 @@
 
                     <div class="avatar"
                          id="providerInitials">
-                        SP
+                        {{ fullname[:2]|upper if fullname else 'SP' }}
                     </div>
 
 
                     <div class="provider-mini-text">
 
-                        <strong id="providerName">
-                            Service Provider
+                        <strong id="providerName" data-fullname="{{ fullname }}">
+                            {{ fullname or 'Service Provider' }}
                         </strong>
 
-                        <span id="providerType">
-                            Healthcare Provider
+                        <span id="providerType" data-provider-type="{{ provider_type }}">
+                            {{ provider_type or 'Healthcare Provider' }}
                         </span>
 
                     </div>
@@ -1714,7 +1714,7 @@
 
                     <h2>
                         Good to see you again,
-                        <span id="welcomeName">Service</span>.
+                        <span id="welcomeName">{{ fullname.split()[0] if fullname else 'Provider' }}</span>.
                     </h2>
 
 
@@ -2284,11 +2284,13 @@
     ========================== */
 
     const providerName =
-        localStorage.getItem("provider_fullname")
+        document.getElementById("providerName").dataset.fullname
+        || localStorage.getItem("provider_fullname")
         || "Service Provider";
 
     const providerType =
-        localStorage.getItem("provider_type")
+        document.getElementById("providerType").dataset.providerType
+        || localStorage.getItem("provider_type")
         || "Healthcare Provider";
 
 

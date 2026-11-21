@@ -1277,10 +1277,14 @@
 
                 <br>
 
-                These settings are currently saved in this browser only.
-                They are not yet connected to patient appointment booking
-                or server-side availability validation. Do not rely on this
-                page alone to prevent double bookings.
+                {% if has_saved_availability %}
+                Your schedule is saved to your provider account.
+                {% else %}
+                This schedule has not been saved to your provider account yet.
+                Use Save appointment settings to store it.
+                {% endif %}
+                Patient appointment booking does not yet validate these hours,
+                so this page alone cannot prevent double bookings.
 
             </div>
 
@@ -2085,6 +2089,7 @@
 ========================================================= */
 
 const STORAGE_KEY = "ncd_provider_availability_v1";
+const SERVER_SCHEDULE = {{ availability_config|tojson }};
 
 const DAYS = [
     "Monday",
@@ -2167,7 +2172,9 @@ let selectedDate = toDateString(today);
 
 function loadSchedule() {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = SERVER_SCHEDULE
+            ? JSON.stringify(SERVER_SCHEDULE)
+            : localStorage.getItem(STORAGE_KEY);
 
         if (!stored) {
             return cloneDefaultSchedule();
@@ -2243,31 +2250,33 @@ function cloneDefaultSchedule() {
     );
 }
 
+let scheduleSaveQueue = Promise.resolve(true);
+
 function persistSchedule() {
-
+    const snapshot = JSON.stringify(schedule);
     try {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(schedule)
-        );
-
-        return true;
-
+        localStorage.setItem(STORAGE_KEY, snapshot);
     } catch (error) {
-
-        console.error(
-            "Could not save availability settings:",
-            error
-        );
-
-        showToast(
-            "Could not save settings in this browser.",
-            true
-        );
-
-        return false;
+        console.warn("Browser cache could not be updated:", error);
     }
+
+    scheduleSaveQueue = scheduleSaveQueue.then(async function() {
+        try {
+            const response = await fetch("{{ url_for('availability') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: snapshot,
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Could not save availability.");
+            return true;
+        } catch (error) {
+            console.error("Could not save availability to the provider account:", error);
+            showToast("Could not save availability to your account.", true);
+            return false;
+        }
+    });
+    return scheduleSaveQueue;
 }
 
 /* =========================================================
@@ -2526,7 +2535,7 @@ function renderWeeklySchedule() {
 
         toggle.addEventListener(
             "change",
-            function() {
+            async function() {
 
                 schedule.weekly[day].enabled =
                     toggle.checked;
@@ -2547,7 +2556,7 @@ function renderWeeklySchedule() {
 
                 renderCalendar();
 
-                persistSchedule();
+                await persistSchedule();
             }
         );
 
@@ -2819,7 +2828,7 @@ function readFormIntoSchedule() {
    SAVE
 ========================================================= */
 
-function saveSchedule() {
+async function saveSchedule() {
 
     readFormIntoSchedule();
 
@@ -2836,7 +2845,7 @@ function saveSchedule() {
         return;
     }
 
-    if (!persistSchedule()) {
+    if (!await persistSchedule()) {
         return;
     }
 
@@ -2847,7 +2856,7 @@ function saveSchedule() {
     renderExceptions();
 
     showToast(
-        "Schedule saved in this browser successfully."
+        "Schedule saved to your provider account."
     );
 }
 
@@ -2855,7 +2864,7 @@ function saveSchedule() {
    RESET
 ========================================================= */
 
-function resetSchedule() {
+async function resetSchedule() {
 
     const confirmed =
         window.confirm(
@@ -2869,7 +2878,7 @@ function resetSchedule() {
     schedule =
         cloneDefaultSchedule();
 
-    if (!persistSchedule()) {
+    if (!await persistSchedule()) {
         return;
     }
 
@@ -2884,7 +2893,7 @@ function resetSchedule() {
    COPY MONDAY
 ========================================================= */
 
-function copyMondayToWeekdays() {
+async function copyMondayToWeekdays() {
 
     readFormIntoSchedule();
 
@@ -2918,7 +2927,9 @@ function copyMondayToWeekdays() {
         return;
     }
 
-    persistSchedule();
+    if (!await persistSchedule()) {
+        return;
+    }
 
     updateStatistics();
 
@@ -3565,7 +3576,7 @@ function updateExceptionFields() {
         type === "special";
 }
 
-function saveException(event) {
+async function saveException(event) {
 
     event.preventDefault();
 
@@ -3754,7 +3765,7 @@ function saveException(event) {
         }
     );
 
-    if (!persistSchedule()) {
+    if (!await persistSchedule()) {
         return;
     }
 
@@ -3956,7 +3967,7 @@ function renderExceptions() {
     );
 }
 
-function deleteException(id) {
+async function deleteException(id) {
 
     const confirmed =
         window.confirm(
@@ -3974,7 +3985,7 @@ function deleteException(id) {
             }
         );
 
-    if (!persistSchedule()) {
+    if (!await persistSchedule()) {
         return;
     }
 

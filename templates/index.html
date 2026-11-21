@@ -2645,11 +2645,18 @@
         document.getElementById("themeToggle");
 
 
-    const savedTheme =
-        localStorage.getItem("ncd-theme");
+    const savedSettings = JSON.parse(
+        localStorage.getItem("ncdNepalSettings") || "{}"
+    );
+    const savedTheme = savedSettings.appearance ||
+        localStorage.getItem("ncd-theme") || "light";
 
 
-    if (savedTheme === "dark") {
+        const isDark = savedTheme === "dark" || (
+            savedTheme === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+        );
+        if (isDark) {
 
         document.body.classList.add("dark");
 
@@ -2661,17 +2668,24 @@
     themeToggle.addEventListener("click", function () {
 
         document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        document.documentElement.classList.toggle("dark-mode", isDark);
+        document.body.classList.toggle("dark-mode", isDark);
 
 
         if (document.body.classList.contains("dark")) {
 
             localStorage.setItem("ncd-theme", "dark");
+            savedSettings.appearance = "dark";
+            localStorage.setItem("ncdNepalSettings", JSON.stringify(savedSettings));
 
             themeToggle.textContent = "☀️";
 
         } else {
 
             localStorage.setItem("ncd-theme", "light");
+            savedSettings.appearance = "light";
+            localStorage.setItem("ncdNepalSettings", JSON.stringify(savedSettings));
 
             themeToggle.textContent = "🌙";
 

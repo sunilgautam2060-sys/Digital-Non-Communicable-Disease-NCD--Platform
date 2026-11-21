@@ -2410,12 +2410,12 @@
                 <div class="summary-value"
                      id="bpSummary">
 
-                    120/78
+                    {{ latest_bp.value if latest_bp else '—' }}
 
                 </div>
 
                 <div class="summary-status">
-                    Normal
+                    {{ 'Recorded' if latest_bp else 'No reading yet' }}
                 </div>
 
             </div>
@@ -2437,12 +2437,12 @@
                 <div class="summary-value"
                      id="glucoseSummary">
 
-                    94 mg/dL
+                    {{ (latest_glucose.value ~ ' mg/dL') if latest_glucose else '—' }}
 
                 </div>
 
                 <div class="summary-status">
-                    Normal
+                    {{ 'Recorded' if latest_glucose else 'No reading yet' }}
                 </div>
 
             </div>
@@ -2464,12 +2464,12 @@
                 <div class="summary-value"
                      id="thyroidSummary">
 
-                    2.4
+                    {{ latest_tsh.value if latest_tsh else '—' }}
 
                 </div>
 
                 <div class="summary-status">
-                    Normal
+                    {{ 'Recorded' if latest_tsh else 'No reading yet' }}
                 </div>
 
             </div>
@@ -2498,7 +2498,7 @@
                     {% if current_weight and previous_weight %}
                     {{ '%+.1f'|format((current_weight.value|float) - (previous_weight.value|float)) }} kg from previous
                     {% else %}
-                    No previous entry
+                    Latest record
                     {% endif %}
                 </div>
 
@@ -2573,23 +2573,21 @@
                                 <div class="measurement-value"
                                      id="bpLatest">
 
-                                    120/78 mmHg
+                                    {{ (latest_bp.value ~ ' mmHg') if latest_bp else '—' }}
 
                                 </div>
 
                                 <div class="measurement-date"
                                      id="bpDate">
 
-                                    Latest · Nov 06, 2026
+                                    {{ ('Recorded · ' ~ latest_bp.date_recorded.strftime('%b %d, %Y')) if latest_bp else 'No reading recorded yet' }}
 
                                 </div>
 
                             </div>
 
 
-                            <span class="status">
-                                Normal
-                            </span>
+                            <span class="status">{{ 'Recorded' if latest_bp else 'No reading' }}</span>
 
                         </div>
 
@@ -2613,23 +2611,21 @@
                                 <div class="measurement-value"
                                      id="glucoseLatest">
 
-                                    94 mg/dL
+                                    {{ (latest_glucose.value ~ ' mg/dL') if latest_glucose else '—' }}
 
                                 </div>
 
                                 <div class="measurement-date"
                                      id="glucoseDate">
 
-                                    Fasting · Yesterday
+                                    {{ ('Recorded · ' ~ latest_glucose.date_recorded.strftime('%b %d, %Y')) if latest_glucose else 'No reading recorded yet' }}
 
                                 </div>
 
                             </div>
 
 
-                            <span class="status">
-                                Normal
-                            </span>
+                            <span class="status">{{ 'Recorded' if latest_glucose else 'No reading' }}</span>
 
                         </div>
 
@@ -2653,20 +2649,18 @@
                                 <div class="measurement-value"
                                      id="thyroidLatest">
 
-                                    2.4 mIU/L
+                                    {{ (latest_tsh.value ~ ' mIU/L') if latest_tsh else '—' }}
 
                                 </div>
 
                                 <div class="measurement-date">
-                                    Latest · Nov 03, 2026
+                                    {{ ('Recorded · ' ~ latest_tsh.date_recorded.strftime('%b %d, %Y')) if latest_tsh else 'No reading recorded yet' }}
                                 </div>
 
                             </div>
 
 
-                            <span class="status">
-                                Normal
-                            </span>
+                            <span class="status">{{ 'Recorded' if latest_tsh else 'No reading' }}</span>
 
                         </div>
 
@@ -2729,73 +2723,17 @@
 
                             <tbody id="historyTableBody">
 
+                                {% for record in records %}
+                                {% set units = {'Blood Pressure': 'mmHg', 'Blood Glucose': 'mg/dL', 'Thyroid TSH': 'mIU/L', 'Weight': 'kg'} %}
                                 <tr>
-
-                                    <td>
-                                        Nov 06, 2026
-                                    </td>
-
-                                    <td>
-                                        Blood Pressure
-                                    </td>
-
-                                    <td>
-                                        120/78 mmHg
-                                    </td>
-
-                                    <td>
-                                        <span class="status">
-                                            Normal
-                                        </span>
-                                    </td>
-
+                                    <td>{{ record.date_recorded.strftime('%b %d, %Y') }}</td>
+                                    <td>{{ record.record_type }}</td>
+                                    <td>{{ record.value }}{% if units.get(record.record_type) %} {{ units.get(record.record_type) }}{% endif %}</td>
+                                    <td><span class="status">Recorded</span></td>
                                 </tr>
-
-
-                                <tr>
-
-                                    <td>
-                                        Nov 05, 2026
-                                    </td>
-
-                                    <td>
-                                        Blood Glucose
-                                    </td>
-
-                                    <td>
-                                        94 mg/dL
-                                    </td>
-
-                                    <td>
-                                        <span class="status">
-                                            Normal
-                                        </span>
-                                    </td>
-
-                                </tr>
-
-
-                                <tr>
-
-                                    <td>
-                                        Nov 03, 2026
-                                    </td>
-
-                                    <td>
-                                        Thyroid TSH
-                                    </td>
-
-                                    <td>
-                                        2.4 mIU/L
-                                    </td>
-
-                                    <td>
-                                        <span class="status">
-                                            Normal
-                                        </span>
-                                    </td>
-
-                                </tr>
+                                {% else %}
+                                <tr><td colspan="4">No health measurements recorded yet.</td></tr>
+                                {% endfor %}
 
                             </tbody>
 
@@ -2848,13 +2786,11 @@
                         <div>
 
                             <h3>
-                                Currently Stable
+                                Recorded measurements
                             </h3>
 
                             <p>
-                                Your latest recorded measurements
-                                are shown within the displayed
-                                monitoring range.
+                                This page displays measurements you record. It does not assess whether a reading is normal or provide a diagnosis.
                             </p>
 
                         </div>
@@ -2992,71 +2928,41 @@
 
 
                     <div class="medication-list">
-
-
+                        {% for medication in medications %}
                         <div class="medication">
-
-                            <div class="medication-icon">
-                                +
-                            </div>
-
-
+                            <div class="medication-icon">+</div>
                             <div class="medication-info">
-
-                                <div class="medication-name">
-                                    Metformin
-                                </div>
-
-                                <div class="medication-dose">
-                                    500 mg
-                                </div>
-
+                                <div class="medication-name">{{ medication.name }}</div>
+                                <div class="medication-dose">{{ medication.dose }}</div>
+                                {% if medication.instructions %}<div class="medication-dose">{{ medication.instructions }}</div>{% endif %}
                             </div>
-
-
-                            <button
-                                class="taken-button taken"
-                                onclick="markTaken(this)">
-
-                                ✓ Taken
-
+                            <button class="taken-button {{ 'taken' if medication.id in medication_taken_ids else '' }}"
+                                    data-medication-id="{{ medication.id }}"
+                                    onclick="markTaken(this)"
+                                    {{ 'disabled' if medication.id in medication_taken_ids else '' }}>
+                                {{ '✓ Taken today' if medication.id in medication_taken_ids else 'Mark Taken' }}
                             </button>
-
                         </div>
-
-
-
-                        <div class="medication">
-
-                            <div class="medication-icon">
-                                +
-                            </div>
-
-
-                            <div class="medication-info">
-
-                                <div class="medication-name">
-                                    BP Medicine
-                                </div>
-
-                                <div class="medication-dose">
-                                    10 mg
-                                </div>
-
-                            </div>
-
-
-                            <button
-                                class="taken-button"
-                                onclick="markTaken(this)">
-
-                                Mark Taken
-
-                            </button>
-
-                        </div>
-
+                        {% else %}
+                        <p class="empty-state">No medications added yet. Add your own medication details below.</p>
+                        {% endfor %}
                     </div>
+
+                    <form id="medicationForm" class="medication-form" onsubmit="return addMedication(event)">
+                        <div class="form-group">
+                            <label for="medicationName">Medication name</label>
+                            <input id="medicationName" name="name" type="text" maxlength="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="medicationDose">Dose or label</label>
+                            <input id="medicationDose" name="dose" type="text" maxlength="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="medicationInstructions">Notes (optional)</label>
+                            <input id="medicationInstructions" name="instructions" type="text" maxlength="1000">
+                        </div>
+                        <button class="save-button" type="submit">Add Medication</button>
+                    </form>
 
                 </section>
 
@@ -3644,279 +3550,31 @@
        SAVE READING
     ===================================================== */
 
-    function saveReading() {
-
-        const type =
-            document.getElementById(
-                "readingType"
-            ).value;
-
-
-        const value =
-            document.getElementById(
-                "readingValue"
-            ).value.trim();
-
-
-        const date =
-            document.getElementById(
-                "readingDate"
-            ).value;
-
-
+    async function saveReading() {
+        const type = document.getElementById("readingType").value;
+        const value = document.getElementById("readingValue").value.trim();
+        const date = document.getElementById("readingDate").value;
         if (!value || !date) {
-
+            showToast("Enter a reading and date.", true);
             return;
-
         }
 
-
-        const formattedDate =
-            new Date(
-                date + "T00:00:00"
-            ).toLocaleDateString(
-                "en-US",
-                {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric"
-                }
-            );
-
-
-        let unit = "";
-
-
-        if (type === "Blood Pressure") {
-
-            unit = "mmHg";
-
-            document.getElementById(
-                "bpLatest"
-            ).textContent =
-                value + " " + unit;
-
-
-            document.getElementById(
-                "bpSummary"
-            ).textContent =
-                value;
-
-        }
-
-
-        else if (
-            type === "Blood Glucose"
-        ) {
-
-            unit = "mg/dL";
-
-            document.getElementById(
-                "glucoseLatest"
-            ).textContent =
-                value + " " + unit;
-
-
-            document.getElementById(
-                "glucoseSummary"
-            ).textContent =
-                value + " mg/dL";
-
-        }
-
-
-        else if (
-            type === "Thyroid TSH"
-        ) {
-
-            unit = "mIU/L";
-
-            document.getElementById(
-                "thyroidLatest"
-            ).textContent =
-                value + " " + unit;
-
-
-            document.getElementById(
-                "thyroidSummary"
-            ).textContent =
-                value;
-
-        }
-
-
-        addHistoryRow(
-            formattedDate,
-            type,
-            value + " " + unit
-        );
-
-
-        saveReadingToStorage(
-            type,
-            value,
-            formattedDate
-        );
-
-
-        closeReadingModal();
-
-
-        document.getElementById(
-            "readingValue"
-        ).value = "";
-
-    }
-
-
-
-    /* =====================================================
-       ADD HISTORY ROW
-    ===================================================== */
-
-    function addHistoryRow(
-        date,
-        type,
-        reading
-    ) {
-
-        const tableBody =
-            document.getElementById(
-                "historyTableBody"
-            );
-
-
-        if (!tableBody) {
-
-            return;
-
-        }
-
-
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${date}
-            </td>
-
-            <td>
-                ${type}
-            </td>
-
-            <td>
-                ${reading}
-            </td>
-
-            <td>
-                <span class="status">
-                    Recorded
-                </span>
-            </td>
-
-        `;
-
-
-        tableBody.insertBefore(
-            row,
-            tableBody.firstChild
-        );
-
-    }
-
-
-
-    /* =====================================================
-       SAVE READING TO LOCAL STORAGE
-    ===================================================== */
-
-    function saveReadingToStorage(
-        type,
-        value,
-        date
-    ) {
-
-        let readings = [];
-
-
+        const button = document.querySelector("#readingModal .save-button");
+        button.disabled = true;
         try {
-
-            readings =
-                JSON.parse(
-                    localStorage.getItem(
-                        "ncdHealthReadings"
-                    )
-                ) || [];
-
+            const response = await fetch("{{ url_for('save_health_record') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ type, value, date }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Reading could not be saved.");
+            window.location.reload();
+        } catch (error) {
+            showToast(error.message || "Reading could not be saved.", true);
+        } finally {
+            button.disabled = false;
         }
-
-        catch (error) {
-
-            readings = [];
-
-        }
-
-
-        readings.unshift({
-
-            type: type,
-
-            value: value,
-
-            date: date
-
-        });
-
-
-        localStorage.setItem(
-            "ncdHealthReadings",
-            JSON.stringify(readings)
-        );
-
-    }
-
-
-
-    /* =====================================================
-       LOAD SAVED READINGS
-    ===================================================== */
-
-    function loadSavedReadings() {
-
-        let readings = [];
-
-
-        try {
-
-            readings =
-                JSON.parse(
-                    localStorage.getItem(
-                        "ncdHealthReadings"
-                    )
-                ) || [];
-
-        }
-
-        catch (error) {
-
-            readings = [];
-
-        }
-
-
-        readings.forEach(function (reading) {
-
-            addHistoryRow(
-                reading.date,
-                reading.type,
-                reading.value
-            );
-
-        });
-
     }
 
 
@@ -4007,41 +3665,46 @@
        MEDICATION
     ===================================================== */
 
-    function markTaken(button) {
-
-        if (!button) {
-
-            return;
-
-        }
-
-
-        if (
-            button.classList.contains(
-                "taken"
-            )
-        ) {
-
-            button.classList.remove(
-                "taken"
+    async function markTaken(button) {
+        if (!button) return;
+        button.disabled = true;
+        try {
+            const response = await fetch(
+                `{{ url_for('add_medication') }}/${encodeURIComponent(button.dataset.medicationId)}/taken`,
+                { method: "POST" }
             );
-
-            button.textContent =
-                "Mark Taken";
-
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Could not record medication intake.");
+            window.location.reload();
+        } catch (error) {
+            showToast(error.message || "Could not record medication intake.", true);
+            button.disabled = false;
         }
+    }
 
-        else {
-
-            button.classList.add(
-                "taken"
-            );
-
-            button.textContent =
-                "✓ Taken";
-
+    async function addMedication(event) {
+        event.preventDefault();
+        const form = document.getElementById("medicationForm");
+        const button = form.querySelector("button[type='submit']");
+        button.disabled = true;
+        try {
+            const response = await fetch("{{ url_for('add_medication') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: form.elements.name.value.trim(),
+                    dose: form.elements.dose.value.trim(),
+                    instructions: form.elements.instructions.value.trim(),
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Could not save medication.");
+            window.location.reload();
+        } catch (error) {
+            showToast(error.message || "Could not save medication.", true);
+            button.disabled = false;
         }
-
+        return false;
     }
 
 
@@ -4100,8 +3763,6 @@
             applyAppearance();
 
             displayUserName();
-
-            loadSavedReadings();
 
         }
     );
