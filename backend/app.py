@@ -4,11 +4,13 @@ from datetime import datetime, date
 from functools import wraps
 from dotenv import load_dotenv
 from flask_migrate import Migrate
-from extensions import db
+from backend.extensions import db
 import os
 
 
-load_dotenv()
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_ROOT = os.path.join(PROJECT_ROOT, "frontend")
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 secret_key = os.environ.get("SECRET_KEY")
 database_url = os.environ.get("DATABASE_URL")
@@ -18,7 +20,12 @@ if not secret_key:
 if not database_url:
     raise RuntimeError("DATABASE_URL environment variable is required but not set")
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(FRONTEND_ROOT, "templates"),
+    static_folder=os.path.join(FRONTEND_ROOT, "static"),
+    instance_path=os.path.join(PROJECT_ROOT, "instance"),
+)
 app.secret_key = secret_key
 
 # Database configuration
@@ -27,11 +34,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize extensions
 db.init_app(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, directory=os.path.join(os.path.dirname(__file__), "migrations"))
 
 # Import models AFTER db is initialized so SQLAlchemy and
 # Flask-Migrate can register them with the app.
-import models  # noqa: E402,F401
+from backend import models  # noqa: E402,F401
 
 # Keep the model classes available to the existing route code while
 # importing the module only after `db` has been initialized.

@@ -14,6 +14,13 @@
 - **Password hashing:** Werkzeug
 - **Frontend:** Existing Flask templates, HTML, CSS and JavaScript.
 
+## 2.1 Project Layout
+
+- `backend/` contains the Flask application, SQLAlchemy models, dependencies, and migrations.
+- `frontend/` contains the Flask templates and static CSS/JavaScript assets.
+- `docs/` contains project status, requirements, and the frontend audit.
+- `run.py` starts the local application from the project root.
+
 ## 3. Development Rules
 
 - Assume the project owner is a beginner.
